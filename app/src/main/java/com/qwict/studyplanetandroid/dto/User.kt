@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.data
+package com.qwict.studyplanetandroid.dto
 
 import android.util.Log
 import com.auth0.android.jwt.JWT

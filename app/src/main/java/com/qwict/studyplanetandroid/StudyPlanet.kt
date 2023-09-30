@@ -28,11 +28,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.qwict.studyplanetandroid.dto.HealthDto
+import com.qwict.studyplanetandroid.service.HealthService
 import com.qwict.studyplanetandroid.ui.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.MainScreen
 import com.qwict.studyplanetandroid.ui.MainViewModel
 import com.qwict.studyplanetandroid.ui.PlanetExplorerScreen
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 enum class StudyPlanetScreens(@StringRes val title: Int) {
     MainScreen(title = R.string.title_main_screen),
@@ -50,8 +55,26 @@ fun StudyPlanetAppBar(
     modifier: Modifier = Modifier,
     onAccountButtonClicked: () -> Unit = {},
 ) {
+//    val healthService = HealthService()
+//    val health = healthService.getHealth()
+    val call = HealthService().healthApi.getHealth()
+    var version = ""
+    call.enqueue(object : Callback<HealthDto> {
+        override fun onResponse(call: Call<HealthDto>, response: Response<HealthDto>) {
+            if (response.isSuccessful) {
+                version = response.body()?.version.toString()
+            } else {
+                version = "Server is offline"
+            }
+        }
+
+        override fun onFailure(call: Call<HealthDto>, t: Throwable) {
+            version = "Server had internal error on getting version"
+        }
+    })
+
     TopAppBar(
-        title = { Text(stringResource(currentScreen.title)) },
+        title = { Text(stringResource(currentScreen.title) + " " + version) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),

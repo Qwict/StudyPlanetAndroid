@@ -19,7 +19,7 @@ import com.auth0.android.result.Credentials
 import android.util.Log
 
 import com.qwict.studyplanetandroid.R
-import com.qwict.studyplanetandroid.data.User
+import com.qwict.studyplanetandroid.dto.User
 
 
 

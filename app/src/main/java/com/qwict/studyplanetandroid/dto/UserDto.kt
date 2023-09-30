@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.data
+package com.qwict.studyplanetandroid.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
