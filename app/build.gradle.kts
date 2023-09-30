@@ -13,6 +13,9 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+        manifestPlaceholders["auth0Domain"] = "@string/com_auth0_domain"
+        manifestPlaceholders["auth0Scheme"] = "@string/com_auth0_scheme"
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -38,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -76,4 +80,21 @@ dependencies {
     // Required for GIF support
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("io.coil-kt:coil-gif:2.4.0")
+
+
+    // Retrofit for backend API calls
+    val retrofit_version = "2.9.0";
+    implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofit_version")
+
+    // Using Jackson for JSON parsing (because of tutorial, and I don't like GSON)
+    implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
+
+    // required for Auth0
+//    implementation("com.auth0.android:auth0:2.0.0")
+    implementation("com.auth0.android:auth0:+")
+    implementation("com.auth0.android:jwtdecode:+")
+    // maybe for image loading in the future
+    implementation("io.coil-kt:coil-compose:+")
+
 }

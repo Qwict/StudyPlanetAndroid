@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,16 +28,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.qwict.studyplanetandroid.ui.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.MainScreen
-import com.qwict.studyplanetandroid.ui.MainScreenModel
+import com.qwict.studyplanetandroid.ui.MainViewModel
 import com.qwict.studyplanetandroid.ui.PlanetExplorerScreen
-import javax.sql.DataSource
 
 enum class StudyPlanetScreens(@StringRes val title: Int) {
     MainScreen(title = R.string.title_main_screen),
     PlanetExplorerScreen(title = R.string.title_explorer_screen),
     DiscoveredPlanetsScreen(title = R.string.title_discovered_planets_screen),
+    AuthenticationScreen(title = R.string.title_authentication_screen),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +47,8 @@ fun StudyPlanetAppBar(
     currentScreen: StudyPlanetScreens,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAccountButtonClicked: () -> Unit = {},
 ) {
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
@@ -62,15 +65,24 @@ fun StudyPlanetAppBar(
                     )
                 }
             }
-        }
-    )
+        },
+        actions = {
+            IconButton(onClick = { onAccountButtonClicked() }) {
+                Icon(
+                    imageVector = Icons.Filled.AccountCircle,
+                    contentDescription = "The Account screen"
+                )
+            }
+        },
+
+        )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyPlanetApp(
-    viewModel: MainScreenModel = viewModel(),
-    navController: NavHostController = rememberNavController()
+    viewModel: MainViewModel = viewModel(),
+    navController: NavHostController = rememberNavController(),
 ) {
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -84,7 +96,10 @@ fun StudyPlanetApp(
             StudyPlanetAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() },
+                onAccountButtonClicked = {
+                    navController.navigate(StudyPlanetScreens.AuthenticationScreen.name)
+                }
             )
         }
     ) { innerPadding ->
@@ -100,6 +115,14 @@ fun StudyPlanetApp(
                     onStartExploringButtonClicked = {
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                )
+            }
+            composable(route = StudyPlanetScreens.AuthenticationScreen.name) {
+                AuthenticationScreen(
+                    viewModel = viewModel,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium))

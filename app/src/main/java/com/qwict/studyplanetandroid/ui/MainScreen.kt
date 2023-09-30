@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    onStartExploringButtonClicked: () -> Unit = {}
+    onStartExploringButtonClicked: () -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
