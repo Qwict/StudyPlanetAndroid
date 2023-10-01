@@ -7,7 +7,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 object RetrofitClient {
 
 //    private const val BASE_URL = "http://localhost:9009/v1/"
-    private const val BASE_URL = "https://todo.qwict.com/api/"
+    private const val BASE_URL = "https://api.todo.qwict.com/api/"
 
     private val okHttpClient = OkHttpClient()
         .newBuilder()

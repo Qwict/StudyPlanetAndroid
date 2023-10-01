@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -152,25 +151,24 @@ fun StudyPlanetApp(
                 )
             }
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
-                val context = LocalContext.current
+//                val context = LocalContext.current
                 DiscoveredPlanetsScreen(
-                    onEarthMineButtonClicked = { navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name) },
-                    onCancelButtonClicked = {
-//                        cancelOrderAndNavigateToStart(viewModel, navController)
+                    viewModel = viewModel,
+                    onMineButtonClicked = { planet ->
+                        navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
+                        viewModel.selectedPlanet = planet
                     },
                     modifier = Modifier.fillMaxHeight()
                 )
             }
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
                 PlanetExplorerScreen(
-//                    subtotal = uiState.price,
-//                    onNextButtonClicked = { navController.navigate(StudyPlanetScreens.Summary.name) },
-//                    onCancelButtonClicked = {
-////                        cancelOrderAndNavigateToStart(viewModel, navController)
-//                    },
-//                    options = uiState.pickupOptions,
-//                    onSelectionChanged = { viewModel.setDate(it) },
+                    planet = viewModel.selectedPlanet,
+                    onCancelMiningButtonClicked = {
+                        navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
+                    },
                     modifier = Modifier.fillMaxHeight()
+
                 )
             }
         }

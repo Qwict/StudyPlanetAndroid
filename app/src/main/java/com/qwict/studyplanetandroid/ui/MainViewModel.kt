@@ -19,22 +19,26 @@ import com.auth0.android.result.Credentials
 import android.util.Log
 
 import com.qwict.studyplanetandroid.R
+import com.qwict.studyplanetandroid.data.Planet
 import com.qwict.studyplanetandroid.dto.User
 
 
 
 class MainViewModel : ViewModel() {
-
     private val _uiState = MutableStateFlow(StudyPlanetUiState())
     val uiState: StateFlow<StudyPlanetUiState> = _uiState.asStateFlow()
     var user by mutableStateOf(User())
 
+    var discoveredPlanets: MutableList<Planet> = mutableListOf<Planet>()
+    var exploredPlanets: MutableList<Planet> = mutableListOf<Planet>()
+    var selectedPlanet: Planet = Planet()
 
-    fun setSelectedPlanet(planet: String) {
-        _uiState.update { currentState ->
-            currentState.copy(selectedPlanet = planet)
-        }
-    }
+
+//    fun setSelectedPlanet(planet: Planet) {
+//        _uiState.update { currentState ->
+//            currentState.copy(selectedPlanet = planet)
+//        }
+//    }
 
     //    For Auth0 to work
     var appJustLaunched by mutableStateOf(true)
