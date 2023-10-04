@@ -1,6 +1,5 @@
 package com.qwict.studyplanetandroid.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,25 +10,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -39,11 +34,14 @@ import coil.compose.rememberAsyncImagePainter
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
-import com.qwict.studyplanetandroid.R
-import com.qwict.studyplanetandroid.data.Planet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
+import com.qwict.studyplanetandroid.R
+import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.ui.components.AlertDialog
+import com.qwict.studyplanetandroid.ui.components.LinearProgressbar
 
 @Composable
 fun PlanetExplorerScreen(
@@ -52,12 +50,23 @@ fun PlanetExplorerScreen(
     modifier: Modifier = Modifier
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
+
+    var currentProgress by remember { mutableStateOf(0f) }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(key1 = Unit) {
+        scope.launch {
+            loadProgress { progress ->
+                currentProgress = progress
+            }
+        }
+    }
+
+
     Column {
-        OutlinedCard(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 6.dp
             ),
-            border = BorderStroke(1.dp, Color.Black),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(600.dp)
@@ -87,7 +96,7 @@ fun PlanetExplorerScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             RemainingTime(planet.timeToExplore!!)
-            MiningPlanetProgressbar()
+            LinearProgressbar(currentProgress)
 
             OutlinedButton(
                 onClick = {openAlertDialog.value = true},
@@ -101,7 +110,7 @@ fun PlanetExplorerScreen(
 
         when {
             openAlertDialog.value -> {
-                AlertDialogExample(
+                AlertDialog(
                     onDismissRequest = { openAlertDialog.value = false },
                     onConfirmation = {
                         onCancelMiningButtonClicked()
@@ -120,65 +129,10 @@ fun PlanetExplorerScreen(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AlertDialogExample(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-    icon: ImageVector,
-) {
-    AlertDialog(
-        icon = {
-            Icon(icon, contentDescription = "Example Icon")
-        },
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation()
-                }
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text("Dismiss")
-            }
-        }
-    )
-}
-
 @Composable
 fun RemainingTime(timeToExplore: Double) {
     Text(text = "Remaining Time $timeToExplore")
 
-}
-
-@Composable
-fun MiningPlanetProgressbar() {
-//    var currentProgress = remember { mutableStateOf(0f) }
-    var currentProgress = 0f
-    LinearProgressIndicator(
-        modifier = Modifier
-            .width(300.dp)
-            .height(10.dp),
-        progress = currentProgress
-    )
 }
 
 @Composable
