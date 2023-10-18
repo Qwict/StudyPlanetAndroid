@@ -1,18 +1,19 @@
 package com.qwict.studyplanetandroid.data
 
 import android.util.Log
+import androidx.annotation.DrawableRes
+import com.qwict.studyplanetandroid.R
 
 class Planet constructor(
-    name: String? = "Unknown Planet",
-    timeToExplore: Double? = 1.0,
-    timeToDiscover: Double? = 1.0
+    id: Int = 0,
+    name: String = "Unknown Planet",
+    @DrawableRes imageId: Int = R.drawable.earth,
 ) {
+    val id = id
     val name = name
-    val timeToExplore = timeToExplore
-    val timeToDiscover = timeToDiscover
+    val imageId = imageId
 
     init {
-        Log.d("Planet", "Planet created with name: $name and timeToExplore: $timeToExplore and timeToDiscover: $timeToDiscover")
+        Log.d("Planet", "Planet created with name: $name and id: $id")
     }
-
 }

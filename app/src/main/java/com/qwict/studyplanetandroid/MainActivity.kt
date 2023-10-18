@@ -10,39 +10,46 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.data.StudyPlanetUiState
-
-
-import com.qwict.studyplanetandroid.ui.MainScreen
-import com.qwict.studyplanetandroid.ui.AuthenticationView
 import com.qwict.studyplanetandroid.ui.MainViewModel
 import com.qwict.studyplanetandroid.ui.theme.StudyPlanetAndroidTheme
+import com.qwict.svkandroid.helper.getTokenFromSharedPrefs
+import com.qwict.svkandroid.helper.saveEncryptedPreference
 
 class MainActivity : ComponentActivity() {
-
-    private val mainViewModel: MainViewModel by viewModels()
+    val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel.setContext(this)
         this.createPlanets(mainViewModel)
-        Log.i("MainActivity", "onCreate: ${mainViewModel.discoveredPlanets.size}")
+        Log.i("MainActivity", "onCreate: ${mainViewModel.user.discoveredPlanets.size}")
         setContent {
             StudyPlanetAndroidTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
-                    StudyPlanetApp(mainViewModel);
+                    StudyPlanetApp(mainViewModel)
                 }
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        getTokenFromSharedPrefs(mainViewModel, applicationContext)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveEncryptedPreference("token", mainViewModel.user.token, applicationContext)
+    }
+
     private fun createPlanets(mainViewModel: MainViewModel) {
-        mainViewModel.discoveredPlanets.add(Planet("Earth", 1.0, 2.0))
-        mainViewModel.discoveredPlanets.add(Planet("Mars", 1.0, 2.0))
-        mainViewModel.discoveredPlanets.add(Planet("Europe", 1.0, 2.0))
+        Log.i("MainActivity", "createPlanets: creating planets ${R.drawable.earth} ${R.drawable.mars} ${R.drawable.europa}")
+        mainViewModel.user.discoveredPlanets.add(Planet(1, "Earth", R.drawable.earth))
+        mainViewModel.user.discoveredPlanets.add(Planet(2, "Mars", R.drawable.mars))
+        mainViewModel.user.discoveredPlanets.add(Planet(3, "Europe", R.drawable.europa))
     }
 }

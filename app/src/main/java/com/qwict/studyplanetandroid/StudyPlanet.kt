@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,22 +28,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.qwict.studyplanetandroid.dto.HealthDto
-import com.qwict.studyplanetandroid.service.HealthService
-import com.qwict.studyplanetandroid.ui.AuthenticationScreen
-import com.qwict.studyplanetandroid.ui.DiscoveredPlanetsScreen
-import com.qwict.studyplanetandroid.ui.MainScreen
+import com.qwict.studyplanetandroid.data.Planet
 import com.qwict.studyplanetandroid.ui.MainViewModel
-import com.qwict.studyplanetandroid.ui.PlanetExplorerScreen
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
+import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
+import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
+import com.qwict.studyplanetandroid.ui.screens.MainScreen
+import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
 
 enum class StudyPlanetScreens(@StringRes val title: Int) {
     MainScreen(title = R.string.title_main_screen),
-    PlanetExplorerScreen(title = R.string.title_explorer_screen),
-    DiscoveredPlanetsScreen(title = R.string.title_discovered_planets_screen),
     AuthenticationScreen(title = R.string.title_authentication_screen),
+    DiscoveredPlanetsScreen(title = R.string.title_discovered_planets_screen),
+    TimeSelectionScreen(title = R.string.title_time_selection_screen),
+    PlanetExplorerScreen(title = R.string.title_explorer_screen),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,28 +53,10 @@ fun StudyPlanetAppBar(
     modifier: Modifier = Modifier,
     onAccountButtonClicked: () -> Unit = {},
 ) {
-//    val healthService = HealthService()
-//    val health = healthService.getHealth()
-    val call = HealthService().healthApi.getHealth()
-    var version = ""
-    call.enqueue(object : Callback<HealthDto> {
-        override fun onResponse(call: Call<HealthDto>, response: Response<HealthDto>) {
-            if (response.isSuccessful) {
-                version = response.body()?.version.toString()
-            } else {
-                version = "Server is offline"
-            }
-        }
-
-        override fun onFailure(call: Call<HealthDto>, t: Throwable) {
-            version = "Server had internal error on getting version"
-        }
-    })
-
     TopAppBar(
-        title = { Text(stringResource(currentScreen.title) + " " + version) },
+        title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
         ),
         modifier = modifier,
         navigationIcon = {
@@ -83,7 +64,7 @@ fun StudyPlanetAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Return"
+                        contentDescription = "Return",
                     )
                 }
             }
@@ -92,12 +73,12 @@ fun StudyPlanetAppBar(
             IconButton(onClick = { onAccountButtonClicked() }) {
                 Icon(
                     imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "The Account screen"
+                    contentDescription = "The Account screen",
                 )
             }
         },
 
-        )
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,8 +91,12 @@ fun StudyPlanetApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     val currentScreen = StudyPlanetScreens.valueOf(
-        backStackEntry?.destination?.route ?: StudyPlanetScreens.MainScreen.name
+        backStackEntry?.destination?.route ?: StudyPlanetScreens.MainScreen.name,
     )
+
+    // TODO: what is this used for?
+//    val scope = rememberCoroutineScope()
+//    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         topBar = {
@@ -121,16 +106,20 @@ fun StudyPlanetApp(
                 navigateUp = { navController.navigateUp() },
                 onAccountButtonClicked = {
                     navController.navigate(StudyPlanetScreens.AuthenticationScreen.name)
-                }
+                },
             )
-        }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = viewModel.snackBarHostState)
+        },
+
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
 
         NavHost(
             navController = navController,
             startDestination = StudyPlanetScreens.MainScreen.name,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
         ) {
             composable(route = StudyPlanetScreens.MainScreen.name) {
                 MainScreen(
@@ -139,7 +128,8 @@ fun StudyPlanetApp(
                     },
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .padding(dimensionResource(R.dimen.padding_medium)),
+                    viewModel = viewModel,
                 )
             }
             composable(route = StudyPlanetScreens.AuthenticationScreen.name) {
@@ -147,28 +137,41 @@ fun StudyPlanetApp(
                     viewModel = viewModel,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .padding(dimensionResource(R.dimen.padding_medium)),
                 )
             }
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
 //                val context = LocalContext.current
                 DiscoveredPlanetsScreen(
                     viewModel = viewModel,
-                    onMineButtonClicked = { planet ->
-                        navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
+                    onMineButtonClicked = { planet: Planet ->
+                        navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                         viewModel.selectedPlanet = planet
                     },
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier.fillMaxHeight(),
+                )
+            }
+            composable(route = StudyPlanetScreens.TimeSelectionScreen.name) {
+                TimeSelectionScreen(
+                    viewModel = viewModel,
+                    onStartExploringButtonClicked = { planet: Planet, selectedTime: Long ->
+                        navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
+                        viewModel.selectedPlanet = planet
+                        viewModel.selectedTime = selectedTime
+                    },
+                    modifier = Modifier.fillMaxHeight(),
+                    planet = viewModel.selectedPlanet,
                 )
             }
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
-                PlanetExplorerScreen(
+                ExplorerScreen(
                     planet = viewModel.selectedPlanet,
+                    selectedTime = viewModel.selectedTime,
                     onCancelMiningButtonClicked = {
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
-                    modifier = Modifier.fillMaxHeight()
-
+                    modifier = Modifier.fillMaxHeight(),
+                    viewModel = viewModel,
                 )
             }
         }

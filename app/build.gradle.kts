@@ -16,7 +16,6 @@ android {
         manifestPlaceholders["auth0Domain"] = "@string/com_auth0_domain"
         manifestPlaceholders["auth0Scheme"] = "@string/com_auth0_scheme"
 
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -28,7 +27,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -66,6 +65,7 @@ dependencies {
 //    Why does this throw an error?
 //    implementation("androidx.annotation:annotation-jvm:1.7.0")
     implementation("androidx.annotation:annotation:1.5.0")
+    implementation("com.google.android.engage:engage-core:1.3.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -81,20 +81,29 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("io.coil-kt:coil-gif:2.4.0")
 
-
     // Retrofit for backend API calls
-    val retrofit_version = "2.9.0";
+    val retrofit_version = "2.9.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
     implementation("com.squareup.retrofit2:converter-gson:$retrofit_version")
 
     // Using Jackson for JSON parsing (because of tutorial, and I don't like GSON)
     implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
 
-    // required for Auth0
-//    implementation("com.auth0.android:auth0:2.0.0")
-    implementation("com.auth0.android:auth0:+")
-    implementation("com.auth0.android:jwtdecode:+")
     // maybe for image loading in the future
     implementation("io.coil-kt:coil-compose:+")
 
+    // required for Auth0 (might remove later)
+//    implementation("com.auth0.android:auth0:2.0.0")
+    implementation("com.auth0.android:auth0:+")
+    implementation("com.auth0.android:jwtdecode:+")
+
+    // datastore used to store token
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    // extension for datastore to support encryption
+    implementation("io.github.osipxd:security-crypto-datastore-preferences:1.0.0-alpha04")
+    // utility library for datastore encryption
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha05")
+
+    // using this to store the token in the keystore
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 }

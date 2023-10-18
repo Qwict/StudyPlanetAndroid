@@ -34,7 +34,7 @@ fun AlertDialog(
             TextButton(
                 onClick = {
                     onConfirmation()
-                }
+                },
             ) {
                 Text("Confirm")
             }
@@ -43,10 +43,10 @@ fun AlertDialog(
             TextButton(
                 onClick = {
                     onDismissRequest()
-                }
+                },
             ) {
                 Text("Dismiss")
             }
-        }
+        },
     )
 }

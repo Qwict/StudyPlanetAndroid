@@ -2,44 +2,29 @@ package com.qwict.studyplanetandroid.dto
 
 import android.util.Log
 import com.auth0.android.jwt.JWT
+import com.qwict.studyplanetandroid.data.Planet
 
-
-data class User(val idToken: String? = null) {
+data class User(val jwt: String? = null) {
 
     private val TAG = "User"
 
-    var id = ""
-    var name = ""
+    var id = 0
     var email = ""
-    var emailVerified = ""
-    var picture = ""
-    var updatedAt = ""
+    var token = ""
+    var discoveredPlanets: MutableList<Planet> = mutableListOf<Planet>()
 
     init {
-        if (idToken != null) {
+        if (jwt != null) {
             try {
-                // Attempt to decode the ID token.
-                val jwt = JWT(idToken ?: "")
-
-                // The ID token is a valid JWT,
-                // so extract information about the user from it.
-                id = jwt.subject ?: ""
-                name = jwt.getClaim("name").asString() ?: ""
+                val jwt = JWT(jwt ?: "")
+                id = jwt.getClaim("id").asInt()!!
                 email = jwt.getClaim("email").asString() ?: ""
-                emailVerified = jwt.getClaim("email_verified").asString() ?: ""
-                picture = jwt.getClaim("picture").asString() ?: ""
-                updatedAt = jwt.getClaim("updated_at").asString() ?: ""
+                token = this.jwt
             } catch (error: com.auth0.android.jwt.DecodeException) {
-                // The ID token is NOT a valid JWT, so log the error
-                // and leave the user properties as empty strings.
-                Log.e(TAG, "Error occurred trying to decode JWT: ${error.toString()} ")
+                Log.e(TAG, "Error occurred trying to decode JWT: $error ")
             }
         } else {
-            // The User object was instantiated with a null value,
-            // which means the user is being logged out.
-            // The user properties will be set to empty strings.
             Log.d(TAG, "User is logged out - instantiating empty User object.")
         }
     }
-
 }
