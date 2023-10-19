@@ -29,12 +29,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.ui.MainViewModel
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
 import com.qwict.studyplanetandroid.ui.screens.MainScreen
 import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 
 enum class StudyPlanetScreens(@StringRes val title: Int) {
     MainScreen(title = R.string.title_main_screen),
@@ -110,7 +110,7 @@ fun StudyPlanetApp(
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = viewModel.snackBarHostState)
+            SnackbarHost(hostState = viewModel.uiState.collectAsState().value.snackBarHostState)
         },
 
     ) { innerPadding ->
@@ -154,10 +154,9 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.TimeSelectionScreen.name) {
                 TimeSelectionScreen(
                     viewModel = viewModel,
-                    onStartExploringButtonClicked = { planet: Planet, selectedTime: Long ->
+                    onStartExploringButtonClicked = { planet: Planet ->
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
                         viewModel.selectedPlanet = planet
-                        viewModel.selectedTime = selectedTime
                     },
                     modifier = Modifier.fillMaxHeight(),
                     planet = viewModel.selectedPlanet,
@@ -166,7 +165,6 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
                 ExplorerScreen(
                     planet = viewModel.selectedPlanet,
-                    selectedTime = viewModel.selectedTime,
                     onCancelMiningButtonClicked = {
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },

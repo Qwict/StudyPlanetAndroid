@@ -22,10 +22,10 @@ fun getTokenFromSharedPrefs(mainViewModel: MainViewModel, applicationContext: Co
             jwt = token,
         )
         // TODO: might have to check here if token still good
-        mainViewModel.userIsAuthenticated = true
+        mainViewModel.userIsAuthenticated.value = true
     } else {
         Log.i("MainActivity", "onResume: token is null")
-        mainViewModel.userIsAuthenticated = false
+        mainViewModel.userIsAuthenticated.value = false
         mainViewModel.user = User()
     }
 }

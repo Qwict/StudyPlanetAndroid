@@ -14,8 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import com.qwict.studyplanetandroid.ui.screens.startMining
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

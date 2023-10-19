@@ -57,10 +57,10 @@ fun AuthenticationView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        val Title = if (viewModel.userIsAuthenticated) {
+        val Title = if (viewModel.userIsAuthenticated.value) {
             stringResource(R.string.logged_in_title)
         } else {
-            if (viewModel.appJustLaunched) {
+            if (viewModel.appJustLaunched.value) {
                 stringResource(R.string.initial_title)
             } else {
                 stringResource(R.string.logged_out_title)
@@ -70,7 +70,7 @@ fun AuthenticationView(
             text = Title,
         )
 
-        if (viewModel.userIsAuthenticated) {
+        if (viewModel.userIsAuthenticated.value) {
             UserInfoRow(
                 label = stringResource(R.string.email_label),
                 value = viewModel.user.email,
@@ -98,12 +98,12 @@ fun AuthenticationView(
 
         val buttonText: String
         val onClickAction: () -> Unit
-        if (viewModel.userIsAuthenticated) {
+        if (viewModel.userIsAuthenticated.value) {
             buttonText = stringResource(R.string.log_out_button)
             onClickAction = {
                 viewModel.logout()
                 scope.launch {
-                    viewModel.snackBarHostState.showSnackbar("Logged out")
+                    viewModel.uiState.value.snackBarHostState.showSnackbar("Logged out")
                 }
                 email.value = TextFieldValue()
                 password.value = TextFieldValue()
@@ -113,7 +113,7 @@ fun AuthenticationView(
             onClickAction = {
                 if (!viewModel.login(email, password)) {
                     scope.launch {
-                        viewModel.snackBarHostState.showSnackbar(
+                        viewModel.uiState.value.snackBarHostState.showSnackbar(
                             message = "Failed to login",
                             withDismissAction = true,
                         )

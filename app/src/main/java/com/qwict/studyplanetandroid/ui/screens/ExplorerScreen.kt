@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.dp
 import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import com.qwict.studyplanetandroid.ui.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.ui.components.MiningPlanetProgressbar
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -43,7 +43,6 @@ private val validationId = UUID.randomUUID().toString()
 @Composable
 fun ExplorerScreen(
     onCancelMiningButtonClicked: () -> Unit = {},
-    selectedTime: Long,
     planet: Planet,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel,
@@ -75,7 +74,7 @@ fun ExplorerScreen(
                     contentDescription = planet.name,
                 )
                 Text(
-                    text = (selectedTime / 1000 / 60).toString() + " Minutes",
+                    text = (viewModel.selectedTime / 1000 / 60).toString() + " Minutes",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
@@ -90,8 +89,8 @@ fun ExplorerScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CustomCountDownTimer(selectedTime, viewModel)
-            MiningPlanetProgressbar(planet, selectedTime, viewModel)
+            CustomCountDownTimer(viewModel)
+            MiningPlanetProgressbar(planet, viewModel.selectedTime.toLong(), viewModel)
 
             OutlinedButton(
                 onClick = { openAlertDialog.value = true },

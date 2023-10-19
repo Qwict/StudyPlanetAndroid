@@ -14,7 +14,7 @@ import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 fun TimeSelectionScreen(
     planet: Planet,
     modifier: Modifier = Modifier,
-    onStartExploringButtonClicked: (Planet, Long) -> Unit = { planet: Planet, l: Long -> },
+    onStartExploringButtonClicked: (Planet) -> Unit = { planet: Planet -> },
     viewModel: MainViewModel,
 ) {
     Column {
@@ -23,9 +23,11 @@ fun TimeSelectionScreen(
             onClick = {
                 onStartExploringButtonClicked(
                     planet,
-//                    (30 * 60 * 1000).toLong()
-                    (1 * 60 * 1000).toLong(),
+
                 )
+//                    (30 * 60 * 1000).toLong()
+                viewModel.selectedTime = (1 * 60 * 1000)
+                viewModel.updatedTime = viewModel.selectedTime
             },
             modifier = Modifier.padding(16.dp),
         ) {
@@ -36,9 +38,11 @@ fun TimeSelectionScreen(
             onClick = {
                 onStartExploringButtonClicked(
                     planet,
-//                    (60 * 60 * 1000).toLong()
-                    (5 * 60 * 1000).toLong(),
+
                 )
+//                    (60 * 60 * 1000).toLong()
+                viewModel.selectedTime = (5 * 60 * 1000)
+                viewModel.updatedTime = viewModel.selectedTime
             },
             modifier = Modifier.padding(16.dp),
         ) {
@@ -49,9 +53,10 @@ fun TimeSelectionScreen(
             onClick = {
                 onStartExploringButtonClicked(
                     planet,
-//                    (120 * 60 * 1000).toLong()
-                    (10 * 60 * 1000).toLong(),
                 )
+//                    (120 * 60 * 1000).toLong()
+                viewModel.selectedTime = (10 * 60 * 1000)
+                viewModel.updatedTime = viewModel.selectedTime
             },
             modifier = Modifier.padding(16.dp),
         ) {

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +13,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +26,7 @@ import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.dto.HealthDto
 import com.qwict.studyplanetandroid.dto.UserDto
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import kotlinx.serialization.json.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -67,36 +68,32 @@ fun MainScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(15.dp))
-
-        TextField(
-            label = { Text(text = "User ID") },
-            value = id.value,
-            onValueChange = { id.value = it },
-        )
-
-        Spacer(modifier = Modifier.height(15.dp))
+        Column {
+            OutlinedButton(onClick = { onStartExploringButtonClicked() }) {
+                Text(text = "Discover Planets")
+            }
+            OutlinedButton(onClick = { onStartExploringButtonClicked() }) {
+                Text(text = "Start Exploring")
+            }
+        }
 
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-            Button(
-                onClick = {
-                    val data = sendRequest(
-                        healthState = health,
-                    )
+            Row {
+                Button(
+                    onClick = {
+                        val data = sendRequest(
+                            healthState = health,
+                        )
 
-                    Log.d("Main Activity", profile.toString())
-                },
-            ) {
-                Text(text = "Get Data")
+                        Log.d("Main Activity", profile.toString())
+                    },
+                ) {
+                    Text(text = "Get Health")
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(15.dp))
-
-        Text(text = profile.component1().toString(), fontSize = 16.sp)
-        OutlinedButton(onClick = { onStartExploringButtonClicked() }) {
-            Text(text = "Start Exploring")
-        }
 
         Text(text = health.component1().toString(), fontSize = 16.sp)
     }
@@ -105,16 +102,19 @@ fun MainScreen(
 fun sendRequest(
     healthState: MutableState<HealthDto>,
 ) {
-    val healthCall: Call<HealthDto?>? = Api.service.getVersion()
-    healthCall!!.enqueue(object : Callback<HealthDto?> {
-        override fun onResponse(call: Call<HealthDto?>, response: Response<HealthDto?>) {
+    Api.service.getVersion().enqueue(object : Callback<JsonObject> {
+        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
             if (response.isSuccessful) {
                 Log.d("Main", "success!" + response.body().toString())
-                healthState.value = response.body()!!
+                healthState.value = HealthDto(
+                    env = response.body()!!["env"].toString(),
+                    version = response.body()!!["version"].toString(),
+                    name = response.body()!!["name"].toString(),
+                )
             }
         }
 
-        override fun onFailure(call: Call<HealthDto?>, t: Throwable) {
+        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
             Log.e("Main", "Failed mate " + t.message.toString())
         }
     })

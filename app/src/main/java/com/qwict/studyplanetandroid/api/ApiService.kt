@@ -49,7 +49,7 @@ interface ApiService {
         "Accept: application/json",
     )
     @GET("health/version/")
-    fun getVersion(): Call<HealthDto?>?
+    fun getVersion(): Call<JsonObject>
 }
 
 private const val BASE_URL =

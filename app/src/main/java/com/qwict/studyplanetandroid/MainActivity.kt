@@ -33,10 +33,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        getTokenFromSharedPrefs(mainViewModel, applicationContext)
-//    }
+    override fun onResume() {
+        super.onResume()
+        getTokenFromSharedPrefs(mainViewModel, applicationContext)
+    }
 
     override fun onPause() {
         super.onPause()

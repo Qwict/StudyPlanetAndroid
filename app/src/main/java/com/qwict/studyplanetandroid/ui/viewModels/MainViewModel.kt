@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,9 +12,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.data.StudyPlanetUiState
 import com.qwict.studyplanetandroid.dto.User
 import com.qwict.svkandroid.helper.clearEncryptedPreferences
 import com.qwict.svkandroid.helper.saveEncryptedPreference
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -23,19 +27,41 @@ import kotlinx.serialization.json.put
 import retrofit2.Call
 import retrofit2.Response
 class MainViewModel() : ViewModel() {
-//    TODO: I initialize in the init block, but I don't know if this is the best way to do it
-
     // TODO: what is this used for?
-    val snackBarHostState = SnackbarHostState()
+    private var _uiState = MutableStateFlow(
+        StudyPlanetUiState(),
+    )
+    val uiState: StateFlow<StudyPlanetUiState> = _uiState.asStateFlow()
 
-    var user by mutableStateOf(User())
+    var selectedTime by mutableStateOf(0)
+    var hours by mutableStateOf(0)
+    var minutes by mutableStateOf(0)
+    var seconds by mutableStateOf(0)
+    var updatedTime by mutableStateOf(0)
 
-    var exploredPlanets: MutableList<Planet> = mutableListOf<Planet>()
-    var selectedPlanet: Planet = Planet()
-    var selectedTime: Long = 0L
+    var selectedPlanet = Planet()
+    var exploredPlanets = mutableListOf<Planet>()
 
-    var appJustLaunched by mutableStateOf(true)
-    var userIsAuthenticated by mutableStateOf(false)
+    var user = User()
+    var userIsAuthenticated = mutableStateOf(false)
+    var appJustLaunched = mutableStateOf(true)
+    suspend fun countDown() {
+        while (updatedTime > 0) {
+            updatedTime -= 1000
+            hours = (updatedTime / (1000 * 60 * 60)).toInt()
+            minutes = (updatedTime % (1000 * 60 * 60) / (1000 * 60)).toInt()
+            seconds = (updatedTime % (1000 * 60 * 60) % (1000 * 60) / 1000).toInt()
+            delay(1000)
+        }
+    }
+
+//    var user by mutableStateOf(User())
+//    var exploredPlanets: MutableList<Planet> = mutableListOf<Planet>()
+//    var selectedPlanet: Planet = Planet()
+//    var selectedTime: Long = 0L
+//
+//    var appJustLaunched by mutableStateOf(true)
+//    var userIsAuthenticated by mutableStateOf(false)
 
     private val TAG = "MainViewModel"
     private lateinit var context: Context
@@ -58,7 +84,7 @@ class MainViewModel() : ViewModel() {
                     user = User(
                         response.body()!!["token"].toString(),
                     )
-                    userIsAuthenticated = true
+                    userIsAuthenticated.value = true
 //                    Not sure if this is needed (because this also happens in MainActivity onPause)
                     saveEncryptedPreference("token", user.token, context)
                     Log.i("MainViewModel", user.token)
@@ -81,7 +107,7 @@ class MainViewModel() : ViewModel() {
     }
 
     fun logout() {
-        userIsAuthenticated = false
+        userIsAuthenticated.value = false
         user = User()
         clearEncryptedPreferences("token", context)
     }
