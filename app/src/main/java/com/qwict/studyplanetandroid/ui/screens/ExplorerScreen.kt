@@ -2,24 +2,37 @@ package com.qwict.studyplanetandroid.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.* // ktlint-disable no-wildcard-imports
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.* // ktlint-disable no-wildcard-imports
-import androidx.compose.runtime.* // ktlint-disable no-wildcard-imports
-import androidx.compose.ui.* // ktlint-disable no-wildcard-imports
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qwict.studyplanetandroid.R
-import com.qwict.studyplanetandroid.api.IApiService
+import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.helper.RetrofitSingleton
-import com.qwict.studyplanetandroid.ui.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import com.qwict.studyplanetandroid.ui.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.ui.components.MiningPlanetProgressbar
-import okhttp3.ResponseBody
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -108,16 +121,20 @@ fun ExplorerScreen(
 }
 
 fun startMining(selectedTime: Long, planet: Planet, viewModel: MainViewModel) {
-    val body = mapOf(
-        "type" to "startExploring",
-        "validationId" to validationId,
-        "planetId" to planet.id,
-        "selectedActionTime" to selectedTime,
-    )
+    val body = buildJsonObject {
+        put("type", "startExploring")
+        put("validationId", validationId)
+        put("planetId", planet.id.toString())
+        put("time", selectedTime.toString())
+    }
+
     Log.i("ExplorerScreen", body.toString())
     Log.i("ExplorerScreen", viewModel.user.token)
-    RetrofitSingleton.getApiService().handleAction("bearer ${viewModel.user.token}", body).enqueue(object : Callback<ResponseBody> {
-        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+    Api.service.handleAction(
+        "bearer ${viewModel.user.token}",
+        JsonObject(body),
+    ).enqueue(object : Callback<JsonObject> {
+        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
             if (response.isSuccessful) {
                 Log.i("ExplorerScreen", "Started mining")
             } else {
@@ -125,18 +142,19 @@ fun startMining(selectedTime: Long, planet: Planet, viewModel: MainViewModel) {
             }
         }
 
-        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
             startMining(selectedTime, planet, viewModel)
         }
     })
 }
 
 fun stopMining(viewModel: MainViewModel) {
-    val body = mapOf(
-        "validationId" to validationId,
-    )
-    RetrofitSingleton.getApiService().handleAction(viewModel.user.token, body).enqueue(object : Callback<ResponseBody> {
-        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+    val body = buildJsonObject {
+        put("type", "stopExploring")
+        put("validationId", validationId)
+    }
+    Api.service.handleAction(viewModel.user.token, body).enqueue(object : Callback<JsonObject> {
+        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
             if (response.isSuccessful) {
                 Log.i("ExplorerScreen", "Stopped mining")
             } else {
@@ -144,7 +162,7 @@ fun stopMining(viewModel: MainViewModel) {
             }
         }
 
-        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
 //            stopMining()
         }
     })

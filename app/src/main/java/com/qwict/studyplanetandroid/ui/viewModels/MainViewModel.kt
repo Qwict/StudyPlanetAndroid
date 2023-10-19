@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.ui
+package com.qwict.studyplanetandroid.ui.viewModels
 
 import android.content.Context
 import android.os.Build
@@ -11,24 +11,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.data.StudyPlanetUiState
 import com.qwict.studyplanetandroid.dto.User
-import com.qwict.studyplanetandroid.helper.RetrofitSingleton
 import com.qwict.svkandroid.helper.clearEncryptedPreferences
 import com.qwict.svkandroid.helper.saveEncryptedPreference
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import okhttp3.ResponseBody
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import retrofit2.Call
 import retrofit2.Response
-class MainViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(StudyPlanetUiState())
-    val uiState: StateFlow<StudyPlanetUiState> = _uiState.asStateFlow()
+class MainViewModel() : ViewModel() {
+//    TODO: I initialize in the init block, but I don't know if this is the best way to do it
 
     // TODO: what is this used for?
     val snackBarHostState = SnackbarHostState()
@@ -39,12 +34,6 @@ class MainViewModel : ViewModel() {
     var selectedPlanet: Planet = Planet()
     var selectedTime: Long = 0L
 
-    fun setSelectedPlanet(planet: Planet) {
-        _uiState.update { currentState ->
-            currentState.copy(selectedPlanet = planet)
-        }
-    }
-
     var appJustLaunched by mutableStateOf(true)
     var userIsAuthenticated by mutableStateOf(false)
 
@@ -53,23 +42,21 @@ class MainViewModel : ViewModel() {
 
     fun login(email: MutableState<TextFieldValue>, password: MutableState<TextFieldValue>): Boolean {
         var success = false
-        val body = mapOf(
-            "email" to email.value.text,
-            "password" to password.value.text,
-        )
+        val body = buildJsonObject {
+            put("email", email.value.text)
+            put("password", password.value.text)
+        }
         Log.i("MainViewModel", body.toString())
 
-        RetrofitSingleton.getApiService().login(body).enqueue(object :
-            retrofit2.Callback<ResponseBody> {
+        Api.service.login(body).enqueue(object :
+            retrofit2.Callback<JsonObject> {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if (response.isSuccessful) {
                     Log.i("MainViewModel", "Logged in")
-                    val stringResponse = response.body()?.string()
-                    var json = JSONObject(stringResponse)
 //                    user.token = json.getString("token")
                     user = User(
-                        json.getString("token"),
+                        response.body()!!["token"].toString(),
                     )
                     userIsAuthenticated = true
 //                    Not sure if this is needed (because this also happens in MainActivity onPause)
@@ -86,7 +73,7 @@ class MainViewModel : ViewModel() {
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                 Log.e("MainViewModel", "Failed to Login")
             }
         })
@@ -104,36 +91,34 @@ class MainViewModel : ViewModel() {
     }
 
     fun getUserById() {
-        RetrofitSingleton.getApiService().getUserById(user.token, user.id).enqueue(object :
-            retrofit2.Callback<ResponseBody> {
+        Api.service.getUserById(user.token, user.id).enqueue(object :
+            retrofit2.Callback<JsonObject> {
             @RequiresApi(Build.VERSION_CODES.O)
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if (response.isSuccessful) {
                     Log.i("MainViewModel", "Got user")
-                    val stringResponse = response.body()?.string()
-                    var json = JSONObject(stringResponse)
-                    Log.i("MainViewModel", json.toString())
-                    val planets = json.getJSONArray("discoveredPlanets")
+                    Log.i("MainViewModel", response.body().toString())
+                    val planets = response.body()?.get("discoveredPlanets") as JsonArray
                     setDiscoveredPlanets(planets)
                 } else {
                     Log.e("MainViewModel", "Failed to get user")
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                 Log.e("MainViewModel", "Failed to get user")
             }
         })
     }
 
-    fun setDiscoveredPlanets(planets: JSONArray) {
-        for (i in 0 until planets.length()) {
-            val planet = planets.get(i) as JSONObject
+    fun setDiscoveredPlanets(planets: JsonArray) {
+        for (i in 0 until planets.size) {
+            val planet = planets[i] as JsonObject
             user.discoveredPlanets.add(
                 Planet(
-                    id = planet.getInt("id"),
-                    name = planet.getString("name"),
-                    imageId = planet.getInt("image"),
+                    id = planet["id"].toString().toInt(),
+                    name = planet["name"].toString(),
+                    imageId = planet["image"].toString().toInt(),
                     // TODO: Why does this not work? (returns 0)
 //                    imageId = getDrawable(planet.getString("name")),
                 ),

@@ -1,6 +1,6 @@
 package com.qwict.studyplanetandroid.data
 
 data class StudyPlanetUiState(
-    var selectedPlanet: Planet = Planet(),
-
+    var selectedPlanet: PlanetEntity = PlanetEntity(),
+    var planets: List<PlanetEntity> = emptyList(),
 )
