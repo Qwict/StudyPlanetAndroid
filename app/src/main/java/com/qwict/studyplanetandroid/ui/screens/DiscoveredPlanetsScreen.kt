@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -14,11 +15,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.ui.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,7 +32,7 @@ fun DiscoveredPlanetsScreen(
     modifier: Modifier = Modifier,
 ) {
     Scaffold() { values ->
-        Column() {
+        Column {
             if (viewModel.user.discoveredPlanets.isEmpty()) {
                 Text(
                     text = "No planets discovered yet",
@@ -49,8 +52,8 @@ fun DiscoveredPlanetsScreen(
             }
         }
         LazyColumn(contentPadding = values) {
-            items(viewModel.user.discoveredPlanets.size) { id ->
-                viewModel.user.discoveredPlanets[id].name?.let { DiscoveredPlanetCard(modifier, viewModel.user.discoveredPlanets[id], { onMineButtonClicked(viewModel.user.discoveredPlanets[id]) }) }
+            items(viewModel.user.discoveredPlanets) { planet ->
+                DiscoveredPlanetCard(modifier, planet, { onMineButtonClicked(planet) })
             }
         }
     }

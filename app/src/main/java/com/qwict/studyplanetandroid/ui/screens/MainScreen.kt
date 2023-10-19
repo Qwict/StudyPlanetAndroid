@@ -22,10 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.dto.HealthDto
 import com.qwict.studyplanetandroid.dto.UserDto
-import com.qwict.studyplanetandroid.helper.RetrofitSingleton
-import com.qwict.studyplanetandroid.ui.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -105,7 +105,7 @@ fun MainScreen(
 fun sendRequest(
     healthState: MutableState<HealthDto>,
 ) {
-    val healthCall: Call<HealthDto?>? = RetrofitSingleton.getApiService().getVersion()
+    val healthCall: Call<HealthDto?>? = Api.service.getVersion()
     healthCall!!.enqueue(object : Callback<HealthDto?> {
         override fun onResponse(call: Call<HealthDto?>, response: Response<HealthDto?>) {
             if (response.isSuccessful) {

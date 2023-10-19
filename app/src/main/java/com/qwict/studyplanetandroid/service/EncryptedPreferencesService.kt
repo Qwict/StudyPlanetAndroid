@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.qwict.studyplanetandroid.dto.User
-import com.qwict.studyplanetandroid.ui.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 
 // TODO: this is deprecated? What should we replace it with...
 val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)

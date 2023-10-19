@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.ui.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import com.qwict.studyplanetandroid.ui.screens.startMining
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,6 +48,6 @@ fun MiningPlanetProgressbar(planet: Planet, selectedTime: Long, viewModel: MainV
 suspend fun loadProgress(updateProgress: (Float) -> Unit, delay: Long) {
     for (i in 1..1000) {
         updateProgress(i.toFloat() / 1000)
-        delay(delay / 100)
+        delay(delay / 1000)
     }
 }
