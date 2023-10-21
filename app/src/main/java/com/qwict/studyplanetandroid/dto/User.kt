@@ -11,7 +11,8 @@ data class User(val jwt: String? = null) {
     var id = 0
     var email = ""
     var token = ""
-    var discoveredPlanets: MutableList<Planet> = mutableListOf<Planet>()
+    var experience = 0
+    var discoveredPlanets: MutableList<Planet> = mutableListOf()
 
     init {
         if (jwt != null) {

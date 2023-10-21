@@ -28,6 +28,7 @@ import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 fun DiscoveredPlanetsScreen(
     viewModel: MainViewModel,
     onMineButtonClicked: (Planet) -> Unit = {},
+    onDiscoverPlanetsButtonClicked: () -> Unit = {},
     onCancelMiningButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {

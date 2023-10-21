@@ -32,6 +32,8 @@ class MainViewModel() : ViewModel() {
         StudyPlanetUiState(),
     )
     val uiState: StateFlow<StudyPlanetUiState> = _uiState.asStateFlow()
+    var snackBarVisible = mutableStateOf(false)
+    var isDiscovering = mutableStateOf(false)
 
     var selectedTime by mutableStateOf(0)
     var hours by mutableStateOf(0)
@@ -82,7 +84,7 @@ class MainViewModel() : ViewModel() {
                     Log.i("MainViewModel", "Logged in")
 //                    user.token = json.getString("token")
                     user = User(
-                        response.body()!!["token"].toString(),
+                        response.body()!!["token"].toString().replace("\"", ""),
                     )
                     userIsAuthenticated.value = true
 //                    Not sure if this is needed (because this also happens in MainActivity onPause)
@@ -153,6 +155,14 @@ class MainViewModel() : ViewModel() {
         user.discoveredPlanets.forEach { planet ->
             Log.i("MainViewModel", "Discovered planet ${planet.name}, ${planet.imageId}, ${planet.id}")
         }
+    }
+    fun resetAction() {
+        isDiscovering.value = false
+        selectedTime = 0
+        hours = 0
+        minutes = 0
+        seconds = 0
+        updatedTime = 0
     }
 
     // TODO: my planets are saved in the database (with an image name/id) how could convert this parameter to a drawable?

@@ -23,10 +23,9 @@ fun TimeSelectionScreen(
             onClick = {
                 onStartExploringButtonClicked(
                     planet,
-
                 )
 //                    (30 * 60 * 1000).toLong()
-                viewModel.selectedTime = (1 * 60 * 1000)
+                viewModel.selectedTime = (1 * 1000)
                 viewModel.updatedTime = viewModel.selectedTime
             },
             modifier = Modifier.padding(16.dp),

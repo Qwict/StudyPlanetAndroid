@@ -36,6 +36,7 @@ import retrofit2.Response
 fun MainScreen(
     modifier: Modifier = Modifier,
     onStartExploringButtonClicked: () -> Unit = {},
+    onDiscoverPlanetsButtonClicked: () -> Unit = {},
     viewModel: MainViewModel,
 ) {
     Column(
@@ -43,21 +44,6 @@ fun MainScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val id = remember {
-            mutableStateOf(TextFieldValue())
-        }
-
-        val profile = remember {
-            mutableStateOf(
-                UserDto(
-                    id = "",
-                    name = "",
-                    email = "",
-                    experience = 0,
-                ),
-            )
-        }
-
         val health = remember {
             mutableStateOf(
                 HealthDto(
@@ -69,7 +55,7 @@ fun MainScreen(
         }
 
         Column {
-            OutlinedButton(onClick = { onStartExploringButtonClicked() }) {
+            OutlinedButton(onClick = { onDiscoverPlanetsButtonClicked() }) {
                 Text(text = "Discover Planets")
             }
             OutlinedButton(onClick = { onStartExploringButtonClicked() }) {
@@ -81,11 +67,9 @@ fun MainScreen(
             Row {
                 Button(
                     onClick = {
-                        val data = sendRequest(
+                        sendRequest(
                             healthState = health,
                         )
-
-                        Log.d("Main Activity", profile.toString())
                     },
                 ) {
                     Text(text = "Get Health")

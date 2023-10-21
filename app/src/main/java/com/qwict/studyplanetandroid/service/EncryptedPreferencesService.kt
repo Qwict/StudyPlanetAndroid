@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.qwict.studyplanetandroid.dto.User
+import com.qwict.studyplanetandroid.service.tokenIsValid
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 
 // TODO: this is deprecated? What should we replace it with...
@@ -16,17 +17,20 @@ fun getTokenFromSharedPrefs(mainViewModel: MainViewModel, applicationContext: Co
     val sharedPreferences = getSharedPreferences(applicationContext)
     val token = sharedPreferences.getString("token", "")
 
-    if (token != null && !token.equals("")) {
-        Log.i("MainActivity", "onResume: token was found")
-        mainViewModel.user = User(
-            jwt = token,
-        )
-        // TODO: might have to check here if token still good
-        mainViewModel.userIsAuthenticated.value = true
+    if (token != null && token != "") {
+        if (tokenIsValid(mainViewModel)) {
+            Log.i("MainActivity", "onResume: token was found")
+            mainViewModel.user = User(
+                jwt = token,
+            )
+            mainViewModel.userIsAuthenticated.value = true
+        } else {
+            Log.i("MainActivity", "onResume: token was found but is invalid")
+            mainViewModel.logout()
+        }
     } else {
-        Log.i("MainActivity", "onResume: token is null")
-        mainViewModel.userIsAuthenticated.value = false
-        mainViewModel.user = User()
+        Log.i("MainActivity", "onResume: token is null or empty")
+        mainViewModel.logout()
     }
 }
 

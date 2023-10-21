@@ -13,24 +13,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.ui.screens.startMining
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun MiningPlanetProgressbar(planet: Planet, selectedTime: Long, viewModel: MainViewModel) {
+fun MiningPlanetProgressbar(countDownTime: Long) {
     var currentProgress by remember { mutableStateOf(0f) }
     val scope = rememberCoroutineScope() // Create a coroutine scope
-    Log.i("ExplorerScreen", "Time selected: $selectedTime")
+    Log.i("ExplorerScreen", "Time selected: $countDownTime")
     LaunchedEffect(true) {
         scope.launch {
             try {
-                startMining(selectedTime, planet, viewModel)
                 loadProgress({ progress ->
                     currentProgress = progress
-                }, selectedTime)
+                }, countDownTime)
             } catch (e: Exception) {
                 Log.i("ExplorerScreen", e.toString())
             }

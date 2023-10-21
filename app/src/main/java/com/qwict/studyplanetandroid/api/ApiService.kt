@@ -1,8 +1,6 @@
 package com.qwict.studyplanetandroid.api
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.qwict.studyplanetandroid.dto.HealthDto
-import com.qwict.studyplanetandroid.dto.UserDto
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,25 +11,27 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
-    @POST("users/explore")
-    fun explore(): Call<UserDto>
-
-    @Headers(
-        "Accept: application/json",
-    )
-    @GET("users/{id}")
-    abstract fun getUserByAuth0Id(
-        @Path("id") id: String,
-    ): Call<UserDto?>?
-
     // TODO: What does this even mean? (@JvmSuppressWildcards)
     // TODO: I should use an interceptor for this but there is no good tutorial that I can find...
-    @POST("users/actions")
+    @POST("actions/discover")
     @JvmSuppressWildcards
-    fun handleAction(@Header("authorization") bearerToken: String, @Body body: JsonObject): Call<JsonObject>
+    fun startDiscovery(@Header("authorization") bearerToken: String, @Body body: JsonObject): Call<JsonObject>
+
+    @PUT("actions/discover")
+    @JvmSuppressWildcards
+    fun finishedDiscovery(@Header("authorization") bearerToken: String): Call<JsonObject>
+
+    @POST("actions/explore")
+    @JvmSuppressWildcards
+    fun startExploring(@Header("authorization") bearerToken: String, @Body body: JsonObject): Call<JsonObject>
+
+    @PUT("actions/explore")
+    @JvmSuppressWildcards
+    fun finishedExploration(@Header("authorization") bearerToken: String): Call<JsonObject>
 
     @POST("users/register")
     @JvmSuppressWildcards

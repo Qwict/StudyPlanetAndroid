@@ -57,7 +57,7 @@ fun AuthenticationView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        val Title = if (viewModel.userIsAuthenticated.value) {
+        val title = if (viewModel.userIsAuthenticated.value) {
             stringResource(R.string.logged_in_title)
         } else {
             if (viewModel.appJustLaunched.value) {
@@ -67,8 +67,9 @@ fun AuthenticationView(
             }
         }
         Title(
-            text = Title,
+            text = title,
         )
+//        Text(text = )
 
         if (viewModel.userIsAuthenticated.value) {
             UserInfoRow(

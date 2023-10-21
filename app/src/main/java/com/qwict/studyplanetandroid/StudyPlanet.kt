@@ -126,6 +126,10 @@ fun StudyPlanetApp(
                     onStartExploringButtonClicked = {
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
+                    onDiscoverPlanetsButtonClicked = {
+                        viewModel.isDiscovering.value = true
+                        navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium)),
@@ -170,6 +174,7 @@ fun StudyPlanetApp(
                     },
                     modifier = Modifier.fillMaxHeight(),
                     viewModel = viewModel,
+                    isDiscovering = viewModel.isDiscovering.value,
                 )
             }
         }
