@@ -252,7 +252,8 @@ fun stopDiscovering(viewModel: MainViewModel) {
                     viewModel.user.discoveredPlanets.add(planet)
                 } else {
                     Log.i("ExplorerScreen", "No planet was found, adding experience instead")
-                    viewModel.user.experience += viewModel.selectedTime / 1000 / 60
+//                    viewModel.user.experience += viewModel.selectedTime / 1000 / 60 // for production
+                    viewModel.user.experience.value += viewModel.selectedTime / 1000
                 }
                 Log.i("ExplorerScreen", "Stopped discovering; it was a success")
                 viewModel.resetAction()

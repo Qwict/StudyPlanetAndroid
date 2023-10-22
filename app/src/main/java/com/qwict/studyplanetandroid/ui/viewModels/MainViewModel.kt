@@ -46,6 +46,7 @@ class MainViewModel() : ViewModel() {
     var exploredPlanets = mutableListOf<Planet>()
 
     var user = User()
+    var experienceBarProgress = mutableStateOf(user.experience.value / 10f)
     var userIsAuthenticated = mutableStateOf(false)
     var registerNewUser = mutableStateOf(false)
     var appJustLaunched = mutableStateOf(true)
@@ -137,7 +138,7 @@ class MainViewModel() : ViewModel() {
         user = User(
             token,
         )
-        user.experience = experience
+        user.experience.value = experience
 
         planets.forEach() { planet ->
             user.discoveredPlanets.add(

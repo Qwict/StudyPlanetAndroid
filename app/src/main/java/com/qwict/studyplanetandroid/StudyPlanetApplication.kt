@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid
 
 import android.app.Application
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.data.AppContainer
 import com.qwict.studyplanetandroid.data.AppDataContainer
 import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.ui.components.ExperienceBar
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
@@ -76,6 +76,7 @@ fun StudyPlanetAppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     onAccountButtonClicked: () -> Unit = {},
+    viewModel: MainViewModel,
 ) {
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
@@ -94,6 +95,9 @@ fun StudyPlanetAppBar(
             }
         },
         actions = {
+            if (viewModel.userIsAuthenticated.value) {
+                ExperienceBar(viewModel = viewModel)
+            }
             IconButton(onClick = { onAccountButtonClicked() }) {
                 Icon(
                     imageVector = Icons.Filled.AccountCircle,
@@ -132,10 +136,11 @@ fun StudyPlanetApp(
                 onAccountButtonClicked = {
                     navController.navigate(StudyPlanetScreens.AuthenticationScreen.name)
                 },
+                viewModel = viewModel,
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = viewModel.snackBarHostState)
+            SnackbarHost(hostState = viewModel.uiState.collectAsState().value.snackBarHostState)
         },
 
     ) { innerPadding ->
@@ -149,7 +154,13 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.MainScreen.name) {
                 MainScreen(
                     onStartExploringButtonClicked = {
-                        navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
+                        navController.navigate(
+                            StudyPlanetScreens.DiscoveredPlanetsScreen.name,
+                        )
+                    },
+                    onDiscoverPlanetsButtonClicked = {
+                        viewModel.isDiscovering.value = true
+                        navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -179,10 +190,8 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.TimeSelectionScreen.name) {
                 TimeSelectionScreen(
                     viewModel = viewModel,
-                    onStartExploringButtonClicked = { planet: Planet, selectedTime: Long ->
+                    onStartActionButtonClicked = {
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
-                        viewModel.selectedPlanet = planet
-                        viewModel.selectedTime = selectedTime
                     },
                     modifier = Modifier.fillMaxHeight(),
                     planet = viewModel.selectedPlanet,
@@ -191,12 +200,12 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
                 ExplorerScreen(
                     planet = viewModel.selectedPlanet,
-                    selectedTime = viewModel.selectedTime,
                     onCancelMiningButtonClicked = {
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
                     viewModel = viewModel,
+                    isDiscovering = viewModel.isDiscovering.value,
                 )
             }
         }
