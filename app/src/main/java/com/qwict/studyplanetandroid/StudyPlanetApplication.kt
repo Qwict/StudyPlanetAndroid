@@ -1,5 +1,7 @@
 package com.qwict.studyplanetandroid
 
+import android.app.Application
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -28,6 +29,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.qwict.studyplanetandroid.data.AppContainer
+import com.qwict.studyplanetandroid.data.AppDataContainer
 import com.qwict.studyplanetandroid.data.Planet
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
@@ -35,6 +38,9 @@ import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
 import com.qwict.studyplanetandroid.ui.screens.MainScreen
 import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 enum class StudyPlanetScreens(@StringRes val title: Int) {
     MainScreen(title = R.string.title_main_screen),
@@ -42,6 +48,24 @@ enum class StudyPlanetScreens(@StringRes val title: Int) {
     DiscoveredPlanetsScreen(title = R.string.title_discovered_planets_screen),
     TimeSelectionScreen(title = R.string.title_time_selection_screen),
     PlanetExplorerScreen(title = R.string.title_explorer_screen),
+}
+
+// private const val SETTINGS_PREFERENCE_NAME = "settings_preferences"
+// private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+//    name = SETTINGS_PREFERENCE_NAME
+// )
+
+class StudyPlanetApplication : Application() {
+//    lateinit var userSettings: UserSettings
+    lateinit var container: AppContainer
+    private lateinit var appScope: CoroutineScope
+
+    override fun onCreate() {
+        super.onCreate()
+//        userSettings = UserSettings(dataStore)
+        appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+        container = AppDataContainer(this, appScope)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +108,8 @@ fun StudyPlanetAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyPlanetApp(
-    viewModel: MainViewModel = viewModel(),
+    viewModel: MainViewModel,
+//    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
 ) {
     // Get current back stack entry
@@ -110,11 +135,11 @@ fun StudyPlanetApp(
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = viewModel.uiState.collectAsState().value.snackBarHostState)
+            SnackbarHost(hostState = viewModel.snackBarHostState)
         },
 
     ) { innerPadding ->
-        val uiState by viewModel.uiState.collectAsState()
+//        val uiState by viewModel.uiState.collectAsState()
 
         NavHost(
             navController = navController,
@@ -124,13 +149,7 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.MainScreen.name) {
                 MainScreen(
                     onStartExploringButtonClicked = {
-                        navController.navigate(
-                            StudyPlanetScreens.DiscoveredPlanetsScreen.name
-                        )
-                    },
-                    onDiscoverPlanetsButtonClicked = {
-                        viewModel.isDiscovering.value = true
-                        navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
+                        navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
                     modifier = Modifier
                         .fillMaxSize()
@@ -152,7 +171,7 @@ fun StudyPlanetApp(
                     viewModel = viewModel,
                     onMineButtonClicked = { planet: Planet ->
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
-                        viewModel.selectedPlanet = planet
+//                        dataViewModel.uiState.value.selectedPlanet = PlanetEntity()
                     },
                     modifier = Modifier.fillMaxHeight(),
                 )
@@ -160,8 +179,10 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.TimeSelectionScreen.name) {
                 TimeSelectionScreen(
                     viewModel = viewModel,
-                    onStartActionButtonClicked = {
+                    onStartExploringButtonClicked = { planet: Planet, selectedTime: Long ->
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
+                        viewModel.selectedPlanet = planet
+                        viewModel.selectedTime = selectedTime
                     },
                     modifier = Modifier.fillMaxHeight(),
                     planet = viewModel.selectedPlanet,
@@ -170,12 +191,12 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
                 ExplorerScreen(
                     planet = viewModel.selectedPlanet,
+                    selectedTime = viewModel.selectedTime,
                     onCancelMiningButtonClicked = {
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
                     viewModel = viewModel,
-                    isDiscovering = viewModel.isDiscovering.value,
                 )
             }
         }
