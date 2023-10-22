@@ -1,5 +1,6 @@
 package com.qwict.studyplanetandroid.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,22 +16,30 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
+import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoveredPlanetsScreen(
     viewModel: MainViewModel,
+    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onMineButtonClicked: (Planet) -> Unit = {},
     onCancelMiningButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(true) {
+        Log.i("DiscoveredPlanetsScreen", "Discovered planet entities: ${dataViewModel.getPlanets()}")
+    }
+
     Scaffold() { values ->
         Column {
             if (viewModel.user.discoveredPlanets.isEmpty()) {

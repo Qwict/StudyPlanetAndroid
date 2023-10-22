@@ -1,6 +1,7 @@
 package com.qwict.studyplanetandroid
 
 import android.app.Application
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,14 +32,11 @@ import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.data.AppContainer
 import com.qwict.studyplanetandroid.data.AppDataContainer
 import com.qwict.studyplanetandroid.data.Planet
-import com.qwict.studyplanetandroid.data.PlanetEntity
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
 import com.qwict.studyplanetandroid.ui.screens.MainScreen
 import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
-import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
