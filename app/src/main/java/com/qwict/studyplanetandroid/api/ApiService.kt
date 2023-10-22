@@ -35,7 +35,7 @@ interface ApiService {
 
     @POST("users/register")
     @JvmSuppressWildcards
-    fun register(@Body body: Map<String, Any>): Call<JsonObject>
+    fun register(@Body body: JsonObject): Call<JsonObject>
 
     @POST("users/login")
     @JvmSuppressWildcards
@@ -52,8 +52,8 @@ interface ApiService {
     fun getVersion(): Call<JsonObject>
 }
 
-private const val BASE_URL =
-    "http://10.0.2.2:9010/v1/"
+private const val BASE_URL = "http://10.0.2.2:9010/v1/"
+//    "http://192.168.1.39:9010/v1/"
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(

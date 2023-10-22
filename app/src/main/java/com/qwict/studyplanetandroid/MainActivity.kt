@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         mainViewModel.setContext(this)
         Log.i("MainActivity", "onCreate: ${mainViewModel.user.discoveredPlanets.size}")
+        getTokenFromSharedPrefs(mainViewModel, applicationContext)
         setContent {
             StudyPlanetAndroidTheme {
                 Surface(

@@ -19,12 +19,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.dto.HealthDto
-import com.qwict.studyplanetandroid.dto.UserDto
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.serialization.json.JsonObject
 import retrofit2.Call

@@ -16,4 +16,11 @@ class Planet constructor(
     init {
         Log.d("Planet", "Planet created with name: $name and id: $id")
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Planet) {
+            return this.id == other.id
+        }
+        return false
+    }
 }

@@ -15,7 +15,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,12 @@ fun DiscoveredPlanetsScreen(
     onCancelMiningButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(true) {
+        viewModel.getUserById()
+    }
+
     Scaffold() { values ->
         Column {
             if (viewModel.user.discoveredPlanets.isEmpty()) {

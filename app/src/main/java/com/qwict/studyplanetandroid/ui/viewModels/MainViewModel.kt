@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import retrofit2.Call
 import retrofit2.Response
@@ -46,6 +47,7 @@ class MainViewModel() : ViewModel() {
 
     var user = User()
     var userIsAuthenticated = mutableStateOf(false)
+    var registerNewUser = mutableStateOf(false)
     var appJustLaunched = mutableStateOf(true)
     suspend fun countDown() {
         while (updatedTime > 0) {
@@ -68,6 +70,37 @@ class MainViewModel() : ViewModel() {
     private val TAG = "MainViewModel"
     private lateinit var context: Context
 
+    fun register(email: MutableState<TextFieldValue>, password: MutableState<TextFieldValue>): Boolean {
+        var success = false
+        val body = buildJsonObject {
+            put("name", email.value.text)
+            put("email", email.value.text)
+            put("password", password.value.text)
+        }
+        Log.i("MainViewModel", body.toString())
+
+        Api.service.register(body).enqueue(object :
+            retrofit2.Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                Log.i("MainViewModel", response.code().toString())
+                Log.i("MainViewModel", response.body().toString())
+                if (response.isSuccessful) {
+                    val token = response.body()!!["token"].toString().replace("\"", "")
+                    val user = response.body()!!["user"]
+                    createLocalUser(token, user as JsonObject)
+                    success = true
+                } else {
+                    Log.e("MainViewModel", "Failed to Login")
+                }
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e("MainViewModel", "Failed to Login, Failure with message: ${t.message}")
+            }
+        })
+        return success
+    }
+
     fun login(email: MutableState<TextFieldValue>, password: MutableState<TextFieldValue>): Boolean {
         var success = false
         val body = buildJsonObject {
@@ -78,26 +111,14 @@ class MainViewModel() : ViewModel() {
 
         Api.service.login(body).enqueue(object :
             retrofit2.Callback<JsonObject> {
-            @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if (response.isSuccessful) {
-                    Log.i("MainViewModel", "Logged in")
-//                    user.token = json.getString("token")
-                    user = User(
-                        response.body()!!["token"].toString().replace("\"", ""),
-                    )
-                    userIsAuthenticated.value = true
-//                    Not sure if this is needed (because this also happens in MainActivity onPause)
-                    saveEncryptedPreference("token", user.token, context)
-                    Log.i("MainViewModel", user.token)
+                    val token = response.body()!!["token"].toString().replace("\"", "")
+                    val user = response.body()!!["user"]
+                    createLocalUser(token, user as JsonObject)
                     success = true
-                    try {
-                        getUserById()
-                    } catch (e: Exception) {
-                        Log.e("MainViewModel", "Failed to get user $success")
-                    }
                 } else {
-                    Log.e("MainViewModel", "Failed to Login")
+                    Log.e("MainViewModel", "Failed to Login response was not successful")
                 }
             }
 
@@ -106,6 +127,31 @@ class MainViewModel() : ViewModel() {
             }
         })
         return success
+    }
+
+    fun createLocalUser(token: String, jsonUser: JsonObject) {
+        Log.i("MainViewModel", "Creating local user with jsonUser: $jsonUser")
+        val planets = jsonUser["discoveredPlanets"] as JsonArray
+        val experience = jsonUser["experience"].toString().toInt()
+
+        user = User(
+            token,
+        )
+        user.experience = experience
+
+        planets.forEach() { planet ->
+            user.discoveredPlanets.add(
+                Planet(
+                    planet.jsonObject["id"].toString().toInt(),
+                    planet.jsonObject["name"].toString(),
+                    planet.jsonObject["image"].toString().toInt(),
+                ),
+            )
+        }
+
+        userIsAuthenticated.value = true
+        saveEncryptedPreference("token", user.token, context)
+        Log.i("MainViewModel", user.token)
     }
 
     fun logout() {
@@ -141,16 +187,17 @@ class MainViewModel() : ViewModel() {
 
     fun setDiscoveredPlanets(planets: JsonArray) {
         for (i in 0 until planets.size) {
-            val planet = planets[i] as JsonObject
-            user.discoveredPlanets.add(
-                Planet(
-                    id = planet["id"].toString().toInt(),
-                    name = planet["name"].toString(),
-                    imageId = planet["image"].toString().toInt(),
-                    // TODO: Why does this not work? (returns 0)
-//                    imageId = getDrawable(planet.getString("name")),
-                ),
+            val jsonPlanet = planets[i] as JsonObject
+            val planet = Planet(
+                id = jsonPlanet["id"].toString().toInt(),
+                name = jsonPlanet["name"].toString(),
+                imageId = jsonPlanet["image"].toString().toInt(),
+                // TODO: Why does this not work? (returns 0)
+                //                    imageId = getDrawable(planet.getString("name")),
             )
+            if (!user.discoveredPlanets.contains(planet)) {
+                user.discoveredPlanets.add(planet)
+            }
         }
         user.discoveredPlanets.forEach { planet ->
             Log.i("MainViewModel", "Discovered planet ${planet.name}, ${planet.imageId}, ${planet.id}")

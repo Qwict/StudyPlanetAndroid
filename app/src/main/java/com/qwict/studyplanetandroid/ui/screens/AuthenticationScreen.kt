@@ -1,5 +1,6 @@
 package com.qwict.studyplanetandroid.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -51,6 +53,7 @@ fun AuthenticationView(
     val scope = rememberCoroutineScope()
     val email = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
+    val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
 
     Column(
         modifier = Modifier.padding(20.dp),
@@ -82,7 +85,7 @@ fun AuthenticationView(
             //            )
         } else {
             TextField(
-                label = { Text(text = "Username") },
+                label = { Text(text = "Email") },
                 value = email.value,
                 onValueChange = { email.value = it },
             )
@@ -95,6 +98,16 @@ fun AuthenticationView(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 onValueChange = { password.value = it },
             )
+            if (viewModel.registerNewUser.value) {
+                Spacer(modifier = Modifier.height(10.dp))
+                TextField(
+                    label = { Text(text = "Confirm Password") },
+                    value = confirmPassword.value,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    onValueChange = { confirmPassword.value = it },
+                )
+            }
         }
 
         val buttonText: String
@@ -108,6 +121,41 @@ fun AuthenticationView(
                 }
                 email.value = TextFieldValue()
                 password.value = TextFieldValue()
+            }
+        } else if (viewModel.registerNewUser.value) {
+            buttonText = "Register"
+
+            onClickAction = {
+                if (confirmPassword.value.equals(password.value)) {
+                    if (viewModel.register(email, password)) {
+                        scope.launch {
+                            viewModel.uiState.value.snackBarHostState.showSnackbar(
+                                message = "Welcome ${viewModel.user.email}!",
+                                withDismissAction = true,
+                            )
+                        }
+                    } else {
+                        scope.launch {
+                            viewModel.uiState.value.snackBarHostState.showSnackbar(
+                                message = "Failed to register",
+                                withDismissAction = true,
+                            )
+                        }
+                    }
+                    viewModel.registerNewUser.value = false
+                } else {
+                    Log.i(
+                        "AuthenticationScreen",
+                        "Passwords do not match " +
+                            "${confirmPassword.value.text} ${password.value.text}",
+                    )
+                    scope.launch {
+                        viewModel.uiState.value.snackBarHostState.showSnackbar(
+                            message = "Passwords do not match",
+                            withDismissAction = true,
+                        )
+                    }
+                }
             }
         } else {
             buttonText = stringResource(R.string.log_in_button)
@@ -126,6 +174,17 @@ fun AuthenticationView(
             text = buttonText,
             onClick = onClickAction,
         )
+        if (!viewModel.userIsAuthenticated.value) {
+            OutlinedButton(onClick = {
+                viewModel.registerNewUser.value = !viewModel.registerNewUser.value
+            }) {
+                if (viewModel.registerNewUser.value) {
+                    Text(text = "Cancel")
+                } else {
+                    Text(text = "Register")
+                }
+            }
+        }
     }
 }
 

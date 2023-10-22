@@ -124,7 +124,9 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.MainScreen.name) {
                 MainScreen(
                     onStartExploringButtonClicked = {
-                        navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
+                        navController.navigate(
+                            StudyPlanetScreens.DiscoveredPlanetsScreen.name
+                        )
                     },
                     onDiscoverPlanetsButtonClicked = {
                         viewModel.isDiscovering.value = true
@@ -158,9 +160,8 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.TimeSelectionScreen.name) {
                 TimeSelectionScreen(
                     viewModel = viewModel,
-                    onStartExploringButtonClicked = { planet: Planet ->
+                    onStartActionButtonClicked = {
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
-                        viewModel.selectedPlanet = planet
                     },
                     modifier = Modifier.fillMaxHeight(),
                     planet = viewModel.selectedPlanet,
