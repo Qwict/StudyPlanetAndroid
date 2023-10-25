@@ -7,16 +7,20 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 
 @Composable
-fun ExperienceBar(viewModel: MainViewModel) {
+fun ExperienceBar(
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
     Row {
         LinearProgressIndicator(
             modifier = Modifier
                 .width(60.dp)
                 .height(15.dp),
-            progress = viewModel.user.experience.value / 10f,
+            progress = viewModel.decodedUser.experience.value / 10f,
         )
     }
 }

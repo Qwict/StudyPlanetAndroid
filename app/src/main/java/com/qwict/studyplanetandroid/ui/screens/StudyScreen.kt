@@ -29,12 +29,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.api.Api
-import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.data.OldPlanet
 import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import com.qwict.studyplanetandroid.ui.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.ui.components.loadProgress
+import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -52,9 +54,9 @@ private val validationId = UUID.randomUUID().toString()
 fun ExplorerScreen(
     onCancelMiningButtonClicked: () -> Unit = {},
     isDiscovering: Boolean,
-    planet: Planet,
+    planet: OldPlanet,
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -169,17 +171,17 @@ suspend fun loadProgress(updateProgress: (Float) -> Unit, delay: Long) {
     }
 }
 
-fun startExploring(selectedTime: Long, planet: Planet, viewModel: MainViewModel) {
+fun startExploring(selectedTime: Long, planet: OldPlanet, viewModel: MainViewModel) {
     val body = buildJsonObject {
         put("planetId", planet.id.toString())
         put("selectedTime", selectedTime.toString())
     }
 
     Log.i("ExplorerScreen", body.toString())
-    Log.i("ExplorerScreen", viewModel.user.token)
+    Log.i("ExplorerScreen", viewModel.decodedUser.token)
     Api.service.startExploring(
 //        "bearer ${viewModel.user.token}",
-        viewModel.user.token,
+        viewModel.decodedUser.token,
         JsonObject(body),
     ).enqueue(object : Callback<JsonObject> {
         override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
@@ -197,7 +199,7 @@ fun startExploring(selectedTime: Long, planet: Planet, viewModel: MainViewModel)
 }
 
 fun stopExploring(viewModel: MainViewModel) {
-    Api.service.finishedExploration(viewModel.user.token).enqueue(object : Callback<JsonObject> {
+    Api.service.finishedExploration(viewModel.decodedUser.token).enqueue(object : Callback<JsonObject> {
         override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
             if (response.isSuccessful) {
                 Log.i("ExplorerScreen", "Stopped mining")
@@ -213,9 +215,9 @@ fun stopExploring(viewModel: MainViewModel) {
 }
 
 fun startDiscovering(selectedTime: Int, viewModel: MainViewModel) {
-    Log.i("ExplorerScreen", "Started discovering ${viewModel.user.token}")
+    Log.i("ExplorerScreen", "Started discovering ${viewModel.decodedUser.token}")
     Api.service.startDiscovery(
-        viewModel.user.token,
+        viewModel.decodedUser.token,
         JsonObject(
             buildJsonObject {
                 put("selectedTime", selectedTime)
@@ -239,21 +241,21 @@ fun startDiscovering(selectedTime: Int, viewModel: MainViewModel) {
 }
 
 fun stopDiscovering(viewModel: MainViewModel) {
-    Api.service.finishedDiscovery(viewModel.user.token).enqueue(object : Callback<JsonObject> {
+    Api.service.finishedDiscovery(viewModel.decodedUser.token).enqueue(object : Callback<JsonObject> {
         override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
             if (response.isSuccessful) {
                 val newPlanet = response.body()?.get("newPlanet") as JsonObject?
                 if (newPlanet != null) {
-                    val planet = Planet(
+                    val planet = OldPlanet(
                         newPlanet["id"].toString().replace("\"", "").toInt(),
                         newPlanet["name"].toString().replace("\"", ""),
                         newPlanet["imageId"].toString().replace("\"", "").toInt(),
                     )
-                    viewModel.user.discoveredPlanets.add(planet)
+                    viewModel.decodedUser.discoveredPlanets.add(planet)
                 } else {
                     Log.i("ExplorerScreen", "No planet was found, adding experience instead")
 //                    viewModel.user.experience += viewModel.selectedTime / 1000 / 60 // for production
-                    viewModel.user.experience.value += viewModel.selectedTime / 1000
+                    viewModel.decodedUser.experience.value += viewModel.selectedTime / 1000
                 }
                 Log.i("ExplorerScreen", "Stopped discovering; it was a success")
                 viewModel.resetAction()

@@ -30,14 +30,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.R
+import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
+import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun AuthenticationScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column() {
         AuthenticationView(modifier, viewModel)
@@ -48,7 +51,8 @@ fun AuthenticationScreen(
 @Composable
 fun AuthenticationView(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val scope = rememberCoroutineScope()
     val email = remember { mutableStateOf(TextFieldValue()) }
@@ -77,7 +81,12 @@ fun AuthenticationView(
         if (viewModel.userIsAuthenticated.value) {
             UserInfoRow(
                 label = stringResource(R.string.email_label),
-                value = viewModel.user.email,
+                value = viewModel.decodedUser.email,
+            )
+            UserInfoRow(
+                label = "Experience",
+//                value = viewModel.user.email,
+                value = dataViewModel.getUserById(viewModel.decodedUser.id).experience.toString(),
             )
             //            UserPicture(
             //                url = viewModel.user.picture,
@@ -130,7 +139,7 @@ fun AuthenticationView(
                     if (viewModel.register(email, password)) {
                         scope.launch {
                             viewModel.uiState.value.snackBarHostState.showSnackbar(
-                                message = "Welcome ${viewModel.user.email}!",
+                                message = "Welcome ${viewModel.decodedUser.email}!",
                                 withDismissAction = true,
                             )
                         }

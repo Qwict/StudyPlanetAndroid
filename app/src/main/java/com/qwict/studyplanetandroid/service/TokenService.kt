@@ -16,8 +16,8 @@ fun decodeToken(jwt: String): String {
 }
 
 fun tokenIsValid(mainViewModel: MainViewModel): Boolean {
-    if (mainViewModel.user.token != "") {
-        val decodedToken = decodeToken(mainViewModel.user.token)
+    if (mainViewModel.decodedUser.token != "") {
+        val decodedToken = decodeToken(mainViewModel.decodedUser.token)
         Log.i("MainActivity", "decoded token: $decodedToken")
 
         val tokenExpiration = decodedToken
@@ -27,7 +27,7 @@ fun tokenIsValid(mainViewModel: MainViewModel): Boolean {
             .replace("}", "")
         val currentTime = System.currentTimeMillis() / 1000
         if (tokenExpiration.toLong() < currentTime) {
-            mainViewModel.user.token = "expired"
+            mainViewModel.decodedUser.token = "expired"
             Log.i("MainActivity", "token expired")
             return false
         }

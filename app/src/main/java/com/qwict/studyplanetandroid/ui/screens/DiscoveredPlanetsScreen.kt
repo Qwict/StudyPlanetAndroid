@@ -16,19 +16,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
+import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoveredPlanetsScreen(
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onMineButtonClicked: (Planet) -> Unit = {},
     onDiscoverPlanetsButtonClicked: () -> Unit = {},
     onCancelMiningButtonClicked: () -> Unit = {},
@@ -42,7 +44,8 @@ fun DiscoveredPlanetsScreen(
 
     Scaffold() { values ->
         Column {
-            if (viewModel.user.discoveredPlanets.isEmpty()) {
+//            if (viewModel.user.discoveredPlanets.isEmpty()) {
+            if (dataViewModel.getPlanets().isEmpty()) {
                 Text(
                     text = "No planets discovered yet",
                     modifier = Modifier.padding(16.dp),
@@ -54,15 +57,19 @@ fun DiscoveredPlanetsScreen(
                 }
             } else {
                 Text(
-                    text = "You have discovered ${viewModel.user.discoveredPlanets.size} planets! These planets can now be mined for resources.",
+                    text = "You have discovered ${dataViewModel.getPlanets().size} planets! These planets can now be mined for resources.",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
             }
         }
         LazyColumn(contentPadding = values) {
-            items(viewModel.user.discoveredPlanets) { planet ->
-                DiscoveredPlanetCard(modifier, planet, { onMineButtonClicked(planet) })
+            items(dataViewModel.getPlanets().size) { id ->
+                DiscoveredPlanetCard(modifier, dataViewModel.getPlanets()[id]) {
+                    onMineButtonClicked(
+                        dataViewModel.getPlanets()[id],
+                    )
+                }
             }
         }
     }

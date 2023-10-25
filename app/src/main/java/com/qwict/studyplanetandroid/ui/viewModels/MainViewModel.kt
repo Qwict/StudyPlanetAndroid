@@ -1,6 +1,5 @@
 package com.qwict.studyplanetandroid.ui.viewModels
 
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -10,16 +9,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.api.Api
+import com.qwict.studyplanetandroid.data.DecodedUser
+import com.qwict.studyplanetandroid.data.OldPlanet
 import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.data.PlanetsRepository
 import com.qwict.studyplanetandroid.data.StudyPlanetUiState
-import com.qwict.studyplanetandroid.dto.User
+import com.qwict.studyplanetandroid.data.User
+import com.qwict.studyplanetandroid.data.UsersRepository
 import com.qwict.svkandroid.helper.clearEncryptedPreferences
 import com.qwict.svkandroid.helper.saveEncryptedPreference
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -27,7 +33,11 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import retrofit2.Call
 import retrofit2.Response
-class MainViewModel() : ViewModel() {
+class MainViewModel(
+    private val planetsRepository: PlanetsRepository,
+    private val usersRepository: UsersRepository,
+) : ViewModel() {
+
     // TODO: what is this used for?
     private var _uiState = MutableStateFlow(
         StudyPlanetUiState(),
@@ -42,11 +52,11 @@ class MainViewModel() : ViewModel() {
     var seconds by mutableStateOf(0)
     var updatedTime by mutableStateOf(0)
 
-    var selectedPlanet = Planet()
-    var exploredPlanets = mutableListOf<Planet>()
+    var selectedPlanet = OldPlanet()
+    var exploredPlanets = mutableListOf<OldPlanet>()
 
-    var user = User()
-    var experienceBarProgress = mutableStateOf(user.experience.value / 10f)
+    var decodedUser = DecodedUser()
+    var experienceBarProgress = mutableStateOf(decodedUser.experience.value / 10f)
     var userIsAuthenticated = mutableStateOf(false)
     var registerNewUser = mutableStateOf(false)
     var appJustLaunched = mutableStateOf(true)
@@ -69,7 +79,7 @@ class MainViewModel() : ViewModel() {
 //    var userIsAuthenticated by mutableStateOf(false)
 
     private val TAG = "MainViewModel"
-    private lateinit var context: Context
+//    private lateinit var context: Context
 
     fun register(email: MutableState<TextFieldValue>, password: MutableState<TextFieldValue>): Boolean {
         var success = false
@@ -83,12 +93,18 @@ class MainViewModel() : ViewModel() {
         Api.service.register(body).enqueue(object :
             retrofit2.Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                Log.i("MainViewModel", response.code().toString())
-                Log.i("MainViewModel", response.body().toString())
+                Log.d("MainViewModel", response.code().toString())
+                Log.d("MainViewModel", response.body().toString())
                 if (response.isSuccessful) {
                     val token = response.body()!!["token"].toString().replace("\"", "")
-                    val user = response.body()!!["user"]
-                    createLocalUser(token, user as JsonObject)
+                    val jsonUser = response.body()!!["user"]
+                    try {
+                        createLocalUser(token, jsonUser as JsonObject)
+                    } catch (e: Exception) {
+                        userIsAuthenticated.value = true
+                        saveEncryptedPreference("token", decodedUser.token)
+                        Log.d("MainViewModel", "user was created")
+                    }
                     success = true
                 } else {
                     Log.e("MainViewModel", "Failed to Login")
@@ -130,43 +146,18 @@ class MainViewModel() : ViewModel() {
         return success
     }
 
-    fun createLocalUser(token: String, jsonUser: JsonObject) {
-        Log.i("MainViewModel", "Creating local user with jsonUser: $jsonUser")
-        val planets = jsonUser["discoveredPlanets"] as JsonArray
-        val experience = jsonUser["experience"].toString().toInt()
-
-        user = User(
-            token,
-        )
-        user.experience.value = experience
-
-        planets.forEach() { planet ->
-            user.discoveredPlanets.add(
-                Planet(
-                    planet.jsonObject["id"].toString().toInt(),
-                    planet.jsonObject["name"].toString(),
-                    planet.jsonObject["image"].toString().toInt(),
-                ),
-            )
-        }
-
-        userIsAuthenticated.value = true
-        saveEncryptedPreference("token", user.token, context)
-        Log.i("MainViewModel", user.token)
-    }
-
     fun logout() {
         userIsAuthenticated.value = false
-        user = User()
-        clearEncryptedPreferences("token", context)
+        decodedUser = DecodedUser()
+        clearEncryptedPreferences("token")
     }
 
-    fun setContext(activityContext: Context) {
-        context = activityContext
-    }
+//    fun setContext(activityContext: Context) {
+//        context = activityContext
+//    }
 
     fun getUserById() {
-        Api.service.getUserById(user.token, user.id).enqueue(object :
+        Api.service.getUserById(decodedUser.token, decodedUser.id).enqueue(object :
             retrofit2.Callback<JsonObject> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
@@ -189,18 +180,18 @@ class MainViewModel() : ViewModel() {
     fun setDiscoveredPlanets(planets: JsonArray) {
         for (i in 0 until planets.size) {
             val jsonPlanet = planets[i] as JsonObject
-            val planet = Planet(
+            val planet = OldPlanet(
                 id = jsonPlanet["id"].toString().toInt(),
                 name = jsonPlanet["name"].toString(),
                 imageId = jsonPlanet["image"].toString().toInt(),
                 // TODO: Why does this not work? (returns 0)
                 //                    imageId = getDrawable(planet.getString("name")),
             )
-            if (!user.discoveredPlanets.contains(planet)) {
-                user.discoveredPlanets.add(planet)
+            if (!decodedUser.discoveredPlanets.contains(planet)) {
+                decodedUser.discoveredPlanets.add(planet)
             }
         }
-        user.discoveredPlanets.forEach { planet ->
+        decodedUser.discoveredPlanets.forEach { planet ->
             Log.i("MainViewModel", "Discovered planet ${planet.name}, ${planet.imageId}, ${planet.id}")
         }
     }
@@ -215,6 +206,38 @@ class MainViewModel() : ViewModel() {
 
     // TODO: my planets are saved in the database (with an image name/id) how could convert this parameter to a drawable?
     private fun getDrawable(name: String = "earth"): Int {
-        return context.resources.getIdentifier(name, "drawable", context.packageName)
+        return StudyPlanetApplication.appContext.resources.getIdentifier(name, "drawable", StudyPlanetApplication.appContext.packageName)
+    }
+
+    fun createLocalUser(token: String, jsonUser: JsonObject) {
+        Log.i("MainViewModel", "Creating local user with jsonUser: $jsonUser")
+        val jsonPlanets = jsonUser["discoveredPlanets"] as JsonArray
+        val experience = jsonUser["experience"].toString().toInt()
+
+        decodedUser = DecodedUser(
+            token,
+        )
+        saveEncryptedPreference("token", decodedUser.token)
+
+        val planets = jsonPlanets.map { planet -> toPlanet(planet.jsonObject) }
+        viewModelScope.launch {
+//            planetsRepository.insertAll(planets)
+//            usersRepository.insert(toUser(decodedUser))
+        }
+    }
+
+    fun toPlanet(jsonPlanet: JsonObject): Planet {
+        return Planet(
+            id = jsonPlanet.jsonObject["id"].toString().toInt(),
+            name = jsonPlanet.jsonObject["name"].toString(),
+            imageId = jsonPlanet.jsonObject["image"].toString().toInt(),
+        )
+    }
+
+    fun toUser(decodedUser: DecodedUser): User {
+        return User(
+            id = decodedUser.id,
+            experience = decodedUser.experience.value,
+        )
     }
 }

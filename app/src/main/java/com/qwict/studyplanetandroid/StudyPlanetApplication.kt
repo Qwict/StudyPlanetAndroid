@@ -1,6 +1,7 @@
 package com.qwict.studyplanetandroid
 
 import android.app.Application
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,10 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -20,9 +24,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,13 +38,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.data.AppContainer
 import com.qwict.studyplanetandroid.data.AppDataContainer
-import com.qwict.studyplanetandroid.data.Planet
 import com.qwict.studyplanetandroid.ui.components.ExperienceBar
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
 import com.qwict.studyplanetandroid.ui.screens.MainScreen
 import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
+import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
+import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +74,11 @@ class StudyPlanetApplication : Application() {
 //        userSettings = UserSettings(dataStore)
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         container = AppDataContainer(this, appScope)
+        appContext = applicationContext
+    }
+
+    companion object {
+        lateinit var appContext: Context
     }
 }
 
@@ -76,7 +90,7 @@ fun StudyPlanetAppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     onAccountButtonClicked: () -> Unit = {},
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
@@ -96,7 +110,7 @@ fun StudyPlanetAppBar(
         },
         actions = {
             if (viewModel.userIsAuthenticated.value) {
-                ExperienceBar(viewModel = viewModel)
+                ExperienceBar()
             }
             IconButton(onClick = { onAccountButtonClicked() }) {
                 Icon(
@@ -111,9 +125,27 @@ fun StudyPlanetAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun StudyPlanetNavBar() {
+    var selectedItem by remember { mutableStateOf(0) }
+    val items = listOf("Home", "Discover", "Explore")
+
+    NavigationBar {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                icon = { Icon(Icons.Filled.Favorite, contentDescription = item) },
+                label = { Text(item) },
+                selected = selectedItem == index,
+                onClick = { selectedItem = index },
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun StudyPlanetApp(
-    viewModel: MainViewModel,
-//    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
 ) {
     // Get current back stack entry
@@ -136,8 +168,10 @@ fun StudyPlanetApp(
                 onAccountButtonClicked = {
                     navController.navigate(StudyPlanetScreens.AuthenticationScreen.name)
                 },
-                viewModel = viewModel,
             )
+        },
+        bottomBar = {
+            StudyPlanetNavBar()
         },
         snackbarHost = {
             SnackbarHost(hostState = viewModel.uiState.collectAsState().value.snackBarHostState)
@@ -165,12 +199,10 @@ fun StudyPlanetApp(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium)),
-                    viewModel = viewModel,
                 )
             }
             composable(route = StudyPlanetScreens.AuthenticationScreen.name) {
                 AuthenticationScreen(
-                    viewModel = viewModel,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium)),
@@ -179,8 +211,7 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
 //                val context = LocalContext.current
                 DiscoveredPlanetsScreen(
-                    viewModel = viewModel,
-                    onMineButtonClicked = { planet: Planet ->
+                    onMineButtonClicked = {
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
 //                        dataViewModel.uiState.value.selectedPlanet = PlanetEntity()
                     },
@@ -189,7 +220,6 @@ fun StudyPlanetApp(
             }
             composable(route = StudyPlanetScreens.TimeSelectionScreen.name) {
                 TimeSelectionScreen(
-                    viewModel = viewModel,
                     onStartActionButtonClicked = {
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
                     },
@@ -204,7 +234,6 @@ fun StudyPlanetApp(
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    viewModel = viewModel,
                     isDiscovering = viewModel.isDiscovering.value,
                 )
             }

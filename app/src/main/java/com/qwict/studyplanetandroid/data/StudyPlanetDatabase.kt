@@ -1,6 +1,7 @@
 package com.qwict.studyplanetandroid.data
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -9,13 +10,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [PlanetEntity::class],
-    version = 1,
+    entities = [Planet::class, User::class],
+    version = 3,
     exportSchema = false,
 )
 abstract class StudyPlanetDatabase : RoomDatabase() {
 
     abstract fun planetDao(): PlanetDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
@@ -32,8 +34,11 @@ abstract class StudyPlanetDatabase : RoomDatabase() {
                         super.onCreate(db)
                         // Use a coroutine to insert data
                         val planetDao = Instance?.planetDao()
+                        val userDao = Instance?.userDao()
+                        Log.i("StudyPlanetDatabase", "Inserting all planets and users")
                         scope.launch {
-                            planetDao?.insertAll(populateData())
+                            planetDao?.insertAll(populatePlanetData())
+                            userDao?.insertAll(populateUserData())
                         }
                     }
                 })

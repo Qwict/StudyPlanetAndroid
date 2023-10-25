@@ -9,21 +9,19 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface PlanetDao {
+interface UserDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(planet: Planet)
+    suspend fun insert(user: User)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(planets: List<Planet>)
+    suspend fun insertAll(users: List<User>)
 
     @Update
-    suspend fun update(planet: Planet)
+    suspend fun update(user: User)
 
     @Delete
-    suspend fun delete(planet: Planet)
+    suspend fun delete(user: User)
 
-    @Query("SELECT * FROM planets WHERE id = :id")
-    fun getPlanetById(id: Int): Flow<Planet>
-    @Query("SELECT * FROM planets")
-    fun getPlanets(): Flow<List<Planet>>
+    @Query("SELECT * FROM users WHERE id = :id")
+    fun getUserById(id: Int): Flow<User>
 }
