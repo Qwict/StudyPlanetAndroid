@@ -2,7 +2,7 @@ package com.qwict.studyplanetandroid.service
 
 import android.util.Base64
 import android.util.Log
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.svkandroid.helper.saveEncryptedPreference
 
 fun decodeToken(jwt: String): String {
     val (header, payload, signature) = jwt.split(".")
@@ -15,9 +15,9 @@ fun decodeToken(jwt: String): String {
     }
 }
 
-fun tokenIsValid(mainViewModel: MainViewModel): Boolean {
-    if (mainViewModel.decodedUser.token != "") {
-        val decodedToken = decodeToken(mainViewModel.decodedUser.token)
+fun tokenIsValid(token: String): Boolean {
+    if (token != "") {
+        val decodedToken = decodeToken(token)
         Log.i("MainActivity", "decoded token: $decodedToken")
 
         val tokenExpiration = decodedToken
@@ -26,11 +26,11 @@ fun tokenIsValid(mainViewModel: MainViewModel): Boolean {
 //            if exp is in the end of the decoded token the before , will not work, so we need to remove the last }
             .replace("}", "")
         val currentTime = System.currentTimeMillis() / 1000
-        if (tokenExpiration.toLong() < currentTime) {
-            mainViewModel.decodedUser.token = "expired"
-            Log.i("MainActivity", "token expired")
-            return false
+        if (tokenExpiration.toLong() > currentTime) {
+            Log.i("MainActivity", "token still valid")
+            return true
         }
     }
-    return true
+    return false
+    saveEncryptedPreference("token", "expired")
 }

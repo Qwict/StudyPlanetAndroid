@@ -27,6 +27,7 @@ import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.dto.HealthDto
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import kotlinx.serialization.json.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,6 +40,7 @@ fun MainScreen(
     onStartExploringButtonClicked: () -> Unit = {},
     onDiscoverPlanetsButtonClicked: () -> Unit = {},
     viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -55,6 +57,7 @@ fun MainScreen(
             )
         }
         Row() {
+            Text(text = "user is authenticated: ${userViewModel.userIsAuthenticated}")
 //            VideoPlayer()
         }
 

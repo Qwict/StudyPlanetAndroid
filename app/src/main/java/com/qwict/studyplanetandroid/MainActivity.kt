@@ -10,21 +10,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.qwict.studyplanetandroid.ui.states.StudyPlanetUiState
 import com.qwict.studyplanetandroid.ui.theme.StudyPlanetAndroidTheme
+import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
-import com.qwict.svkandroid.helper.getTokenFromSharedPrefs
-import com.qwict.svkandroid.helper.saveEncryptedPreference
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
-    private val mainViewModel: MainViewModel by viewModels {
+    val mainViewModel: MainViewModel by viewModels {
+        AppViewModelProvider.Factory
+    }
+    private val userViewModel: UserViewModel by viewModels {
         AppViewModelProvider.Factory
     }
 
+    private var _uiState = MutableStateFlow(
+        StudyPlanetUiState(),
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        mainViewModel.setContext(this)
-        getTokenFromSharedPrefs(mainViewModel)
+        userViewModel.authenticationCheckWithToken()
         setContent {
             StudyPlanetAndroidTheme {
                 Surface(
@@ -39,14 +46,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        getTokenFromSharedPrefs(mainViewModel)
+        userViewModel.authenticationCheckWithToken()
     }
 
     override fun onPause() {
         super.onPause()
-        saveEncryptedPreference("token", mainViewModel.decodedUser.token)
-        Log.i("MainActivity", "onPause, save userId: ${mainViewModel.decodedUser.id}")
-        saveEncryptedPreference("userId", mainViewModel.decodedUser.id.toString())
     }
 
     fun getContext(): Context {

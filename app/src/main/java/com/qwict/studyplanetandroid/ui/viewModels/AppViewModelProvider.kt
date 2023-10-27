@@ -21,7 +21,7 @@ object AppViewModelProvider {
             )
         }
         initializer {
-            ApiViewModel(
+            UserViewModel(
                 planetsRepository = studyPlanetApplication().container.planetRepository,
                 usersRepository = studyPlanetApplication().container.usersRepository,
             )

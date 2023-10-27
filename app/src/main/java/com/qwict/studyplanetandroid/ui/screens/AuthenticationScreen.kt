@@ -16,6 +16,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,6 +37,8 @@ import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
+import com.qwict.svkandroid.helper.getEncryptedPreference
 import kotlinx.coroutines.launch
 
 @Composable
@@ -52,22 +56,21 @@ fun AuthenticationScreen(
 fun AuthenticationView(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val scope = rememberCoroutineScope()
     val email = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
     val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
-
     Column(
         modifier = Modifier.padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        val title = if (viewModel.userIsAuthenticated.value) {
+        val title = if (userViewModel.userIsAuthenticated) {
             stringResource(R.string.logged_in_title)
         } else {
-            if (viewModel.appJustLaunched.value) {
+            if (userViewModel.appJustLaunched.value) {
                 stringResource(R.string.initial_title)
             } else {
                 stringResource(R.string.logged_out_title)
@@ -77,16 +80,15 @@ fun AuthenticationView(
             text = title,
         )
 //        Text(text = )
-
-        if (viewModel.userIsAuthenticated.value) {
+        if (userViewModel.userIsAuthenticated) {
             UserInfoRow(
                 label = stringResource(R.string.email_label),
-                value = viewModel.decodedUser.email,
+                value = getEncryptedPreference("email"),
             )
             UserInfoRow(
                 label = "Experience",
 //                value = viewModel.user.email,
-                value = dataViewModel.getUserById(viewModel.decodedUser.id).experience.toString(),
+                value = userViewModel.getUser().collectAsState().value.experience.toString(),
             )
             //            UserPicture(
             //                url = viewModel.user.picture,
@@ -107,7 +109,7 @@ fun AuthenticationView(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 onValueChange = { password.value = it },
             )
-            if (viewModel.registerNewUser.value) {
+            if (userViewModel.registerNewUser.value) {
                 Spacer(modifier = Modifier.height(10.dp))
                 TextField(
                     label = { Text(text = "Confirm Password") },
@@ -121,25 +123,25 @@ fun AuthenticationView(
 
         val buttonText: String
         val onClickAction: () -> Unit
-        if (viewModel.userIsAuthenticated.value) {
+        if (userViewModel.userIsAuthenticated) {
             buttonText = stringResource(R.string.log_out_button)
             onClickAction = {
-                viewModel.logout()
+                userViewModel.logout()
                 scope.launch {
                     viewModel.uiState.value.snackBarHostState.showSnackbar("Logged out")
                 }
                 email.value = TextFieldValue()
                 password.value = TextFieldValue()
             }
-        } else if (viewModel.registerNewUser.value) {
+        } else if (userViewModel.registerNewUser.value) {
             buttonText = "Register"
 
             onClickAction = {
                 if (confirmPassword.value.equals(password.value)) {
-                    if (viewModel.register(email, password)) {
+                    if (userViewModel.register(email, password)) {
                         scope.launch {
                             viewModel.uiState.value.snackBarHostState.showSnackbar(
-                                message = "Welcome ${viewModel.decodedUser.email}!",
+                                message = "Welcome ${getEncryptedPreference("email")}!",
                                 withDismissAction = true,
                             )
                         }
@@ -151,7 +153,7 @@ fun AuthenticationView(
                             )
                         }
                     }
-                    viewModel.registerNewUser.value = false
+                    userViewModel.registerNewUser.value = false
                 } else {
                     Log.i(
                         "AuthenticationScreen",
@@ -169,7 +171,7 @@ fun AuthenticationView(
         } else {
             buttonText = stringResource(R.string.log_in_button)
             onClickAction = {
-                if (!viewModel.login(email, password)) {
+                if (!userViewModel.login(email, password)) {
                     scope.launch {
                         viewModel.uiState.value.snackBarHostState.showSnackbar(
                             message = "Failed to login",
@@ -183,11 +185,11 @@ fun AuthenticationView(
             text = buttonText,
             onClick = onClickAction,
         )
-        if (!viewModel.userIsAuthenticated.value) {
+        if (!userViewModel.userIsAuthenticated) {
             OutlinedButton(onClick = {
-                viewModel.registerNewUser.value = !viewModel.registerNewUser.value
+                userViewModel.registerNewUser.value = !userViewModel.registerNewUser.value
             }) {
-                if (viewModel.registerNewUser.value) {
+                if (userViewModel.registerNewUser.value) {
                     Text(text = "Cancel")
                 } else {
                     Text(text = "Register")

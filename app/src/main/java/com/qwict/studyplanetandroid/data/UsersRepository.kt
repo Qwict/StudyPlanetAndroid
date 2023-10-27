@@ -9,4 +9,3 @@ interface UsersRepository {
     suspend fun update(user: User)
     suspend fun delete(user: User)
 }
-

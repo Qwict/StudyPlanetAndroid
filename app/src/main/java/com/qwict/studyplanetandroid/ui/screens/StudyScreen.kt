@@ -30,22 +30,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qwict.studyplanetandroid.R
-import com.qwict.studyplanetandroid.api.Api
-import com.qwict.studyplanetandroid.data.OldPlanet
+import com.qwict.studyplanetandroid.data.Planet
 import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import com.qwict.studyplanetandroid.ui.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.ui.components.loadProgress
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.UUID
 
 private val validationId = UUID.randomUUID().toString()
@@ -54,30 +47,32 @@ private val validationId = UUID.randomUUID().toString()
 fun ExplorerScreen(
     onCancelMiningButtonClicked: () -> Unit = {},
     isDiscovering: Boolean,
-    planet: OldPlanet,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    planet: Planet,
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     var currentProgress by remember { mutableStateOf(0f) }
+    var auth = userViewModel.userIsAuthenticated
 
     LaunchedEffect(true) {
         scope.launch {
             try {
                 if (isDiscovering) {
-                    startDiscovering(viewModel.selectedTime, viewModel)
+                    userViewModel.startDiscovering(userViewModel.selectedTime)
                 } else {
-                    startExploring(viewModel.selectedTime.toLong(), planet, viewModel)
+                    userViewModel.startExploring(userViewModel.selectedTime.toLong())
                 }
                 loadProgress({ progress ->
                     currentProgress = progress
-                }, viewModel.selectedTime.toLong())
+                }, userViewModel.selectedTime.toLong())
                 if (isDiscovering) {
-                    stopDiscovering(viewModel)
+                    userViewModel.stopDiscovering()
                 } else {
-                    stopExploring(viewModel)
+                    userViewModel.stopExploring()
                 }
             } catch (e: Exception) {
                 Log.i("ExplorerScreen", e.toString())
@@ -108,12 +103,15 @@ fun ExplorerScreen(
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
+                Text(
+                    text = "User is authenticated: $auth",
+                )
                 Image(
-                    painter = painterResource(id = planet.imageId ?: R.drawable.earth),
+                    painter = painterResource(id = planet.imageId),
                     contentDescription = planet.name,
                 )
                 Text(
-                    text = (viewModel.selectedTime / 1000 / 60).toString() + " Minutes",
+                    text = (userViewModel.selectedTime / 1000 / 60).toString() + " Minutes",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
@@ -128,7 +126,7 @@ fun ExplorerScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CustomCountDownTimer(viewModel)
+            CustomCountDownTimer()
 //            MiningPlanetProgressbar(viewModel.selectedTime.toLong())
             LinearProgressIndicator(
                 modifier = Modifier
@@ -169,104 +167,4 @@ suspend fun loadProgress(updateProgress: (Float) -> Unit, delay: Long) {
         updateProgress(i.toFloat() / 1000)
         delay(delay / 1000)
     }
-}
-
-fun startExploring(selectedTime: Long, planet: OldPlanet, viewModel: MainViewModel) {
-    val body = buildJsonObject {
-        put("planetId", planet.id.toString())
-        put("selectedTime", selectedTime.toString())
-    }
-
-    Log.i("ExplorerScreen", body.toString())
-    Log.i("ExplorerScreen", viewModel.decodedUser.token)
-    Api.service.startExploring(
-//        "bearer ${viewModel.user.token}",
-        viewModel.decodedUser.token,
-        JsonObject(body),
-    ).enqueue(object : Callback<JsonObject> {
-        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-            if (response.isSuccessful) {
-                Log.d("ExplorerScreen", "Started mining")
-            } else {
-                Log.e("ExplorerScreen", "Failed to start mining")
-            }
-        }
-
-        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-            startExploring(selectedTime, planet, viewModel)
-        }
-    })
-}
-
-fun stopExploring(viewModel: MainViewModel) {
-    Api.service.finishedExploration(viewModel.decodedUser.token).enqueue(object : Callback<JsonObject> {
-        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-            if (response.isSuccessful) {
-                Log.i("ExplorerScreen", "Stopped mining")
-            } else {
-                Log.e("ExplorerScreen", "Failed to stop mining")
-            }
-        }
-
-        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-            viewModel.snackBarVisible.value = true
-        }
-    })
-}
-
-fun startDiscovering(selectedTime: Int, viewModel: MainViewModel) {
-    Log.i("ExplorerScreen", "Started discovering ${viewModel.decodedUser.token}")
-    Api.service.startDiscovery(
-        viewModel.decodedUser.token,
-        JsonObject(
-            buildJsonObject {
-                put("selectedTime", selectedTime)
-            },
-        ),
-    ).enqueue(object : Callback<JsonObject> {
-        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-            if (response.isSuccessful) {
-                Log.i("ExplorerScreen", "Started discovering")
-            } else {
-//                TODO show snackbar
-                viewModel.snackBarVisible.value = true
-                Log.e("ExplorerScreen", "Failed to start discovering")
-            }
-        }
-        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-//                TODO show snackbar (possible internet connection not working)
-            viewModel.snackBarVisible.value = true
-        }
-    })
-}
-
-fun stopDiscovering(viewModel: MainViewModel) {
-    Api.service.finishedDiscovery(viewModel.decodedUser.token).enqueue(object : Callback<JsonObject> {
-        override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-            if (response.isSuccessful) {
-                val newPlanet = response.body()?.get("newPlanet") as JsonObject?
-                if (newPlanet != null) {
-                    val planet = OldPlanet(
-                        newPlanet["id"].toString().replace("\"", "").toInt(),
-                        newPlanet["name"].toString().replace("\"", ""),
-                        newPlanet["imageId"].toString().replace("\"", "").toInt(),
-                    )
-                    viewModel.decodedUser.discoveredPlanets.add(planet)
-                } else {
-                    Log.i("ExplorerScreen", "No planet was found, adding experience instead")
-//                    viewModel.user.experience += viewModel.selectedTime / 1000 / 60 // for production
-                    viewModel.decodedUser.experience.value += viewModel.selectedTime / 1000
-                }
-                Log.i("ExplorerScreen", "Stopped discovering; it was a success")
-                viewModel.resetAction()
-            } else {
-                Log.e("ExplorerScreen", "Failed to stop discovering")
-            }
-        }
-
-        override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-            viewModel.snackBarVisible.value = true
-            Log.e("ExplorerScreen", "Failed to stop discovering: there was an a failure")
-        }
-    })
 }

@@ -2,6 +2,7 @@ package com.qwict.studyplanetandroid
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Login
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +40,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.data.AppContainer
 import com.qwict.studyplanetandroid.data.AppDataContainer
-import com.qwict.studyplanetandroid.ui.components.ExperienceBar
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
@@ -47,6 +48,7 @@ import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -68,7 +70,6 @@ class StudyPlanetApplication : Application() {
 //    lateinit var userSettings: UserSettings
     lateinit var container: AppContainer
     private lateinit var appScope: CoroutineScope
-
     override fun onCreate() {
         super.onCreate()
 //        userSettings = UserSettings(dataStore)
@@ -91,6 +92,7 @@ fun StudyPlanetAppBar(
     modifier: Modifier = Modifier,
     onAccountButtonClicked: () -> Unit = {},
     viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
@@ -109,18 +111,38 @@ fun StudyPlanetAppBar(
             }
         },
         actions = {
-            if (viewModel.userIsAuthenticated.value) {
-                ExperienceBar()
-            }
-            IconButton(onClick = { onAccountButtonClicked() }) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "The Account screen",
-                )
-            }
+//            if (userViewModel.userIsAuthenticated) {
+//            TODO: This guy seems to cause a lot of rerenders..
+//            ExperienceBar()
+//            }
+            Text(text = "user is authenticated: ${userViewModel.userIsAuthenticated}")
+            AccountButton(onAccountButtonClicked)
         },
 
     )
+}
+
+@Composable
+fun AccountButton(
+    onAccountButtonClicked: () -> Unit,
+    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
+    Log.d("AccountButton", "AccountButton: ${userViewModel.userIsAuthenticated}")
+    if (userViewModel.userIsAuthenticated) {
+        IconButton(onClick = { onAccountButtonClicked() }) {
+            Icon(
+                imageVector = Icons.Filled.AccountCircle,
+                contentDescription = "Your account screen",
+            )
+        }
+    } else {
+        IconButton(onClick = { onAccountButtonClicked() }) {
+            Icon(
+                imageVector = Icons.Filled.Login,
+                contentDescription = "The login screen",
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,6 +168,7 @@ fun StudyPlanetNavBar() {
 fun StudyPlanetApp(
     viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
     dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController(),
 ) {
     // Get current back stack entry
@@ -193,7 +216,7 @@ fun StudyPlanetApp(
                         )
                     },
                     onDiscoverPlanetsButtonClicked = {
-                        viewModel.isDiscovering.value = true
+                        userViewModel.isDiscovering.value = true
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier
@@ -224,17 +247,16 @@ fun StudyPlanetApp(
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    planet = viewModel.selectedPlanet,
                 )
             }
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
                 ExplorerScreen(
-                    planet = viewModel.selectedPlanet,
                     onCancelMiningButtonClicked = {
                         navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    isDiscovering = viewModel.isDiscovering.value,
+                    isDiscovering = userViewModel.isDiscovering.value,
+                    planet = userViewModel.selectedPlanet,
                 )
             }
         }

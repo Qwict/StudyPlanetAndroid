@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -16,6 +15,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -25,27 +26,29 @@ import com.qwict.studyplanetandroid.data.Planet
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
 import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoveredPlanetsScreen(
     viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
     dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onMineButtonClicked: (Planet) -> Unit = {},
     onDiscoverPlanetsButtonClicked: () -> Unit = {},
     onCancelMiningButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
+    val userPlanets by userViewModel.getPlanets().collectAsState()
 
     LaunchedEffect(true) {
-        viewModel.getUserById()
+        userViewModel.getUserById()
     }
 
     Scaffold() { values ->
         Column {
-//            if (viewModel.user.discoveredPlanets.isEmpty()) {
-            if (dataViewModel.getPlanets().isEmpty()) {
+            if (userPlanets.isEmpty()) {
                 Text(
                     text = "No planets discovered yet",
                     modifier = Modifier.padding(16.dp),
@@ -57,17 +60,17 @@ fun DiscoveredPlanetsScreen(
                 }
             } else {
                 Text(
-                    text = "You have discovered ${dataViewModel.getPlanets().size} planets! These planets can now be mined for resources.",
+                    text = "You have discovered ${userPlanets.size} planets! These planets can now be mined for resources.",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
             }
         }
         LazyColumn(contentPadding = values) {
-            items(dataViewModel.getPlanets().size) { id ->
-                DiscoveredPlanetCard(modifier, dataViewModel.getPlanets()[id]) {
+            items(userPlanets.size) { id ->
+                DiscoveredPlanetCard(modifier, userPlanets[id]) {
                     onMineButtonClicked(
-                        dataViewModel.getPlanets()[id],
+                        userPlanets[id],
                     )
                 }
             }

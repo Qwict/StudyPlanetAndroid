@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineUserRepository(private val userDao: UserDao) : UsersRepository {
     override fun getUserById(id: Int): Flow<User> {
-        return userDao.getUserById(id)
+        return userDao.getFlowUserById(id)
     }
 
     override suspend fun insert(user: User) {

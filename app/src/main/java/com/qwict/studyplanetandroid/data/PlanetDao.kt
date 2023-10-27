@@ -24,6 +24,6 @@ interface PlanetDao {
 
     @Query("SELECT * FROM planets WHERE id = :id")
     fun getPlanetById(id: Int): Flow<Planet>
-    @Query("SELECT * FROM planets")
-    fun getPlanets(): Flow<List<Planet>>
+    @Query("SELECT * FROM planets WHERE userOwnerId = :userOwnerId")
+    fun getPlanetsByOwnerId(userOwnerId: Int): Flow<List<Planet>>
 }

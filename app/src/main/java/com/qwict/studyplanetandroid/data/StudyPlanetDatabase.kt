@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Planet::class, User::class],
-    version = 3,
+    version = 5,
     exportSchema = false,
 )
 abstract class StudyPlanetDatabase : RoomDatabase() {
@@ -24,6 +24,7 @@ abstract class StudyPlanetDatabase : RoomDatabase() {
         private var Instance: StudyPlanetDatabase? = null
 
         fun getDatabase(context: Context, scope: CoroutineScope): StudyPlanetDatabase {
+            Log.d("StudyPlanetDatabase", "Creating database")
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(
                     context,
@@ -32,14 +33,6 @@ abstract class StudyPlanetDatabase : RoomDatabase() {
                 ).addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        // Use a coroutine to insert data
-                        val planetDao = Instance?.planetDao()
-                        val userDao = Instance?.userDao()
-                        Log.i("StudyPlanetDatabase", "Inserting all planets and users")
-                        scope.launch {
-                            planetDao?.insertAll(populatePlanetData())
-                            userDao?.insertAll(populateUserData())
-                        }
                     }
                 })
 //                    .fallbackToDestructiveMigration()

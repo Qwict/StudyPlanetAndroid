@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflinePlanetRepository(private val planetDao: PlanetDao) : PlanetsRepository {
 
-    override fun getPlanets(): Flow<List<Planet>> {
-        return planetDao.getPlanets()
+    override fun getPlanetsByOwnerId(userOwnerId: Int): Flow<List<Planet>> {
+        return planetDao.getPlanetsByOwnerId(userOwnerId)
     }
 
     override fun getPlanetById(id: Int): Flow<Planet> {

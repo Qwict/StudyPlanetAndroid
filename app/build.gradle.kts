@@ -123,4 +123,7 @@ dependencies {
 //    implementation("com.google.android.exoplayer:exoplayer:2.11.7")
 //    implementation("androidx.media3:media3-exoplayer:1.1.1")
     implementation("com.google.android.exoplayer:exoplayer:2.18.7")
+
+//    for more icons
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
 }
