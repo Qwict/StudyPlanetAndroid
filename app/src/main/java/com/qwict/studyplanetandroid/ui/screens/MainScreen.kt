@@ -1,6 +1,5 @@
 package com.qwict.studyplanetandroid.ui.screens
 
-import VideoPlayer
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,12 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.api.Api
 import com.qwict.studyplanetandroid.dto.HealthDto
-import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
-import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
+import com.qwict.studyplanetandroid.service.AuthenticationSingleton.isUserAuthenticated
 import kotlinx.serialization.json.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,8 +35,6 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     onStartExploringButtonClicked: () -> Unit = {},
     onDiscoverPlanetsButtonClicked: () -> Unit = {},
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -57,7 +51,7 @@ fun MainScreen(
             )
         }
         Row() {
-            Text(text = "user is authenticated: ${userViewModel.userIsAuthenticated}")
+            Text(text = "user is authenticated: $isUserAuthenticated")
 //            VideoPlayer()
         }
 

@@ -2,7 +2,6 @@ package com.qwict.studyplanetandroid
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -10,28 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.qwict.studyplanetandroid.ui.states.StudyPlanetUiState
+import com.qwict.studyplanetandroid.service.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.ui.theme.StudyPlanetAndroidTheme
-import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
-import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.qwict.studyplanetandroid.ui.viewModels.AuthViewModel
 
 class MainActivity : ComponentActivity() {
-    val mainViewModel: MainViewModel by viewModels {
-        AppViewModelProvider.Factory
-    }
-    private val userViewModel: UserViewModel by viewModels {
-        AppViewModelProvider.Factory
-    }
+    public val authViewModel by viewModels<AuthViewModel>()
 
-    private var _uiState = MutableStateFlow(
-        StudyPlanetUiState(),
-    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        mainViewModel.setContext(this)
-        userViewModel.authenticationCheckWithToken()
+//        validateUser()
         setContent {
             StudyPlanetAndroidTheme {
                 Surface(
@@ -46,7 +33,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        userViewModel.authenticationCheckWithToken()
+//        validateUser()
     }
 
     override fun onPause() {

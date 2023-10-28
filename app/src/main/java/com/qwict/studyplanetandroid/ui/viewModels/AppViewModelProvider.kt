@@ -6,24 +6,18 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 
-object AppViewModelProvider {
+object AppViewModelProvider : ViewModelProvider.Factory {
     val Factory = viewModelFactory {
-        initializer {
-            MainViewModel(
-                planetsRepository = studyPlanetApplication().container.planetRepository,
-                usersRepository = studyPlanetApplication().container.usersRepository,
-            )
-        }
-        initializer {
-            DataViewModel(
-                planetsRepository = studyPlanetApplication().container.planetRepository,
-                usersRepository = studyPlanetApplication().container.usersRepository,
-            )
-        }
         initializer {
             UserViewModel(
                 planetsRepository = studyPlanetApplication().container.planetRepository,
                 usersRepository = studyPlanetApplication().container.usersRepository,
+            )
+        }
+        initializer {
+            AuthViewModel(
+//                planetsRepository = studyPlanetApplication().container.planetRepository,
+//                usersRepository = studyPlanetApplication().container.usersRepository,
             )
         }
     }

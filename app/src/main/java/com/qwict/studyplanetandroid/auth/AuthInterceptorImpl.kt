@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.auth
 // TODO: Hoe moet een interceptor werken? Also is er ergens een goede tutorial, alles is brak
 //
-//import com.qwict.studyplanetandroid.ui.MainViewModel
 //import okhttp3.Interceptor
 //import okhttp3.Request
 //import okhttp3.Response

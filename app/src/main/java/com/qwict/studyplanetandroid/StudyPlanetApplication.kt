@@ -40,14 +40,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.data.AppContainer
 import com.qwict.studyplanetandroid.data.AppDataContainer
+import com.qwict.studyplanetandroid.service.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
 import com.qwict.studyplanetandroid.ui.screens.MainScreen
 import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.AuthViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,8 +91,8 @@ fun StudyPlanetAppBar(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     onAccountButtonClicked: () -> Unit = {},
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
+    authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
@@ -115,7 +115,7 @@ fun StudyPlanetAppBar(
 //            TODO: This guy seems to cause a lot of rerenders..
 //            ExperienceBar()
 //            }
-            Text(text = "user is authenticated: ${userViewModel.userIsAuthenticated}")
+            Text(text = "user is authenticated: $isUserAuthenticated")
             AccountButton(onAccountButtonClicked)
         },
 
@@ -125,10 +125,10 @@ fun StudyPlanetAppBar(
 @Composable
 fun AccountButton(
     onAccountButtonClicked: () -> Unit,
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
+    authViewModel: AuthViewModel = viewModel<AuthViewModel>(),
 ) {
-    Log.d("AccountButton", "AccountButton: ${userViewModel.userIsAuthenticated}")
-    if (userViewModel.userIsAuthenticated) {
+    if (isUserAuthenticated) {
         IconButton(onClick = { onAccountButtonClicked() }) {
             Icon(
                 imageVector = Icons.Filled.AccountCircle,
@@ -166,10 +166,9 @@ fun StudyPlanetNavBar() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyPlanetApp(
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
     navController: NavHostController = rememberNavController(),
+    isAuthenticated: () -> Boolean = { false },
 ) {
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -197,7 +196,7 @@ fun StudyPlanetApp(
             StudyPlanetNavBar()
         },
         snackbarHost = {
-            SnackbarHost(hostState = viewModel.uiState.collectAsState().value.snackBarHostState)
+            SnackbarHost(hostState = userViewModel.uiState.collectAsState().value.snackBarHostState)
         },
 
     ) { innerPadding ->

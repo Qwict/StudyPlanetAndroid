@@ -8,17 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qwict.studyplanetandroid.data.OldPlanet
-import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 
 @Composable
 fun TimeSelectionScreen(
     modifier: Modifier = Modifier,
     onStartActionButtonClicked: () -> Unit = {},
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
 ) {
     Column {
         Text(text = "Select time to explore")

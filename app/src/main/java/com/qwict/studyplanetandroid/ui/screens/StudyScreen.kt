@@ -31,11 +31,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.service.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import com.qwict.studyplanetandroid.ui.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.ui.components.loadProgress
-import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.ui.viewModels.AuthViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,16 +48,14 @@ fun ExplorerScreen(
     onCancelMiningButtonClicked: () -> Unit = {},
     isDiscovering: Boolean,
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
+    authViewModel: AuthViewModel = viewModel<AuthViewModel>(),
     planet: Planet,
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     var currentProgress by remember { mutableStateOf(0f) }
-    var auth = userViewModel.userIsAuthenticated
-
     LaunchedEffect(true) {
         scope.launch {
             try {
@@ -104,7 +102,7 @@ fun ExplorerScreen(
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "User is authenticated: $auth",
+                    text = "User is authenticated: $isUserAuthenticated",
                 )
                 Image(
                     painter = painterResource(id = planet.imageId),

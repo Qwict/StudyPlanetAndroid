@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CustomCountDownTimer(
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
 ) {
     val scope = rememberCoroutineScope() // Create a coroutine scope
     LaunchedEffect(true) {

@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.R
-import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
+import com.qwict.studyplanetandroid.service.AuthenticationSingleton.isUserAuthenticated
+import com.qwict.studyplanetandroid.service.AuthenticationSingleton.logout
+import com.qwict.studyplanetandroid.ui.viewModels.AuthViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 import com.qwict.svkandroid.helper.getEncryptedPreference
 import kotlinx.coroutines.launch
@@ -44,10 +43,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun AuthenticationScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column() {
-        AuthenticationView(modifier, viewModel)
+        AuthenticationView(modifier)
     }
 }
 
@@ -55,8 +53,8 @@ fun AuthenticationScreen(
 @Composable
 fun AuthenticationView(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
+    authViewModel: AuthViewModel = viewModel<AuthViewModel>(),
 ) {
     val scope = rememberCoroutineScope()
     val email = remember { mutableStateOf(TextFieldValue()) }
@@ -67,7 +65,7 @@ fun AuthenticationView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        val title = if (userViewModel.userIsAuthenticated) {
+        val title = if (isUserAuthenticated) {
             stringResource(R.string.logged_in_title)
         } else {
             if (userViewModel.appJustLaunched.value) {
@@ -80,7 +78,7 @@ fun AuthenticationView(
             text = title,
         )
 //        Text(text = )
-        if (userViewModel.userIsAuthenticated) {
+        if (isUserAuthenticated) {
             UserInfoRow(
                 label = stringResource(R.string.email_label),
                 value = getEncryptedPreference("email"),
@@ -123,12 +121,12 @@ fun AuthenticationView(
 
         val buttonText: String
         val onClickAction: () -> Unit
-        if (userViewModel.userIsAuthenticated) {
+        if (isUserAuthenticated) {
             buttonText = stringResource(R.string.log_out_button)
             onClickAction = {
-                userViewModel.logout()
+                logout()
                 scope.launch {
-                    viewModel.uiState.value.snackBarHostState.showSnackbar("Logged out")
+                    userViewModel.uiState.value.snackBarHostState.showSnackbar("Logged out")
                 }
                 email.value = TextFieldValue()
                 password.value = TextFieldValue()
@@ -138,16 +136,16 @@ fun AuthenticationView(
 
             onClickAction = {
                 if (confirmPassword.value.equals(password.value)) {
-                    if (userViewModel.register(email, password)) {
+                    if (authViewModel.register(email, password)) {
                         scope.launch {
-                            viewModel.uiState.value.snackBarHostState.showSnackbar(
+                            userViewModel.uiState.value.snackBarHostState.showSnackbar(
                                 message = "Welcome ${getEncryptedPreference("email")}!",
                                 withDismissAction = true,
                             )
                         }
                     } else {
                         scope.launch {
-                            viewModel.uiState.value.snackBarHostState.showSnackbar(
+                            userViewModel.uiState.value.snackBarHostState.showSnackbar(
                                 message = "Failed to register",
                                 withDismissAction = true,
                             )
@@ -161,7 +159,7 @@ fun AuthenticationView(
                             "${confirmPassword.value.text} ${password.value.text}",
                     )
                     scope.launch {
-                        viewModel.uiState.value.snackBarHostState.showSnackbar(
+                        userViewModel.uiState.value.snackBarHostState.showSnackbar(
                             message = "Passwords do not match",
                             withDismissAction = true,
                         )
@@ -171,9 +169,9 @@ fun AuthenticationView(
         } else {
             buttonText = stringResource(R.string.log_in_button)
             onClickAction = {
-                if (!userViewModel.login(email, password)) {
+                if (!authViewModel.login(email, password)) {
                     scope.launch {
-                        viewModel.uiState.value.snackBarHostState.showSnackbar(
+                        userViewModel.uiState.value.snackBarHostState.showSnackbar(
                             message = "Failed to login",
                             withDismissAction = true,
                         )
@@ -185,7 +183,7 @@ fun AuthenticationView(
             text = buttonText,
             onClick = onClickAction,
         )
-        if (!userViewModel.userIsAuthenticated) {
+        if (!isUserAuthenticated) {
             OutlinedButton(onClick = {
                 userViewModel.registerNewUser.value = !userViewModel.registerNewUser.value
             }) {

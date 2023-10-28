@@ -24,16 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qwict.studyplanetandroid.data.Planet
 import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.DataViewModel
-import com.qwict.studyplanetandroid.ui.viewModels.MainViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoveredPlanetsScreen(
-    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    dataViewModel: DataViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
     onMineButtonClicked: (Planet) -> Unit = {},
     onDiscoverPlanetsButtonClicked: () -> Unit = {},
     onCancelMiningButtonClicked: () -> Unit = {},

@@ -1,6 +1,5 @@
 package com.qwict.studyplanetandroid.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -11,15 +10,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
+import com.qwict.studyplanetandroid.service.AuthenticationSingleton.isUserAuthenticated
+import com.qwict.studyplanetandroid.ui.viewModels.AuthViewModel
 import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 
 @Composable
 fun ExperienceBar(
-    userViewModel: UserViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
+    authViewModel: AuthViewModel = viewModel<AuthViewModel>(),
 ) {
     val user by userViewModel.getUser().collectAsState()
-    if (userViewModel.userIsAuthenticated) {
+    if (isUserAuthenticated) {
         Row {
             LinearProgressIndicator(
                 modifier = Modifier
