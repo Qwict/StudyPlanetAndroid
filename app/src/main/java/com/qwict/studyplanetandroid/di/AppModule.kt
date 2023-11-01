@@ -1,7 +1,11 @@
 package com.qwict.studyplanetandroid.di
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton
+import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Constants.BASE_URL
+import com.qwict.studyplanetandroid.data.local.AppContainer
+import com.qwict.studyplanetandroid.data.local.AppDataContainer
+import com.qwict.studyplanetandroid.data.local.OfflinePlanetsRepository
+import com.qwict.studyplanetandroid.data.local.OfflineUsersRepository
 import com.qwict.studyplanetandroid.data.remote.StudyPlanetApi
 import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepositoryImpl
 import com.qwict.studyplanetandroid.domain.repository.StudyPlanetRepository
@@ -9,6 +13,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -31,7 +38,36 @@ object AppModule {
     @Singleton
     fun provideStudyPlanetRepository(
         api: StudyPlanetApi,
+        planetsRepo: OfflinePlanetsRepository,
+        usersRepository: OfflineUsersRepository,
     ): StudyPlanetRepository {
-        return StudyPlanetRepositoryImpl(api)
+        return StudyPlanetRepositoryImpl(api, planetsRepo, usersRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOfflinePlanetsRepository(): OfflinePlanetsRepository {
+        return AppDataContainer(
+            StudyPlanetApplication.appContext,
+            CoroutineScope(SupervisorJob() + Dispatchers.Main),
+        ).planetsRepository
+    }
+
+    @Provides
+    @Singleton
+    fun provideOfflineUsersRepository(): OfflineUsersRepository {
+        return AppDataContainer(
+            StudyPlanetApplication.appContext,
+            CoroutineScope(SupervisorJob() + Dispatchers.Main),
+        ).usersRepository
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppContainer(): AppDataContainer {
+        return AppDataContainer(
+            StudyPlanetApplication.appContext,
+            CoroutineScope(SupervisorJob() + Dispatchers.Main),
+        )
     }
 }

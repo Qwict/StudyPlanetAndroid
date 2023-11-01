@@ -1,9 +1,10 @@
 package com.qwict.studyplanetandroid.domain.use_case.get_user
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton
+import android.util.Log
 import com.qwict.studyplanetandroid.common.Resource
+import com.qwict.studyplanetandroid.common.saveEncryptedPreference
+import com.qwict.studyplanetandroid.data.local.AppDataContainer
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
-import com.qwict.studyplanetandroid.data.remote.dto.toUser
 import com.qwict.studyplanetandroid.domain.model.User
 import com.qwict.studyplanetandroid.domain.repository.StudyPlanetRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,17 +15,19 @@ import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
+    private val container: AppDataContainer,
 ) {
     operator fun invoke(
         email: String,
         password: String,
     ): Flow<Resource<User>> = flow {
+        Log.i("LoginUseCase", "invoke: $email, $password")
         try {
             emit(Resource.Loading())
             val authenticatedUser = repo.login(LoginDto(email = email, password = password))
-            AuthenticationSingleton.isUserAuthenticated = true
-            AuthenticationSingleton.token = authenticatedUser.token
-            emit(Resource.Success(authenticatedUser.toUser()))
+            if (authenticatedUser.validated) {
+                emit(Resource.Success(InsertLocalUserUseCase(container)(authenticatedUser)))
+            }
         } catch (e: HttpException) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
         } catch (e: IOException) {

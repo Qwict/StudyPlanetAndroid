@@ -1,7 +1,7 @@
 package com.qwict.studyplanetandroid.presentation.user
 
-import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.data.local.DatabasePlanet
 
 data class UserUiState(
-    var planets: List<Planet> = emptyList(),
+    var planets: List<DatabasePlanet> = emptyList(),
 )

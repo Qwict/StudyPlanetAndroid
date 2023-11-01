@@ -1,17 +1,20 @@
 plugins {
+
     id("com.android.application")
+    id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    kotlin("kapt")
 }
 
 android {
     namespace = "com.qwict.studyplanetandroid"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.qwict.studyplanetandroid"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
         manifestPlaceholders["auth0Domain"] = "@string/com_auth0_domain"
@@ -54,7 +57,6 @@ android {
 }
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
@@ -69,6 +71,8 @@ dependencies {
     implementation("androidx.annotation:annotation:1.5.0")
     implementation("com.google.android.engage:engage-core:1.3.0")
     implementation("androidx.media3:media3-ui:1.1.1")
+    implementation("com.google.firebase:firebase-sessions:1.1.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -128,6 +132,37 @@ dependencies {
 //    for more icons
     implementation("androidx.compose.material:material-icons-extended:1.4.3")
 
-//    HIlt
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+//    implementation("com.google.dagger:hilt-android:2.48.1")
+//    kapt("com.google.dagger:hilt-compiler:2.48.1")
+//
+//    // For instrumentation tests
+//    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48.1")
+//    kaptAndroidTest("com.google.dagger:hilt-compiler:2.48.1")
+//
+//    // For local unit tests
+//    testImplementation("com.google.dagger:hilt-android-testing:2.48.1")
+//    kaptTest("com.google.dagger:hilt-compiler:2.48.1")
+//}
+//
+//kapt {
+//    correctErrorTypes = true
+//}
+
     implementation("com.google.dagger:hilt-android:2.48.1")
+    annotationProcessor("com.google.dagger:hilt-compiler:2.48.1")
+
+    // For instrumentation tests
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48.1")
+    androidTestAnnotationProcessor("com.google.dagger:hilt-compiler:2.48.1")
+
+    // For local unit tests
+    testImplementation("com.google.dagger:hilt-android-testing:2.48.1")
+    testAnnotationProcessor("com.google.dagger:hilt-compiler:2.48.1")
+
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.48.1")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0-rc01")
 }

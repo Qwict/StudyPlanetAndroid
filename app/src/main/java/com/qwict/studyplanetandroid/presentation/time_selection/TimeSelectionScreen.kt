@@ -8,14 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qwict.studyplanetandroid.ui.viewModels.AppViewModelProvider
-import com.qwict.studyplanetandroid.ui.viewModels.UserViewModel
 
 @Composable
 fun TimeSelectionScreen(
     modifier: Modifier = Modifier,
     onStartActionButtonClicked: () -> Unit = {},
-    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
+//    userViewModel: UserViewModel = viewModel(factory = UserViewModel.factory),
 ) {
     Column {
         Text(text = "Select time to explore")
@@ -23,8 +21,8 @@ fun TimeSelectionScreen(
             onClick = {
                 onStartActionButtonClicked()
 //                    (30 * 60 * 1000).toLong()
-                userViewModel.selectedTime = (1 * 1000)
-                userViewModel.updatedTime = userViewModel.selectedTime
+//                userViewModel.selectedTime = (1 * 1000)
+//                userViewModel.updatedTime = userViewModel.selectedTime
             },
             modifier = Modifier.padding(16.dp),
         ) {
@@ -35,8 +33,8 @@ fun TimeSelectionScreen(
             onClick = {
                 onStartActionButtonClicked()
 //                    (60 * 60 * 1000).toLong()
-                userViewModel.selectedTime = (5 * 60 * 1000)
-                userViewModel.updatedTime = userViewModel.selectedTime
+//                userViewModel.selectedTime = (5 * 60 * 1000)
+//                userViewModel.updatedTime = userViewModel.selectedTime
             },
             modifier = Modifier.padding(16.dp),
         ) {
@@ -47,8 +45,8 @@ fun TimeSelectionScreen(
             onClick = {
                 onStartActionButtonClicked()
 //                    (120 * 60 * 1000).toLong()
-                userViewModel.selectedTime = (10 * 60 * 1000)
-                userViewModel.updatedTime = userViewModel.selectedTime
+//                userViewModel.selectedTime = (10 * 60 * 1000)
+//                userViewModel.updatedTime = userViewModel.selectedTime
             },
             modifier = Modifier.padding(16.dp),
         ) {

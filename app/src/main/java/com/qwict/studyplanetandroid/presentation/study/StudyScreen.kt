@@ -1,6 +1,8 @@
 package com.qwict.studyplanetandroid.ui.screens
 
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -8,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LinearProgressIndicator
@@ -23,23 +27,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
+import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.study.components.CustomCountDownTimer
+import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
+import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.UUID
-
-private val validationId = UUID.randomUUID().toString()
 
 @Composable
 fun ExplorerScreen(
     onCancelStudyButtonClicked: () -> Unit = {},
     isDiscovering: Boolean,
     modifier: Modifier = Modifier,
-    studyViewModel: ViewModel = viewModel(),
+    planet: Planet,
+    studyViewModel: StudyViewModel = hiltViewModel(),
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -48,19 +54,19 @@ fun ExplorerScreen(
     LaunchedEffect(true) {
         scope.launch {
             try {
-//                if (isDiscovering) {
-//                    studyViewModel.startDiscovering(studyViewModel.selectedTime)
-//                } else {
-//                    studyViewModel.startExploring(studyViewModel.selectedTime.toLong())
-//                }
-//                loadProgress({ progress ->
-//                    currentProgress = progress
-//                }, studyViewModel.selectedTime.toLong())
-//                if (isDiscovering) {
-//                    studyViewModel.stopDiscovering()
-//                } else {
-//                    studyViewModel.stopExploring()
-//                }
+                if (isDiscovering) {
+                    studyViewModel.startDiscovering(studyViewModel.selectedTime)
+                } else {
+                    studyViewModel.startExploring(studyViewModel.selectedTime.toLong())
+                }
+                loadProgress({ progress ->
+                    currentProgress = progress
+                }, studyViewModel.selectedTime.toLong())
+                if (isDiscovering) {
+                    studyViewModel.stopDiscovering()
+                } else {
+                    studyViewModel.stopExploring()
+                }
             } catch (e: Exception) {
                 Log.i("ExplorerScreen", e.toString())
             }
@@ -93,15 +99,15 @@ fun ExplorerScreen(
                 Text(
                     text = "User is authenticated: $isUserAuthenticated",
                 )
-//                Image(
-//                    painter = painterResource(id = planet.imageId),
-//                    contentDescription = planet.name,
-//                )
-//                Text(
-//                    text = (studyViewModel.selectedTime / 1000 / 60).toString() + " Minutes",
-//                    modifier = Modifier.padding(16.dp),
-//                    textAlign = TextAlign.Center,
-//                )
+                Image(
+                    painter = painterResource(id = planet.imageId),
+                    contentDescription = planet.name,
+                )
+                Text(
+                    text = (studyViewModel.selectedTime / 1000 / 60).toString() + " Minutes",
+                    modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center,
+                )
 //                GifImage()
             }
         }
@@ -134,16 +140,16 @@ fun ExplorerScreen(
 
         when {
             openAlertDialog.value -> {
-//                AlertDialog(
-//                    onDismissRequest = { openAlertDialog.value = false },
-//                    onConfirmation = {
+                AlertDialog(
+                    onDismissRequest = { openAlertDialog.value = false },
+                    onConfirmation = {
 //                        onCancelMiningButtonClicked()
-//                        openAlertDialog.value = false
-//                    },
-//                    dialogTitle = "Cancel mining operation?",
-//                    dialogText = "Are you sure you want to stop mining ${planet.name}? All progress will be lost.",
-//                    icon = Icons.Default.Info,
-//                )
+                        openAlertDialog.value = false
+                    },
+                    dialogTitle = "Cancel mining operation?",
+                    dialogText = "Are you sure you want to stop mining ${planet.name}? All progress will be lost.",
+                    icon = Icons.Default.Info,
+                )
             }
         }
     }

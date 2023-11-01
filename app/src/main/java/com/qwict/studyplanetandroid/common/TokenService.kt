@@ -2,7 +2,7 @@ package com.qwict.studyplanetandroid.service
 
 import android.util.Base64
 import android.util.Log
-import com.qwict.svkandroid.helper.saveEncryptedPreference
+import com.qwict.studyplanetandroid.common.saveEncryptedPreference
 
 fun decodeToken(jwt: String): String {
     val (header, payload, signature) = jwt.split(".")

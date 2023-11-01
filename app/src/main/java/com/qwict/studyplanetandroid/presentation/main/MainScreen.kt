@@ -51,7 +51,6 @@ fun MainScreen(
             )
         }
         Row() {
-            Text(text = "user is authenticated: $isUserAuthenticated")
 //            VideoPlayer()
         }
 

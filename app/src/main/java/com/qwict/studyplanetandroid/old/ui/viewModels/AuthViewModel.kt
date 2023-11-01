@@ -5,9 +5,9 @@ package com.qwict.studyplanetandroid.ui.viewModels
 //import androidx.compose.ui.text.input.TextFieldValue
 //import androidx.lifecycle.ViewModel
 //import com.qwict.studyplanetandroid.api.Api
-//import com.qwict.studyplanetandroid.data.toPlanet
+//import com.qwict.studyplanetandroid.data.local.toPlanet
 //import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
-//import com.qwict.svkandroid.helper.saveEncryptedPreference
+//import com.qwict.studyplanetandroid.common.saveEncryptedPreference
 //import dagger.hilt.android.lifecycle.HiltViewModel
 //import kotlinx.serialization.json.JsonArray
 //import kotlinx.serialization.json.JsonObject

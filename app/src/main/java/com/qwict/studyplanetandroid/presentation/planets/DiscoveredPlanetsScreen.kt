@@ -21,8 +21,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qwict.studyplanetandroid.data.Planet
+import com.qwict.studyplanetandroid.data.local.DatabasePlanet
+import com.qwict.studyplanetandroid.domain.model.Planet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,11 +33,12 @@ fun DiscoveredPlanetsScreen(
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
-    val userPlanets by userViewModel.getPlanets().collectAsState()
+    val userPlanets = listOf<Planet>()
+//    val userPlanets by userViewModel.getPlanets().collectAsState()
 
-    LaunchedEffect(true) {
-        userViewModel.getUserById()
-    }
+//    LaunchedEffect(true) {
+//        userViewModel.getUserById()
+//    }
 
     Scaffold() { values ->
         Column {

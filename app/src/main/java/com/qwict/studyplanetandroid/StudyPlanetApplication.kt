@@ -39,8 +39,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
-import com.qwict.studyplanetandroid.data.AppContainer
-import com.qwict.studyplanetandroid.data.AppDataContainer
+import com.qwict.studyplanetandroid.common.Constants.EMPTY_PLANET
+import com.qwict.studyplanetandroid.data.local.AppContainer
+import com.qwict.studyplanetandroid.data.local.AppDataContainer
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
@@ -52,6 +53,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 enum class StudyPlanetScreens(@StringRes val title: Int) {
+    StartScreen(title = R.string.title_start_screen),
     MainScreen(title = R.string.title_main_screen),
     AuthenticationScreen(title = R.string.title_authentication_screen),
     DiscoveredPlanetsScreen(title = R.string.title_discovered_planets_screen),
@@ -61,12 +63,12 @@ enum class StudyPlanetScreens(@StringRes val title: Int) {
 
 @HiltAndroidApp
 class StudyPlanetApplication : Application() {
-//    lateinit var container: AppContainer
     private lateinit var appScope: CoroutineScope
+    private lateinit var container: AppContainer
     override fun onCreate() {
         super.onCreate()
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-//        container = AppDataContainer(this, appScope)
+        container = AppDataContainer(this, appScope)
         appContext = applicationContext
     }
 
@@ -105,7 +107,6 @@ fun StudyPlanetAppBar(
 //            TODO: This guy seems to cause a lot of rerenders..
 //            ExperienceBar()
 //            }
-            Text(text = "user is authenticated: $isUserAuthenticated")
             AccountButton(onAccountButtonClicked)
         },
 
@@ -208,9 +209,16 @@ fun StudyPlanetApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = StudyPlanetScreens.MainScreen.name,
+            startDestination = StudyPlanetScreens.StartScreen.name,
             modifier = Modifier.padding(innerPadding),
         ) {
+            composable(route = StudyPlanetScreens.StartScreen.name) {
+                AuthenticationScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium)),
+                )
+            }
             composable(route = StudyPlanetScreens.MainScreen.name) {
                 MainScreen(
                     onStartExploringButtonClicked = {
@@ -256,6 +264,7 @@ fun StudyPlanetApp(
                     },
                     modifier = Modifier.fillMaxHeight(),
                     isDiscovering = true,
+                    planet = EMPTY_PLANET,
                 )
             }
         }

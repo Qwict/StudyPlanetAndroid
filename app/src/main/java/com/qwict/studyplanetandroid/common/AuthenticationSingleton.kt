@@ -4,10 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.qwict.studyplanetandroid.common.Constants.DEFAULT_UUID
 import com.qwict.studyplanetandroid.service.tokenIsValid
-import com.qwict.svkandroid.helper.clearEncryptedPreferences
-import com.qwict.svkandroid.helper.getEncryptedPreference
-import com.qwict.svkandroid.helper.saveEncryptedPreference
 import java.util.UUID
 
 object AuthenticationSingleton {
@@ -18,7 +16,6 @@ object AuthenticationSingleton {
 
     fun validateUser() {
         val token = getEncryptedPreference("token")
-        experience = getEncryptedPreference("experience").toInt()
         userUuid = getUUID()
         if (token != null && token != "") {
             if (tokenIsValid(getEncryptedPreference("token"))) {
@@ -35,21 +32,31 @@ object AuthenticationSingleton {
 
     fun logout() {
         isUserAuthenticated = false
-        clearEncryptedPreferences("token")
-        clearEncryptedPreferences("userId")
-        clearEncryptedPreferences("email")
+        removeEncryptedPreference("token")
+        removeEncryptedPreference("userId")
+        removeEncryptedPreference("email")
     }
 
     fun getUUID(): UUID {
-        var userUuid = UUID.fromString(getEncryptedPreference("userUuid"))
-        if (userUuid == null || userUuid.toString() == "") {
-            userUuid = UUID.randomUUID()
-            Log.d("AuthenticationSingleton", "getUUID: userUuid was null, so we generated a new one: $userUuid")
-            saveEncryptedPreference("userUuid", userUuid.toString())
-        } else {
-            Log.d("AuthenticationSingleton", "getUUID: userUuid existing one: $userUuid")
-        }
+//        var userUuid = DEFAULT_UUID
+//        try {
+//            userUuid = UUID.fromString(getEncryptedPreference("userUuid"))
+//        } catch (e: Exception) {
+//            Log.e("AuthenticationSingleton", e.message.toString())
+//        } catch (e: NullPointerException) {
+//            Log.i("AuthenticationSingleton", "getUUID: userUuid was null")
+//        }
+//        if (userUuid == null || userUuid.toString() == "") {
+//            userUuid = UUID.randomUUID()
+//            Log.d("AuthenticationSingleton", "getUUID: userUuid was null, so we generated a new one: $userUuid")
+//            saveEncryptedPreference("userUuid", userUuid.toString())
+//        } else {
+//            Log.d("AuthenticationSingleton", "getUUID: userUuid existing one: $userUuid")
+//        }
 
+//        return userUuid
+        val userUuid = UUID.randomUUID()
+        saveEncryptedPreference("userUuid", userUuid.toString())
         return userUuid
     }
 }

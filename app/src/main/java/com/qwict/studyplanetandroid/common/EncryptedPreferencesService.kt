@@ -1,4 +1,4 @@
-package com.qwict.svkandroid.helper
+package com.qwict.studyplanetandroid.common
 
 import android.content.SharedPreferences
 import android.util.Log
@@ -11,24 +11,21 @@ val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 // TODO: also declare sharedPreference variable here to make code more elegant?
 
 fun getEncryptedPreference(key: String): String {
-    val sharedPreferences = getSharedPreferences()
-    return sharedPreferences.getString(key, "") ?: ""
-}
-
-fun getEncryptedPreferenceInteger(key: String): String {
-    val sharedPreferences = getSharedPreferences()
-    return sharedPreferences.getString(key, "") ?: "0"
+    return getSharedPreferences().getString(key, "") ?: ""
 }
 
 fun saveEncryptedPreference(key: String, preference: String) {
-    val sharedPreferences = getSharedPreferences()
-    sharedPreferences.edit().putString(key, preference).apply()
-
+    getSharedPreferences().edit().putString(key, preference).apply()
     // TODO remove in production
     Log.i("MainActivity", "onResume: $key was saved to preference file as: '$preference'")
 }
 
-fun getSharedPreferences(): SharedPreferences {
+fun removeEncryptedPreference(key: String) {
+    val sharedPreferences = getSharedPreferences()
+    sharedPreferences.edit().clear().apply()
+}
+
+private fun getSharedPreferences(): SharedPreferences {
     return EncryptedSharedPreferences.create(
         "preferences",
         masterKeyAlias,
@@ -36,9 +33,4 @@ fun getSharedPreferences(): SharedPreferences {
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
     )
-}
-
-fun clearEncryptedPreferences(key: String) {
-    val sharedPreferences = getSharedPreferences()
-    sharedPreferences.edit().remove(key).apply()
 }
