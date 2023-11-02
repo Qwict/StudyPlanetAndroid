@@ -1,16 +1,12 @@
 package com.qwict.studyplanetandroid.data.repository
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton
-import com.qwict.studyplanetandroid.common.saveEncryptedPreference
+import android.util.Log
 import com.qwict.studyplanetandroid.data.local.OfflinePlanetsRepository
 import com.qwict.studyplanetandroid.data.local.OfflineUsersRepository
-import com.qwict.studyplanetandroid.data.local.toUser
 import com.qwict.studyplanetandroid.data.remote.StudyPlanetApi
 import com.qwict.studyplanetandroid.data.remote.dto.AuthenticatedUserDto
-import com.qwict.studyplanetandroid.data.remote.dto.AuthenticationDto
 import com.qwict.studyplanetandroid.data.remote.dto.HealthDto
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
-import com.qwict.studyplanetandroid.data.remote.dto.toDatabaseUserWithPlanets
 import com.qwict.studyplanetandroid.domain.model.User
 import com.qwict.studyplanetandroid.domain.repository.StudyPlanetRepository
 import javax.inject.Inject
@@ -29,8 +25,8 @@ class StudyPlanetRepositoryImpl @Inject constructor(
         return api.login(body)
     }
 
-    override suspend fun authenticate(body: AuthenticationDto): AuthenticatedUserDto {
-        return api.authenticate(body)
+    override suspend fun authenticate(token: String): AuthenticatedUserDto {
+        return api.authenticate(token)
     }
 
     override suspend fun registerLocalUser(): User {

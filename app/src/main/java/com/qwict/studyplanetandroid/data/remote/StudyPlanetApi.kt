@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.data.remote
 
 import com.qwict.studyplanetandroid.data.remote.dto.AuthenticatedUserDto
-import com.qwict.studyplanetandroid.data.remote.dto.AuthenticationDto
 import com.qwict.studyplanetandroid.data.remote.dto.HealthDto
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
@@ -21,5 +20,5 @@ interface StudyPlanetApi {
     suspend fun login(@Body body: RegisterDto): AuthenticatedUserDto
 
     @GET("v1/users")
-    suspend fun authenticate(@Header("authorization") bearerToken: AuthenticationDto): AuthenticatedUserDto
+    suspend fun authenticate(@Header("authorization") bearerToken: String): AuthenticatedUserDto
 }

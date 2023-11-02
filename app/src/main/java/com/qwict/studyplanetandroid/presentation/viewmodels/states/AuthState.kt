@@ -9,4 +9,8 @@ data class AuthState(
     val user: User = EMPTY_USER,
     val appJustLaunched: Boolean = true,
     val registerNewUser: Boolean = false,
+
+    val experienceForNextLevel: Int = 0,
+    val currentLevel: Int = 0,
+    val experienceProgress: Float = 0f,
 )

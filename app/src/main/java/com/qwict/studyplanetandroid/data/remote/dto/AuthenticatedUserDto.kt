@@ -22,12 +22,14 @@ data class AuthenticatedUserDto(
 
 // Might be useful when a user registers... (there are no planets yet...)
 fun AuthenticatedUserDto.toDatabaseUser() = DatabaseUser(
+    email = user.email,
+    name = user.name,
     userUuid = user.userUuid,
     experience = user.experience,
     remoteId = user.id,
 )
 
 fun AuthenticatedUserDto.toDatabaseUserWithPlanets() = DatabaseUserWithPlanets(
-    user = toDatabaseUser(),
+    user = user.asDatabaseModel(),
     planets = user.discoveredPlanets.map { it.asDatabaseModel(user.id, user.userUuid) },
 )

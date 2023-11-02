@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.ui.screens
 
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,10 +30,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.study.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
+import com.qwict.studyplanetandroid.presentation.viewmodels.TimeSelectionViewModel
 import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,8 +43,10 @@ fun ExplorerScreen(
     onCancelStudyButtonClicked: () -> Unit = {},
     isDiscovering: Boolean,
     modifier: Modifier = Modifier,
-    planet: Planet,
+    selectedPlanet: Planet,
     studyViewModel: StudyViewModel = hiltViewModel(),
+    timeSelectionViewModel: TimeSelectionViewModel = hiltViewModel(),
+    selectedTimeInMinutes: Float,
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -53,7 +54,11 @@ fun ExplorerScreen(
     var currentProgress by remember { mutableStateOf(0f) }
     LaunchedEffect(true) {
         scope.launch {
+            studyViewModel.resetAction()
+            Log.i("StudyViewModel", "Started studying, ${studyViewModel.selectedPlanet.name} for $selectedTimeInMinutes minutes")
+            studyViewModel.updatedTime = selectedTimeInMinutes.toInt() * 60 * 1000
             try {
+                studyViewModel.selectedTime = selectedTimeInMinutes.toInt() * 60 * 1000
                 if (isDiscovering) {
                     studyViewModel.startDiscovering(studyViewModel.selectedTime)
                 } else {
@@ -91,24 +96,20 @@ fun ExplorerScreen(
             Column(
                 modifier = modifier.fillMaxWidth(),
             ) {
-//                Text(
-//                    text = planet.name!!,
-//                    modifier = Modifier.padding(16.dp),
-//                    textAlign = TextAlign.Center,
-//                )
                 Text(
-                    text = "User is authenticated: $isUserAuthenticated",
+                    text = selectedPlanet.name!!,
+                    modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center,
                 )
                 Image(
-                    painter = painterResource(id = planet.imageId),
-                    contentDescription = planet.name,
+                    painter = painterResource(selectedPlanet.imageId),
+                    contentDescription = selectedPlanet.name,
                 )
                 Text(
                     text = (studyViewModel.selectedTime / 1000 / 60).toString() + " Minutes",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
-//                GifImage()
             }
         }
 
@@ -120,7 +121,6 @@ fun ExplorerScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CustomCountDownTimer()
-//            MiningPlanetProgressbar(viewModel.selectedTime.toLong())
             LinearProgressIndicator(
                 modifier = Modifier
                     .width(300.dp)
@@ -147,7 +147,7 @@ fun ExplorerScreen(
                         openAlertDialog.value = false
                     },
                     dialogTitle = "Cancel mining operation?",
-                    dialogText = "Are you sure you want to stop mining ${planet.name}? All progress will be lost.",
+                    dialogText = "Are you sure you want to stop mining ${selectedPlanet.name}? All progress will be lost.",
                     icon = Icons.Default.Info,
                 )
             }

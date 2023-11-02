@@ -13,6 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
+import kotlin.math.log
+import kotlin.math.pow
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -20,19 +22,19 @@ class AuthViewModel @Inject constructor(
     private val authenticateUseCase: AuthenticateUseCase,
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(AuthState())
+    private var _state = mutableStateOf(AuthState())
     val state: State<AuthState> = _state
 
     init {
         getUserWithToken()
     }
 
-    fun getUserWithToken() {
-        Log.i("AuthViewModel", "getUserWithToken: ")
+    private fun getUserWithToken() {
         authenticateUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
                     _state.value = AuthState(user = result.data!!)
+                    levelCalculator(_state.value.user.experience)
                 }
 
                 is Resource.Error -> {
@@ -65,5 +67,25 @@ class AuthViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun levelCalculator(experience: Int) {
+        Log.d("AuthViewModel", "levelCalculator: ${log(experience.toDouble() / 60, 2.0)}")
+
+        val currentLevel = Math.ceil(log(experience.toDouble() / 60, 2.0))
+        val experienceForCurrentLevel = (2.0.pow(currentLevel - 1) * 60)
+        val experienceForNextLevel = (2.0.pow(currentLevel) * 60) - experience + experienceForCurrentLevel
+        val experienceProgress = (experience - experienceForCurrentLevel) / (experienceForNextLevel)
+
+        if (experience == 0) {
+            _state.value = _state.value.copy(currentLevel = 0, experienceForNextLevel = 2)
+        } else {
+            _state.value = _state.value.copy(
+                currentLevel = currentLevel.toInt(),
+                experienceForNextLevel = experienceForNextLevel.toInt(),
+                experienceProgress = experienceProgress.toFloat(),
+            )
+        }
+        Log.d("AuthViewModel", "levelCalculator: ${_state.value.currentLevel}, ${_state.value.experienceForNextLevel}, ${_state.value.experienceProgress}")
     }
 }

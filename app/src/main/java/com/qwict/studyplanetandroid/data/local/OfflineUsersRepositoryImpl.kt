@@ -1,10 +1,15 @@
 package com.qwict.studyplanetandroid.data.local
 
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 class OfflineUsersRepositoryImpl(private val userDao: UserDao) : OfflineUsersRepository {
     override fun getUserById(id: Int): Flow<DatabaseUser> {
         return userDao.getFlowUserById(id)
+    }
+
+    override fun getUserByUuid(uuid: UUID): Flow<DatabaseUser> {
+        return userDao.getFlowUserByUuid(uuid)
     }
 
     override suspend fun insert(user: DatabaseUser) {

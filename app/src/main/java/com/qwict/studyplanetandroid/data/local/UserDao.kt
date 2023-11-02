@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Dao
 interface UserDao {
@@ -25,6 +26,9 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE id = :id")
     fun getFlowUserById(id: Int): Flow<DatabaseUser>
+
+    @Query("SELECT * FROM users WHERE userUuid = :uuid")
+    fun getFlowUserByUuid(uuid: UUID): Flow<DatabaseUser>
 
     @Query("SELECT * FROM users WHERE id = :id")
     fun getUserById(id: Int): DatabaseUser

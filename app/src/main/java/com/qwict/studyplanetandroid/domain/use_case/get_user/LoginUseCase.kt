@@ -29,7 +29,14 @@ class LoginUseCase @Inject constructor(
                 emit(Resource.Success(InsertLocalUserUseCase(container)(authenticatedUser)))
             }
         } catch (e: HttpException) {
-            emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
+            Log.e("LoginUseCase", "invoke: ${e.code()}", e)
+            if (e.code() == 400) {
+                emit(Resource.Error("Make sure to fill out all fields."))
+            } else if (e.code() == 403) {
+                emit(Resource.Error("Invalid credentials."))
+            } else {
+                emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
+            }
         } catch (e: IOException) {
             // No internet connection or whatever...
             emit(Resource.Error("Couldn't reach server. Check your internet connection."))

@@ -47,7 +47,7 @@ abstract class StudyPlanetDatabase : RoomDatabase() {
                         }
                     }
                 })
-                    .fallbackToDestructiveMigration()
+//                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }

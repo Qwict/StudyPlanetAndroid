@@ -1,7 +1,9 @@
 package com.qwict.studyplanetandroid.presentation.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -14,12 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StudyViewModel @Inject constructor() : ViewModel() {
-
-    private val _state = mutableStateOf(AuthState())
-    val state: State<AuthState> = _state
-
     var selectedPlanet: Planet by mutableStateOf(EMPTY_PLANET)
-    var isDiscovering = mutableStateOf(false)
     var selectedTime by mutableStateOf(0)
     var hours by mutableStateOf(0)
     var minutes by mutableStateOf(0)
@@ -37,7 +34,6 @@ class StudyViewModel @Inject constructor() : ViewModel() {
     fun stopDiscovering() {
     }
     fun resetAction() {
-        isDiscovering.value = false
         selectedTime = 0
         hours = 0
         minutes = 0
@@ -45,7 +41,9 @@ class StudyViewModel @Inject constructor() : ViewModel() {
         updatedTime = 0
     }
     suspend fun countDown() {
+        Log.i("StudyViewModel", "Countdown started for $updatedTime")
         while (updatedTime > 0) {
+            Log.i("StudyViewModel", "Countdown: $updatedTime")
             updatedTime -= 1000
             hours = (updatedTime / (1000 * 60 * 60)).toInt()
             minutes = (updatedTime % (1000 * 60 * 60) / (1000 * 60)).toInt()

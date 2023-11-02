@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Rocket
@@ -33,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -42,6 +42,7 @@ import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthent
 import com.qwict.studyplanetandroid.common.Constants.EMPTY_PLANET
 import com.qwict.studyplanetandroid.data.local.AppContainer
 import com.qwict.studyplanetandroid.data.local.AppDataContainer
+import com.qwict.studyplanetandroid.presentation.viewmodels.MainViewModel
 import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
@@ -92,22 +93,22 @@ fun StudyPlanetAppBar(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
         ),
         modifier = modifier,
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Return",
-                    )
-                }
-            }
-        },
+//        navigationIcon = {
+//            if (canNavigateBack) {
+//                IconButton(onClick = navigateUp) {
+//                    Icon(
+//                        imageVector = Icons.Filled.ArrowBack,
+//                        contentDescription = "Return",
+//                    )
+//                }
+//            }
+//        },
         actions = {
 //            if (userViewModel.userIsAuthenticated) {
 //            TODO: This guy seems to cause a lot of rerenders..
 //            ExperienceBar()
 //            }
-            AccountButton(onAccountButtonClicked)
+            AccountButton(onAccountButtonClicked, currentScreen)
         },
 
     )
@@ -116,9 +117,13 @@ fun StudyPlanetAppBar(
 @Composable
 fun AccountButton(
     onAccountButtonClicked: () -> Unit,
+    currentScreen: StudyPlanetScreens,
 ) {
     if (isUserAuthenticated) {
-        IconButton(onClick = { onAccountButtonClicked() }) {
+        IconButton(
+            enabled = currentScreen.name != StudyPlanetScreens.AuthenticationScreen.name,
+            onClick = { onAccountButtonClicked() },
+        ) {
             Icon(
                 imageVector = Icons.Filled.AccountCircle,
                 contentDescription = "Your account screen",
@@ -136,30 +141,41 @@ fun AccountButton(
 
 @Composable
 fun StudyPlanetNavBar(
+    currentScreen: StudyPlanetScreens,
     navController: NavHostController,
+    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-    var selectedItem by remember { mutableStateOf(0) }
     data class NavbarItem(
         var text: String = "",
+        var name: String = "",
         var icon: ImageVector = Icons.Filled.Favorite,
         var contentDescription: String = "",
         var onClick: () -> Unit = {},
     )
+
+    var selectedNavbarItemIndex by remember { mutableStateOf(0) }
+
     val items = listOf(
         NavbarItem(
             text = "Home",
+            name = StudyPlanetScreens.MainScreen.name,
             icon = Icons.Filled.Rocket,
             contentDescription = "Mission Control Center",
             onClick = { navController.navigate(StudyPlanetScreens.MainScreen.name) },
         ),
         NavbarItem(
             text = "Discover",
+            name = StudyPlanetScreens.TimeSelectionScreen.name,
             icon = Icons.Filled.SatelliteAlt,
             contentDescription = "Discover a new planet",
-            onClick = { navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name) },
+            onClick = {
+                mainViewModel.isDiscovering = true
+                navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
+            },
         ),
         NavbarItem(
             text = "Explore",
+            name = StudyPlanetScreens.DiscoveredPlanetsScreen.name,
             icon = Icons.Filled.TravelExplore,
             contentDescription = "Explore a planet",
             onClick = { navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name) },
@@ -169,17 +185,14 @@ fun StudyPlanetNavBar(
     NavigationBar {
         items.forEachIndexed { index, navbarItem ->
             NavigationBarItem(
-                icon = { Icon(Icons.Filled.Favorite, contentDescription = navbarItem.contentDescription) },
-                label = { Text(navbarItem.text) },
-                selected = selectedItem == index,
+                icon = { Icon(navbarItem.icon, contentDescription = navbarItem.contentDescription) },
+                label = { if (currentScreen.name == navbarItem.name) Text(navbarItem.text) },
+                selected = currentScreen.name == navbarItem.name,
                 onClick = {
-                    selectedItem = index
+                    selectedNavbarItemIndex = index
                     navbarItem.onClick()
                 },
             )
-            if (selectedItem == index) {
-                Text(text = "Selected ${navbarItem.text}")
-            }
         }
     }
 }
@@ -188,6 +201,7 @@ fun StudyPlanetNavBar(
 @Composable
 fun StudyPlanetApp(
     navController: NavHostController = rememberNavController(),
+    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = StudyPlanetScreens.valueOf(
@@ -205,7 +219,7 @@ fun StudyPlanetApp(
                 },
             )
         },
-        bottomBar = { StudyPlanetNavBar(navController) },
+        bottomBar = { StudyPlanetNavBar(currentScreen, navController) },
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -227,6 +241,7 @@ fun StudyPlanetApp(
                         )
                     },
                     onDiscoverPlanetsButtonClicked = {
+                        mainViewModel.isDiscovering = true
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier
@@ -244,6 +259,8 @@ fun StudyPlanetApp(
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
                 DiscoveredPlanetsScreen(
                     onMineButtonClicked = {
+                        mainViewModel.selectedPlanet = it
+                        mainViewModel.isDiscovering = false
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
@@ -255,6 +272,9 @@ fun StudyPlanetApp(
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
+                    isDiscovering = mainViewModel.isDiscovering,
+                    selectedTimeInMinutes = mainViewModel.selectedTimeInMinutes,
+                    setSelectedTimeInMinutes = { mainViewModel.selectedTimeInMinutes = it },
                 )
             }
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
@@ -264,7 +284,8 @@ fun StudyPlanetApp(
                     },
                     modifier = Modifier.fillMaxHeight(),
                     isDiscovering = true,
-                    planet = EMPTY_PLANET,
+                    selectedPlanet = mainViewModel.selectedPlanet,
+                    selectedTimeInMinutes = mainViewModel.selectedTimeInMinutes,
                 )
             }
         }

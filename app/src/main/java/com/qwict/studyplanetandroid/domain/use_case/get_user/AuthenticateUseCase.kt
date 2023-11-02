@@ -1,11 +1,11 @@
 package com.qwict.studyplanetandroid.domain.use_case.get_user
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton
+import android.util.Log
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
-import com.qwict.studyplanetandroid.common.saveEncryptedPreference
-import com.qwict.studyplanetandroid.data.local.AppContainer
+import com.qwict.studyplanetandroid.common.getEncryptedPreference
 import com.qwict.studyplanetandroid.data.local.AppDataContainer
-import com.qwict.studyplanetandroid.data.remote.dto.AuthenticationDto
 import com.qwict.studyplanetandroid.domain.model.User
 import com.qwict.studyplanetandroid.domain.repository.StudyPlanetRepository
 import kotlinx.coroutines.flow.Flow
@@ -21,9 +21,15 @@ class AuthenticateUseCase @Inject constructor(
     operator fun invoke(): Flow<Resource<User>> = flow {
         try {
             emit(Resource.Loading())
-            val authenticatedUser = repo.authenticate(AuthenticationDto(token = AuthenticationSingleton.token))
-            if (authenticatedUser.validated) {
-                emit(Resource.Success(InsertLocalUserUseCase(container)(authenticatedUser)))
+            validateUser()
+            if (isUserAuthenticated) {
+                val authenticatedUser = repo.authenticate(token = getEncryptedPreference("token"))
+                Log.i("AuthenticateUseCase", "invoke: ${authenticatedUser.validated}")
+                if (authenticatedUser.validated) {
+                    emit(Resource.Success(InsertLocalUserUseCase(container)(authenticatedUser)))
+                }
+            } else {
+                emit(Resource.Error("Your login has expired. Please log in again."))
             }
         } catch (e: HttpException) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))

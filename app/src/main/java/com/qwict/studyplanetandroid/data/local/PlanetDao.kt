@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Dao
 interface PlanetDao {
@@ -23,8 +24,11 @@ interface PlanetDao {
     suspend fun delete(planet: DatabasePlanet)
 
     @Query("SELECT * FROM planets WHERE id = :id")
-    fun getPlanetById(id: Int): Flow<DatabasePlanet>
+    suspend fun getPlanetById(id: Int): DatabasePlanet
+
+    @Query("SELECT * FROM planets WHERE userUuid = :uuid")
+    suspend fun getPlanetsByUserUuid(uuid: UUID): List<DatabasePlanet>
 
     @Query("SELECT * FROM planets WHERE userOwnerId = :userOwnerId")
-    fun getPlanetsByOwnerId(userOwnerId: Int): Flow<List<DatabasePlanet>>
+    suspend fun getPlanetsByOwnerId(userOwnerId: Int): List<DatabasePlanet>
 }

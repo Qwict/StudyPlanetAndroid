@@ -1,5 +1,6 @@
 package com.qwict.studyplanetandroid.domain.use_case.get_user
 
+import android.util.Log
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.common.saveEncryptedPreference
 import com.qwict.studyplanetandroid.data.local.AppContainer
@@ -12,6 +13,14 @@ class InsertLocalUserUseCase(
     private val container: AppContainer,
 ) {
     suspend operator fun invoke(authenticatedUser: AuthenticatedUserDto): User {
+        Log.d(
+            "InsertLocalUserUseCase",
+            " token : ${authenticatedUser.token},\n" +
+                " validated : ${authenticatedUser.validated}, \n" +
+                "userId : ${authenticatedUser.user.name}, \n" +
+                "email : ${authenticatedUser.user.email}",
+        )
+
         // Singleton Part
         AuthenticationSingleton.isUserAuthenticated = true
         AuthenticationSingleton.token = authenticatedUser.token
@@ -24,6 +33,8 @@ class InsertLocalUserUseCase(
         container.usersRepository.insert(databaseUserWithPlanets.user)
         container.planetsRepository.insertAll(databaseUserWithPlanets.planets)
 
-        return databaseUserWithPlanets.toUser()
+        var user =  databaseUserWithPlanets.toUser()
+        Log.d("InsertLocalUserUseCase", "user: ${user.email}")
+        return user
     }
 }

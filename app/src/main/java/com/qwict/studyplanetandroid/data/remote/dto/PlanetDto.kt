@@ -7,7 +7,6 @@ import java.util.UUID
 @JsonClass(generateAdapter = true)
 data class PlanetDto(
     val id: Int,
-    val image: Int,
     val name: String,
 )
 
@@ -35,5 +34,4 @@ fun PlanetDto.asDatabaseModel(userId: Int, userUuid: UUID): DatabasePlanet = Dat
     name = name,
     userOwnerId = userId,
     userUuid = userUuid,
-    imageId = image,
 )

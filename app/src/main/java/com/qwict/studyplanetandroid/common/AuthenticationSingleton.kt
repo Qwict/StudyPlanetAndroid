@@ -10,7 +10,7 @@ import java.util.UUID
 
 object AuthenticationSingleton {
     var isUserAuthenticated by mutableStateOf(false)
-    var userUuid by mutableStateOf(getUUID())
+    var userUuid by mutableStateOf(DEFAULT_UUID)
     var experience by mutableStateOf(0)
     var token by mutableStateOf("")
 
@@ -38,25 +38,15 @@ object AuthenticationSingleton {
     }
 
     fun getUUID(): UUID {
-//        var userUuid = DEFAULT_UUID
-//        try {
-//            userUuid = UUID.fromString(getEncryptedPreference("userUuid"))
-//        } catch (e: Exception) {
-//            Log.e("AuthenticationSingleton", e.message.toString())
-//        } catch (e: NullPointerException) {
-//            Log.i("AuthenticationSingleton", "getUUID: userUuid was null")
-//        }
-//        if (userUuid == null || userUuid.toString() == "") {
-//            userUuid = UUID.randomUUID()
-//            Log.d("AuthenticationSingleton", "getUUID: userUuid was null, so we generated a new one: $userUuid")
-//            saveEncryptedPreference("userUuid", userUuid.toString())
-//        } else {
-//            Log.d("AuthenticationSingleton", "getUUID: userUuid existing one: $userUuid")
-//        }
-
-//        return userUuid
-        val userUuid = UUID.randomUUID()
-        saveEncryptedPreference("userUuid", userUuid.toString())
+        userUuid = DEFAULT_UUID
+        try {
+            userUuid = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
+//            return UUID.fromString(getEncryptedPreference("userUuid"))
+        } catch (e: Exception) {
+            Log.d("AuthenticationSingleton", "getUUID: userUuid was null, so we generated a new one: $userUuid")
+            userUuid = UUID.randomUUID()
+            saveEncryptedPreference("userUuid", userUuid.toString())
+        }
         return userUuid
     }
 }

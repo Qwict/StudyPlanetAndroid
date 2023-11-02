@@ -1,14 +1,18 @@
 package com.qwict.studyplanetandroid.data.local
 
-import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 class OfflinePlanetsRepositoryImpl(private val planetDao: PlanetDao) : OfflinePlanetsRepository {
 
-    override fun getPlanetsByOwnerId(userOwnerId: Int): Flow<List<DatabasePlanet>> {
+    override suspend fun getPlanetsByOwnerId(userOwnerId: Int): List<DatabasePlanet> {
         return planetDao.getPlanetsByOwnerId(userOwnerId)
     }
 
-    override fun getPlanetById(id: Int): Flow<DatabasePlanet> {
+    override suspend fun getPlanetsByUserUuid(userUuid: UUID): List<DatabasePlanet> {
+        return planetDao.getPlanetsByUserUuid(userUuid)
+    }
+
+    override suspend fun getPlanetById(id: Int): DatabasePlanet {
         return planetDao.getPlanetById(id)
     }
 

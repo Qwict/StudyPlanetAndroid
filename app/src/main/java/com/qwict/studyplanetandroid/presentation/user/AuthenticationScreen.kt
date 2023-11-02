@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton.logout
 import com.qwict.studyplanetandroid.presentation.viewmodels.AuthViewModel
 
 @Composable
@@ -50,11 +53,12 @@ fun AuthenticationView(
     authViewModel: AuthViewModel = hiltViewModel(),
 
 ) {
-    val authState = authViewModel.state.value
     val scope = rememberCoroutineScope()
     val email = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
     val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
+
+    val authState = authViewModel.state.value
 
     Column(
         modifier = Modifier.padding(20.dp),
@@ -73,19 +77,36 @@ fun AuthenticationView(
         Title(
             text = title,
         )
+        Text(
+            text = authState.error,
+            style = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.error,
+            ),
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
         if (isUserAuthenticated) {
+            //            UserPicture(
+            //                url = viewModel.user.picture,
+            //                description = viewModel.user.name,
+            //            )
             UserInfoRow(
                 label = stringResource(R.string.email_label),
                 value = authState.user.email,
             )
             UserInfoRow(
-                label = "Experience",
-                value = authState.user.experience.toString(),
+                label = "username",
+                value = authState.user.name,
             )
-            //            UserPicture(
-            //                url = viewModel.user.picture,
-            //                description = viewModel.user.name,
-            //            )
+            LevelExperienceBar(
+                level = authState.currentLevel,
+                experience = authState.user.experience,
+                experienceForNextLevel = authState.experienceForNextLevel,
+                experienceProgress = authState.experienceProgress,
+            )
         } else {
             TextField(
                 label = { Text(text = "Email") },
@@ -118,12 +139,12 @@ fun AuthenticationView(
         if (isUserAuthenticated) {
             buttonText = stringResource(R.string.log_out_button)
             onClickAction = {
-//                logout()
+                logout()
 //                scope.launch {
-//                    userViewModel.uiState.value.snackBarHostState.showSnackbar("Logged out")
+//                    authViewModel.state.value.snackBarHostState.showSnackbar("Logged out")
 //                }
-//                email.value = TextFieldValue()
-//                password.value = TextFieldValue()
+                email.value = TextFieldValue()
+                password.value = TextFieldValue()
             }
         }
 //        else if (authState.registerNewUser) {
@@ -192,8 +213,8 @@ fun AuthenticationView(
             }
         }
     }
-    }
-//}
+}
+// }
 
 @Composable
 fun UserInfoRow(
@@ -258,5 +279,51 @@ fun LogButton(
                 fontSize = 20.sp,
             )
         }
+    }
+}
+
+@Composable
+fun LevelExperienceBar(
+    level: Int,
+    experience: Int,
+    experienceForNextLevel: Int,
+    experienceProgress: Float,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "Level $level",
+            style = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+            ),
+        )
+        Text(
+            text = "Experience needed to reach level ${level + 1}: $experienceForNextLevel (${experienceForNextLevel / 60} Hours)",
+            style = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+            ),
+        )
+        Spacer(modifier = Modifier.height(40.dp))
+        Text(
+            text = "Total study time: ${experience / 60} Hours",
+            style = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+            ),
+        )
+        LinearProgressIndicator(
+            modifier = Modifier
+                .height(10.dp),
+            progress = experienceProgress,
+        )
     }
 }
