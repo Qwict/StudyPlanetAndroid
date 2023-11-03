@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.domain.use_case.get_user.AuthenticateUseCase
 import com.qwict.studyplanetandroid.domain.use_case.get_user.LoginUseCase
+import com.qwict.studyplanetandroid.domain.use_case.get_user.RegisterUseCase
 import com.qwict.studyplanetandroid.presentation.viewmodels.states.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -19,6 +20,7 @@ import kotlin.math.pow
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase,
     private val authenticateUseCase: AuthenticateUseCase,
 ) : ViewModel() {
 
@@ -55,6 +57,7 @@ class AuthViewModel @Inject constructor(
             when (result) {
                 is Resource.Success -> {
                     _state.value = AuthState(user = result.data!!)
+                    levelCalculator(_state.value.user.experience)
                 }
 
                 is Resource.Error -> {
@@ -62,6 +65,24 @@ class AuthViewModel @Inject constructor(
                         AuthState(error = result.message ?: "An unexpected error occurred")
                 }
 
+                is Resource.Loading -> {
+                    _state.value = AuthState(isLoading = true)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun registerUser(name: String, email: String, password: String) {
+        registerUseCase(name, email, password).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.value = AuthState(user = result.data!!)
+                    levelCalculator(_state.value.user.experience)
+                }
+                is Resource.Error -> {
+                    _state.value =
+                        AuthState(error = result.message ?: "An unexpected error occurred")
+                }
                 is Resource.Loading -> {
                     _state.value = AuthState(isLoading = true)
                 }

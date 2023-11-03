@@ -43,3 +43,11 @@ fun DatabaseUserWithPlanets.toUser() = User(
     id = user.id,
     name = user.name,
 )
+
+fun DatabaseUser.toUser() = User(
+    discoveredPlanets = emptyList(),
+    email = email,
+    experience = experience,
+    id = id,
+    name = name,
+)

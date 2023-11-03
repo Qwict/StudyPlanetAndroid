@@ -33,6 +33,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE id = :id")
     fun getUserById(id: Int): DatabaseUser
 
+    @Query("SELECT * FROM users WHERE userUuid = :uuid")
+    suspend fun getUserByUuid(uuid: UUID): DatabaseUser
+
     @Transaction
     @Query("SELECT * FROM users")
     fun getUsersWithPlanets(): List<DatabaseUserWithPlanets>

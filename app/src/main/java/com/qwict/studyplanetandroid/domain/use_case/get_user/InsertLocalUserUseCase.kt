@@ -33,7 +33,7 @@ class InsertLocalUserUseCase(
         container.usersRepository.insert(databaseUserWithPlanets.user)
         container.planetsRepository.insertAll(databaseUserWithPlanets.planets)
 
-        var user =  databaseUserWithPlanets.toUser()
+        var user = databaseUserWithPlanets.toUser()
         Log.d("InsertLocalUserUseCase", "user: ${user.email}")
         return user
     }

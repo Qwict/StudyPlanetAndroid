@@ -2,7 +2,6 @@ package com.qwict.studyplanetandroid.di
 
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Constants.BASE_URL
-import com.qwict.studyplanetandroid.data.local.AppContainer
 import com.qwict.studyplanetandroid.data.local.AppDataContainer
 import com.qwict.studyplanetandroid.data.local.OfflinePlanetsRepository
 import com.qwict.studyplanetandroid.data.local.OfflineUsersRepository

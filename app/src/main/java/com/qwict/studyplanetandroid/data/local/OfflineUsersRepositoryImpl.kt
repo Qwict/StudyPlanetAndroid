@@ -8,8 +8,12 @@ class OfflineUsersRepositoryImpl(private val userDao: UserDao) : OfflineUsersRep
         return userDao.getFlowUserById(id)
     }
 
-    override fun getUserByUuid(uuid: UUID): Flow<DatabaseUser> {
+    override fun getUserFlowByUuid(uuid: UUID): Flow<DatabaseUser> {
         return userDao.getFlowUserByUuid(uuid)
+    }
+
+    override suspend fun getUserByUuid(uuid: UUID): DatabaseUser {
+        return userDao.getUserByUuid(uuid)
     }
 
     override suspend fun insert(user: DatabaseUser) {
@@ -28,4 +32,3 @@ class OfflineUsersRepositoryImpl(private val userDao: UserDao) : OfflineUsersRep
         userDao.delete(user)
     }
 }
-

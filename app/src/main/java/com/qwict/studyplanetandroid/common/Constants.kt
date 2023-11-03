@@ -12,7 +12,7 @@ object Constants {
 
     val DEFAULT_UUID = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
     const val DEFAULT_ID = 0
-    val DEFAULT_PLANET_IMAGE_ID = R.drawable.earth
+    val DEFAULT_PLANET_IMAGE_ID = R.drawable.galaxy
     val EMPTY_USER = User(
         discoveredPlanets = emptyList(),
         email = "",
@@ -22,7 +22,6 @@ object Constants {
     )
     val EMPTY_PLANET = Planet(
         id = 0,
-        name = "Unknown Planet",
-        imageId = R.drawable.earth,
+        name = "Galaxy",
     )
 }

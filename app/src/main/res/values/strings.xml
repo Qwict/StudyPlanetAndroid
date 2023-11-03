@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StudyPlanetAndroid</string>
+    <string name="app_name">Study Planet</string>
 
     <string name="title_main_screen">Study Planet</string>
     <string name="title_discovered_planets_screen">Discovered Planets</string>

@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.domain.model
 
 import android.content.Context
-import android.util.Log
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Constants
 
@@ -20,4 +19,3 @@ fun getImageByName(context: Context, imageName: String): Int {
         return Constants.DEFAULT_PLANET_IMAGE_ID
     }
 }
-

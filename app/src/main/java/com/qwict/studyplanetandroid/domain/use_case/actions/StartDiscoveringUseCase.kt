@@ -1,13 +1,11 @@
-package com.qwict.studyplanetandroid.domain.use_case.get_user
+package com.qwict.studyplanetandroid.domain.use_case.actions
 
-import android.util.Log
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getUUID
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.common.getEncryptedPreference
 import com.qwict.studyplanetandroid.data.local.AppDataContainer
-import com.qwict.studyplanetandroid.data.local.toUser
+import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionDto
 import com.qwict.studyplanetandroid.domain.model.User
 import com.qwict.studyplanetandroid.domain.repository.StudyPlanetRepository
 import kotlinx.coroutines.flow.Flow
@@ -16,31 +14,22 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class AuthenticateUseCase @Inject constructor(
+class StartDiscoveringUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
     private val container: AppDataContainer,
 ) {
-    operator fun invoke(): Flow<Resource<User>> = flow {
+    operator fun invoke(
+        selectedTime: Int,
+    ): Flow<Resource<User>> = flow {
         try {
             emit(Resource.Loading())
             validateUser()
             if (isUserAuthenticated) {
-                Log.e("AuthenticateUseCase", "getting local user with: ${getUUID()}")
-                val databaseUser = container.usersRepository.getUserByUuid(getUUID())
-                try {
-                    emit(Resource.Success(databaseUser.toUser()))
-                } catch (e: Exception) {
-                    Log.e("AuthenticateUseCase", "Failed to get local user, will look online with token Error: ${e.localizedMessage}")
-                }
-                val authenticatedUser = repo.authenticate(token = getEncryptedPreference("token"))
-                Log.i("AuthenticateUseCase", "invoke: ${authenticatedUser.validated}")
-                if (authenticatedUser.validated) {
-                    emit(Resource.Success(InsertLocalUserUseCase(container)(authenticatedUser)))
-                }
+                repo.startDiscovering(DiscoverActionDto(selectedTime = selectedTime), token = getEncryptedPreference("token"))
             } else if (getEncryptedPreference("token") == "expired") {
-                emit(Resource.Error("Your login has expired. Please log in again."))
+                emit(Resource.Error("Your access to the universe has expired. Please log in again to discover a new planet."))
             } else {
-                emit(Resource.Error("You are not logged in."))
+                emit(Resource.Error("Discovering a new planet will only be possible with access to the universe (the internets."))
             }
         } catch (e: HttpException) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))

@@ -33,7 +33,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.study.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
-import com.qwict.studyplanetandroid.presentation.viewmodels.TimeSelectionViewModel
 import com.qwict.studyplanetandroid.ui.components.AlertDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -45,28 +44,29 @@ fun ExplorerScreen(
     modifier: Modifier = Modifier,
     selectedPlanet: Planet,
     studyViewModel: StudyViewModel = hiltViewModel(),
-    timeSelectionViewModel: TimeSelectionViewModel = hiltViewModel(),
     selectedTimeInMinutes: Float,
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
+    val studyState by remember { studyViewModel.state }
+
     var currentProgress by remember { mutableStateOf(0f) }
     LaunchedEffect(true) {
         scope.launch {
             studyViewModel.resetAction()
-            Log.i("StudyViewModel", "Started studying, ${studyViewModel.selectedPlanet.name} for $selectedTimeInMinutes minutes")
-            studyViewModel.updatedTime = selectedTimeInMinutes.toInt() * 60 * 1000
+            Log.i("StudyViewModel", "Started studying, ${studyState.selectedPlanet.name} for $selectedTimeInMinutes minutes; Discovering: $isDiscovering")
+            studyState.updatedTime = selectedTimeInMinutes.toInt() * 60 * 1000
             try {
-                studyViewModel.selectedTime = selectedTimeInMinutes.toInt() * 60 * 1000
+                studyState.selectedTime = selectedTimeInMinutes.toInt() * 60 * 1000
                 if (isDiscovering) {
-                    studyViewModel.startDiscovering(studyViewModel.selectedTime)
+                    studyViewModel.startDiscovering()
                 } else {
-                    studyViewModel.startExploring(studyViewModel.selectedTime.toLong())
+                    studyViewModel.startExploring()
                 }
                 loadProgress({ progress ->
                     currentProgress = progress
-                }, studyViewModel.selectedTime.toLong())
+                }, studyState.selectedTime.toLong())
                 if (isDiscovering) {
                     studyViewModel.stopDiscovering()
                 } else {
@@ -106,7 +106,7 @@ fun ExplorerScreen(
                     contentDescription = selectedPlanet.name,
                 )
                 Text(
-                    text = (studyViewModel.selectedTime / 1000 / 60).toString() + " Minutes",
+                    text = (studyState.selectedTime / 1000 / 60).toString() + " Minutes",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
@@ -120,7 +120,11 @@ fun ExplorerScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CustomCountDownTimer()
+            CustomCountDownTimer(
+                studyState.hours,
+                studyState.minutes,
+                studyState.seconds,
+            ) { studyViewModel.startCountDown() }
             LinearProgressIndicator(
                 modifier = Modifier
                     .width(300.dp)
@@ -143,7 +147,7 @@ fun ExplorerScreen(
                 AlertDialog(
                     onDismissRequest = { openAlertDialog.value = false },
                     onConfirmation = {
-//                        onCancelMiningButtonClicked()
+                        onCancelStudyButtonClicked()
                         openAlertDialog.value = false
                     },
                     dialogTitle = "Cancel mining operation?",

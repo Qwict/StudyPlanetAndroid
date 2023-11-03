@@ -33,15 +33,15 @@ object AuthenticationSingleton {
     fun logout() {
         isUserAuthenticated = false
         removeEncryptedPreference("token")
-        removeEncryptedPreference("userId")
         removeEncryptedPreference("email")
     }
 
     fun getUUID(): UUID {
         userUuid = DEFAULT_UUID
         try {
-            userUuid = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
-//            return UUID.fromString(getEncryptedPreference("userUuid"))
+//            userUuid = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
+//            saveEncryptedPreference("userUuid", userUuid.toString())
+            userUuid = UUID.fromString(getEncryptedPreference("userUuid"))
         } catch (e: Exception) {
             Log.d("AuthenticationSingleton", "getUUID: userUuid was null, so we generated a new one: $userUuid")
             userUuid = UUID.randomUUID()

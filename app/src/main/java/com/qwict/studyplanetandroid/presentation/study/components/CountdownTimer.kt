@@ -9,19 +9,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun CustomCountDownTimer(
-    studyViewModel: StudyViewModel = hiltViewModel(),
+    hours: Int,
+    minutes: Int,
+    seconds: Int,
+    startCountDown: suspend () -> Unit,
 ) {
     val scope = rememberCoroutineScope() // Create a coroutine scope
     LaunchedEffect(true) {
         scope.launch {
             try {
-                studyViewModel.countDown()
+                startCountDown()
             } catch (e: Exception) {
                 Log.i("ExplorerScreen", e.toString())
             }
@@ -31,6 +32,6 @@ fun CustomCountDownTimer(
     Text(
         fontSize = MaterialTheme.typography.headlineMedium.fontSize,
         modifier = Modifier.padding(16.dp),
-        text = String.format("%02d:%02d:%02d", studyViewModel.hours, studyViewModel.minutes, studyViewModel.seconds),
+        text = String.format("%02d:%02d:%02d", hours, minutes, seconds),
     )
 }

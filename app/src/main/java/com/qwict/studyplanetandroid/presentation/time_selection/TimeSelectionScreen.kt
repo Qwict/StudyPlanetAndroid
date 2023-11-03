@@ -9,9 +9,9 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlin.math.floor
 
 @Composable
 fun TimeSelectionScreen(
@@ -35,7 +35,8 @@ fun TimeSelectionScreen(
         } else {
             Text(
                 fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                text = "The exploration of this planet will grant more experience points depending on the time you spend exploring it.",
+                text = "The exploration of this planet will grant more experience points depending " +
+                    "on the time you spend exploring it.",
             )
         }
         SliderAdvancedExample(selectedTimeInMinutes, setSelectedTimeInMinutes)
@@ -57,7 +58,8 @@ fun SliderAdvancedExample(selectedTimeInMinutes: Float, setSelectedTimeInMinutes
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
             steps = 6,
-            valueRange = 15f..120f,
+            valueRange = 1f..15f,
+//            valueRange = 15f..120f,
         )
 //        Large text that shows how long the user has selected must be centered
         Text(
@@ -69,11 +71,11 @@ fun SliderAdvancedExample(selectedTimeInMinutes: Float, setSelectedTimeInMinutes
 }
 
 fun calculateTime(value: Float): String {
-    val hours = (value / 60).toInt()
-    val minutes = (value % 60).toInt()
+    val hours = floor(value / 60)
+    val minutes = floor(value % 60)
     // format hours and minutes so that they always have 2 digits
-    val hoursString = hours.toString().padStart(2, '0')
-    val minutesString = minutes.toString().padStart(2, '0')
+    val hoursString = hours.toInt().toString().padStart(2, '0')
+    val minutesString = minutes.toInt().toString().padStart(2, '0')
     return "$hoursString:$minutesString:00"
 }
 
