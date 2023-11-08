@@ -16,8 +16,8 @@ package com.qwict.studyplanetandroid.ui.viewModels
 //import com.qwict.studyplanetandroid.data.local.PlanetsRepository
 //import com.qwict.studyplanetandroid.data.local.User
 //import com.qwict.studyplanetandroid.data.local.UsersRepository
-//import com.qwict.studyplanetandroid.presentation.user.StudyPlanetUiState
-//import com.qwict.studyplanetandroid.presentation.user.UserUiState
+//import com.qwict.studyplanetandroid.presentation.viewmodels.states.StudyPlanetUiState
+//import com.qwict.studyplanetandroid.presentation.viewmodels.states.UserUiState
 //import com.qwict.studyplanetandroid.common.getEncryptedPreference
 //import kotlinx.coroutines.delay
 //import kotlinx.coroutines.flow.MutableStateFlow

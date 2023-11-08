@@ -4,10 +4,9 @@ import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthent
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.common.getEncryptedPreference
-import com.qwict.studyplanetandroid.data.local.AppDataContainer
 import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionDto
 import com.qwict.studyplanetandroid.domain.model.User
-import com.qwict.studyplanetandroid.domain.repository.StudyPlanetRepository
+import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -16,7 +15,6 @@ import javax.inject.Inject
 
 class StartExploringUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
-    private val container: AppDataContainer,
 ) {
     operator fun invoke(
         selectedTime: Int,

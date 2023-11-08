@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.runtime.Composable
@@ -17,7 +18,7 @@ import androidx.navigation.compose.composable
 import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.StudyPlanetScreens
 import com.qwict.studyplanetandroid.presentation.viewmodels.MainViewModel
-import com.qwict.studyplanetandroid.ui.screens.AuthenticationScreen
+import com.qwict.studyplanetandroid.presentation.user.UserScreen
 import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
 import com.qwict.studyplanetandroid.ui.screens.MainScreen
@@ -60,10 +61,7 @@ fun StudyPlanetNavigation(
             )
         }
         composable(route = StudyPlanetScreens.AuthenticationScreen.name) {
-            AuthenticationScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(dimensionResource(R.dimen.padding_medium)),
+            UserScreen(
                 showSnackbar = showSnackbar,
             )
         }

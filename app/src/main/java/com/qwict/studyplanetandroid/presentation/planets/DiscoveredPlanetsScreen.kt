@@ -32,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.domain.model.Planet
-import com.qwict.studyplanetandroid.presentation.user.UserViewModel
+import com.qwict.studyplanetandroid.presentation.viewmodels.DiscoveredPlanetsViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -41,7 +41,7 @@ fun DiscoveredPlanetsScreen(
     onMineButtonClicked: (Planet) -> Unit = {},
     onDiscoverPlanetsButtonClicked: () -> Unit = {},
     onCancelMiningButtonClicked: () -> Unit = {},
-    userViewModel: UserViewModel = hiltViewModel(),
+    userViewModel: DiscoveredPlanetsViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()

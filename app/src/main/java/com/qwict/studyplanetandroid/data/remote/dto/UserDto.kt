@@ -1,6 +1,6 @@
 package com.qwict.studyplanetandroid.data.remote.dto
 
-import com.qwict.studyplanetandroid.data.local.DatabaseUser
+import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import com.squareup.moshi.JsonClass
 import java.util.UUID
 
@@ -17,8 +17,8 @@ data class UserDto(
 /**
  * Convert Network results to database objects
  */
-fun UserDto.asDatabaseModel(): DatabaseUser {
-    return DatabaseUser(
+fun UserDto.asDatabaseModel(): UserRoomEntity {
+    return UserRoomEntity(
         remoteId = id,
         userUuid = userUuid,
         name = name,

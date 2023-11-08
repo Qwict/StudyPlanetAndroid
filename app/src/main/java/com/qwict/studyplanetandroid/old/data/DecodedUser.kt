@@ -3,7 +3,7 @@ package com.qwict.studyplanetandroid.data
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.auth0.android.jwt.JWT
-import com.qwict.studyplanetandroid.data.local.DatabasePlanet
+import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
 
 data class DecodedUser(val jwt: String? = null) {
 
@@ -13,7 +13,7 @@ data class DecodedUser(val jwt: String? = null) {
     var email = ""
     var token = ""
     var discoveredPlanets: MutableList<OldPlanet> = mutableListOf()
-    var discoveredPlanetEntities: MutableList<DatabasePlanet> = mutableListOf<DatabasePlanet>()
+    var discoveredPlanetEntities: MutableList<PlanetRoomEntity> = mutableListOf<PlanetRoomEntity>()
     var experience = mutableStateOf(0)
 
     init {

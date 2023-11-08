@@ -16,7 +16,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 
 interface StudyPlanetApi {
-    @GET("/v1/health/version")
+    @GET("v1/health/version")
     suspend fun getHealth(): HealthDto
 
     @POST("v1/users/login")

@@ -33,7 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.study.components.CustomCountDownTimer
 import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
-import com.qwict.studyplanetandroid.ui.components.AlertDialog
+import com.qwict.studyplanetandroid.presentation.components.AlertDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

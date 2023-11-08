@@ -1,8 +1,9 @@
-package com.qwict.studyplanetandroid.service
+package com.qwict.studyplanetandroid.common
 
 import android.util.Base64
 import android.util.Log
-import com.qwict.studyplanetandroid.common.saveEncryptedPreference
+import com.auth0.android.jwt.JWT
+import java.util.UUID
 
 fun decodeToken(jwt: String): String {
     val (header, payload, signature) = jwt.split(".")
@@ -12,6 +13,20 @@ fun decodeToken(jwt: String): String {
         Base64.decode(payload, Base64.DEFAULT).decodeToString()
     } catch (e: Exception) {
         "Error parsing JWT: $e"
+    }
+}
+
+fun getDecodedUserFromToken(token: String): DecodedUser {
+    val jwt = JWT(token)
+    try {
+        return DecodedUser(
+            id = jwt.getClaim("id").asInt()!!,
+            uuid = UUID.fromString(jwt.getClaim("uuid").asString()),
+            name = jwt.getClaim("name").asString()!!,
+            email = jwt.getClaim("email").asString()!!,
+        )
+    } catch (e: NullPointerException) {
+        throw IllegalArgumentException("JWT is not valid")
     }
 }
 
@@ -31,6 +46,6 @@ fun tokenIsValid(token: String): Boolean {
             return true
         }
     }
-    return false
     saveEncryptedPreference("token", "expired")
+    return false
 }

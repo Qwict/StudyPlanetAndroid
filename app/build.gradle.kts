@@ -105,6 +105,7 @@ dependencies {
 
     // required for Auth0 (might remove later)
 //    implementation("com.auth0.android:auth0:2.0.0")
+    implementation("com.auth0.android:jwtdecode:2.0.2")
     implementation("com.auth0.android:auth0:+")
     implementation("com.auth0.android:jwtdecode:+")
 
@@ -148,11 +149,11 @@ dependencies {
 //    // For local unit tests
 //    testImplementation("com.google.dagger:hilt-android-testing:2.48.1")
 //    kaptTest("com.google.dagger:hilt-compiler:2.48.1")
-//}
+// }
 //
-//kapt {
+// kapt {
 //    correctErrorTypes = true
-//}
+// }
 
     implementation("com.google.dagger:hilt-android:2.48.1")
     annotationProcessor("com.google.dagger:hilt-compiler:2.48.1")
