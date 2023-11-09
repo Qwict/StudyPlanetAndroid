@@ -23,12 +23,6 @@ class LoginUseCase @Inject constructor(
     ): Flow<Resource<User>> = flow {
         Log.i("LoginUseCase", "invoke: $email, $password")
         emit(Resource.Loading())
-
-        if (email.isEmpty() || password.isEmpty()) {
-            emit(Resource.Error("Make sure to fill out all fields."))
-            return@flow
-        }
-
         try {
             val authenticatedUserDto = repo.login(LoginDto(email = email, password = password))
 

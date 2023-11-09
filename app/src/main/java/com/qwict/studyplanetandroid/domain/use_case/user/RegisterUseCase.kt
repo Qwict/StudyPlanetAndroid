@@ -20,7 +20,7 @@ class RegisterUseCase @Inject constructor(
         email: String,
         password: String,
     ): Flow<Resource<User>> = flow {
-        Log.i("LoginUseCase", "invoke: $email, $password")
+        Log.i("RegisterUseCase", "invoke: $email, $password")
         try {
             emit(Resource.Loading())
             val authenticatedUser = repo.register(
@@ -38,7 +38,11 @@ class RegisterUseCase @Inject constructor(
             if (e.code() == 400) {
                 emit(Resource.Error("Make sure to fill out all fields."))
             } else if (e.code() == 403) {
-                emit(Resource.Error("Invalid credentials."))
+                emit(Resource.Error("Registration is temporarily not available."))
+            } else if (e.code() == 409) {
+                emit(Resource.Error("$email is already in use."))
+            } else {
+                emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred."))
             }
         } catch (e: IOException) {
             // No internet connection or whatever...

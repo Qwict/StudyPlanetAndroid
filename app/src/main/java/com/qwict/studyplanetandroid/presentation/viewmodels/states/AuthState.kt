@@ -1,7 +1,5 @@
 package com.qwict.studyplanetandroid.presentation.viewmodels.states
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import com.qwict.studyplanetandroid.common.Constants.EMPTY_USER
 import com.qwict.studyplanetandroid.domain.model.User
 
@@ -11,6 +9,7 @@ data class AuthState(
     val password: String = "",
     val confirmPassword: String = "",
 
+    val usernameError: String = "",
     val emailError: String = "",
     val passwordError: String = "",
     val confirmPasswordError: String = "",

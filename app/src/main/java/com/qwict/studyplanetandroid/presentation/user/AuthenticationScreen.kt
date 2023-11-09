@@ -33,7 +33,6 @@ fun AuthenticationScreen(
     userViewModel: UserViewModel = hiltViewModel(),
     authState: AuthState,
     loginUser: () -> Unit,
-    registerUser: () -> Unit,
     switchIsRegistering: () -> Unit,
     validationEvent: Flow<UserViewModel.ValidationEvent>,
     showSnackbar: (String, SnackbarDuration) -> Unit,
@@ -65,17 +64,25 @@ fun AuthenticationScreen(
     val onClickAction: () -> Unit
 
     if (userViewModel.state.registerNewUser) {
-        Spacer(modifier = Modifier.height(10.dp))
         TextField(
             label = { Text(text = "Username") },
             value = authState.username,
+            isError = authState.emailError.isNotEmpty(),
             onValueChange = { onEvent(AuthenticationFormEvent.UsernameChanged(it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
+        if (authState.usernameError.isNotEmpty()) {
+            Text(
+                text = authState.usernameError,
+                color = MaterialTheme.colorScheme.error,
+            )
+        } else {
+            Spacer(modifier = Modifier.height(20.dp))
+        }
     }
     TextField(
         label = { Text(text = "Email") },
-        value = authState.email,
+        value = userViewModel.state.email,
         isError = authState.emailError.isNotEmpty(),
         onValueChange = { onEvent(AuthenticationFormEvent.EmailChanged(it)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -85,6 +92,8 @@ fun AuthenticationScreen(
             text = authState.emailError,
             color = MaterialTheme.colorScheme.error,
         )
+    } else {
+        Spacer(modifier = Modifier.height(20.dp))
     }
 
     Spacer(modifier = Modifier.height(20.dp))
@@ -101,6 +110,8 @@ fun AuthenticationScreen(
             text = authState.passwordError,
             color = MaterialTheme.colorScheme.error,
         )
+    } else {
+        Spacer(modifier = Modifier.height(20.dp))
     }
     if (userViewModel.state.registerNewUser) {
         Spacer(modifier = Modifier.height(10.dp))
@@ -117,12 +128,14 @@ fun AuthenticationScreen(
                 text = authState.confirmPasswordError,
                 color = MaterialTheme.colorScheme.error,
             )
+        } else {
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 
     if (userViewModel.state.registerNewUser) {
         buttonText = "Register"
-        onClickAction = { registerUser() }
+        onClickAction = { userViewModel.registerUser() }
     } else {
         buttonText = stringResource(R.string.log_in_button)
         onClickAction = { loginUser() }

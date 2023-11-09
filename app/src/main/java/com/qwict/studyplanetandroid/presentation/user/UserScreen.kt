@@ -80,7 +80,6 @@ fun UserScreen(
             AuthenticationScreen(
                 authState = authState,
                 loginUser = { userViewModel.loginUser() },
-                registerUser = { userViewModel.registerUser() },
                 switchIsRegistering = { userViewModel.switchIsRegistering() },
                 showSnackbar = showSnackbar,
                 validationEvent = userViewModel.validationEvent,
