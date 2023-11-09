@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.presentation.user
+package com.qwict.studyplanetandroid.presentation.screens.user
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

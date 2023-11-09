@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.presentation.study.components
+package com.qwict.studyplanetandroid.presentation.components.study
 
 import android.util.Log
 import androidx.compose.foundation.layout.padding

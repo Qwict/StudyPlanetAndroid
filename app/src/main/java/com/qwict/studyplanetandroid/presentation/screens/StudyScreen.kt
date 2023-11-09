@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.ui.screens
+package com.qwict.studyplanetandroid.presentation.screens
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -31,9 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.domain.model.Planet
-import com.qwict.studyplanetandroid.presentation.study.components.CustomCountDownTimer
-import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
 import com.qwict.studyplanetandroid.presentation.components.AlertDialog
+import com.qwict.studyplanetandroid.presentation.components.study.CustomCountDownTimer
+import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

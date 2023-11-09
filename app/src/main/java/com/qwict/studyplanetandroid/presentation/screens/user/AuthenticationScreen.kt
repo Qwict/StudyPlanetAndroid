@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.presentation.user
+package com.qwict.studyplanetandroid.presentation.screens.user
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
@@ -46,8 +46,8 @@ fun AuthenticationScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = context) {
-        val toastText = if (authState.registerNewUser) { "Registration Successfully" } else { "Login Successfully" }
         validationEvent.collect { event ->
+            val toastText = if (userViewModel.state.registerNewUser) { "Registration Successfully" } else { "Login Successfully" }
             when (event) {
                 is UserViewModel.ValidationEvent.Success -> {
                     Toast.makeText(

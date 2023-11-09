@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.presentation.start
+package com.qwict.studyplanetandroid.presentation.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text

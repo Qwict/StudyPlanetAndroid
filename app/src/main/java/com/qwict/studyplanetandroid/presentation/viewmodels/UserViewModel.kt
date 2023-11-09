@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.ceil
 import kotlin.math.log
 import kotlin.math.pow
 
@@ -39,6 +40,10 @@ class UserViewModel @Inject constructor(
 
     init {
         getUserWithToken()
+    }
+
+    sealed class ValidationEvent {
+        data object Success : ValidationEvent()
     }
 
     private fun getUserWithToken() {
@@ -70,12 +75,14 @@ class UserViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    state =
-                        AuthState(error = result.message ?: "An unexpected error occurred")
+                    state = state.copy(
+                        error = result.message ?: "An unexpected error occurred",
+                        isLoading = false,
+                    )
                 }
 
                 is Resource.Loading -> {
-                    state = AuthState(isLoading = true)
+                    state = state.copy(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)
@@ -162,14 +169,10 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    sealed class ValidationEvent {
-        data object Success : ValidationEvent()
-    }
-
     private fun levelCalculator(experience: Int) {
         Log.d("AuthViewModel", "levelCalculator: ${log(experience.toDouble() / 60, 2.0)}")
 
-        val currentLevel = Math.ceil(log(experience.toDouble() / 60, 2.0))
+        val currentLevel = ceil(log(experience.toDouble() / 60, 2.0))
         val experienceForCurrentLevel = (2.0.pow(currentLevel - 1) * 60)
         val experienceForNextLevel = (2.0.pow(currentLevel) * 60) - experience + experienceForCurrentLevel
         val experienceProgress = (experience - experienceForCurrentLevel) / (experienceForNextLevel)

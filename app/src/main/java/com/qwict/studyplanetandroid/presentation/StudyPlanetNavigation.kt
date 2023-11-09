@@ -5,7 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.runtime.Composable
@@ -17,12 +16,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.StudyPlanetScreens
+import com.qwict.studyplanetandroid.presentation.screens.DiscoveredPlanetsScreen
+import com.qwict.studyplanetandroid.presentation.screens.ExplorerScreen
+import com.qwict.studyplanetandroid.presentation.screens.MainScreen
+import com.qwict.studyplanetandroid.presentation.screens.TimeSelectionScreen
+import com.qwict.studyplanetandroid.presentation.screens.user.UserScreen
 import com.qwict.studyplanetandroid.presentation.viewmodels.MainViewModel
-import com.qwict.studyplanetandroid.presentation.user.UserScreen
-import com.qwict.studyplanetandroid.ui.screens.DiscoveredPlanetsScreen
-import com.qwict.studyplanetandroid.ui.screens.ExplorerScreen
-import com.qwict.studyplanetandroid.ui.screens.MainScreen
-import com.qwict.studyplanetandroid.ui.screens.TimeSelectionScreen
 
 @Composable
 fun StudyPlanetNavigation(

@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.presentation.user
+package com.qwict.studyplanetandroid.presentation.screens.user
 
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.runtime.Composable

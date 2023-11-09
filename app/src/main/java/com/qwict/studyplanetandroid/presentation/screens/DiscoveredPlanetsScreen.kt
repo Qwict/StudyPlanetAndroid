@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.ui.screens
+package com.qwict.studyplanetandroid.presentation.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
