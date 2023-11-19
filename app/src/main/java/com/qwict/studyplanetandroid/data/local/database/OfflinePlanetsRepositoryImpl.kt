@@ -1,17 +1,11 @@
 package com.qwict.studyplanetandroid.data.local.database
 
-import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
 import com.qwict.studyplanetandroid.data.local.dao.PlanetDao
-import java.util.UUID
+import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
 
 class OfflinePlanetsRepositoryImpl(private val planetDao: PlanetDao) : OfflinePlanetsRepository {
-
-    override suspend fun getPlanetsByOwnerId(userOwnerId: Int): List<PlanetRoomEntity> {
-        return planetDao.getPlanetsByOwnerId(userOwnerId)
-    }
-
-    override suspend fun getPlanetsByUserUuid(userUuid: UUID): List<PlanetRoomEntity> {
-        return planetDao.getPlanetsByUserUuid(userUuid)
+    override suspend fun getPlanetsByRemoteId(remoteId: Int): List<PlanetRoomEntity> {
+        return planetDao.getPlanetsByRemoteId(remoteId)
     }
 
     override suspend fun getPlanetById(id: Int): PlanetRoomEntity {

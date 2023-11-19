@@ -9,7 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
-import com.qwict.studyplanetandroid.ui.theme.StudyPlanetAndroidTheme
+import com.qwict.studyplanetandroid.presentation.theme.StudyPlanetAndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

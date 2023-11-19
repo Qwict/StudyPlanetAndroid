@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [PlanetRoomEntity::class, UserRoomEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class StudyPlanetDatabase : RoomDatabase() {
@@ -47,7 +47,7 @@ abstract class StudyPlanetDatabase : RoomDatabase() {
                         }
                     }
                 })
-//                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }

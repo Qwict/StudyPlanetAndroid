@@ -7,19 +7,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.qwict.studyplanetandroid.common.Resource
+import com.qwict.studyplanetandroid.domain.use_case.planets.GetLocalPlanetsUseCase
+import com.qwict.studyplanetandroid.domain.use_case.planets.GetOnlinePlanetsUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.AuthenticateUseCase
-import com.qwict.studyplanetandroid.domain.use_case.user.LoginUseCase
-import com.qwict.studyplanetandroid.domain.use_case.user.RegisterUseCase
-import com.qwict.studyplanetandroid.domain.use_case.validator.ValidationResult
-import com.qwict.studyplanetandroid.domain.use_case.validator.Validators
-import com.qwict.studyplanetandroid.presentation.viewmodels.sealed.AuthenticationFormEvent
-import com.qwict.studyplanetandroid.presentation.viewmodels.states.AuthState
+import com.qwict.studyplanetandroid.presentation.viewmodels.states.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.ceil
 import kotlin.math.log
@@ -27,19 +21,53 @@ import kotlin.math.pow
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
-    private val registerUseCase: RegisterUseCase,
     private val authenticateUseCase: AuthenticateUseCase,
-    private val validators: Validators,
+    private val getLocalPlanetsUseCase: GetLocalPlanetsUseCase,
+    private val getOnlinePlanetsUseCase: GetOnlinePlanetsUseCase,
 ) : ViewModel() {
-    var state by mutableStateOf(AuthState())
+    var state by mutableStateOf(UserState())
         private set
-
-    private val validationEventChannel = Channel<ValidationEvent>()
-    val validationEvent = validationEventChannel.receiveAsFlow()
 
     init {
         getUserWithToken()
+    }
+
+    fun getLocalPlanets() {
+        Log.i("UserViewModel", "getPlanets: ")
+        getLocalPlanetsUseCase().onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    state = state.copy(planets = result.data ?: emptyList())
+                }
+
+                is Resource.Error -> {
+                    state = state.copy(error = result.message ?: "An unexpected error occurred")
+                }
+
+                is Resource.Loading -> {
+                    state = state.copy(isLoading = true)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun getOnlinePlanets() {
+        Log.i("UserViewModel", "getPlanets: ")
+        getOnlinePlanetsUseCase().onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    state = state.copy(planets = result.data ?: emptyList())
+                }
+
+                is Resource.Error -> {
+                    state = state.copy(refreshError = result.message ?: "An unexpected error occurred")
+                }
+
+                is Resource.Loading -> {
+                    state = state.copy(isRefreshing = true)
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     sealed class ValidationEvent {
@@ -50,7 +78,7 @@ class UserViewModel @Inject constructor(
         authenticateUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    state = AuthState(user = result.data!!)
+                    state = UserState(user = result.data!!)
                     levelCalculator(result.data.experience)
                 }
 
@@ -64,111 +92,6 @@ class UserViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
-
-    fun loginUser() {
-        Log.i("AuthViewModel", "loginUser: $state.email, $state.password")
-        loginUseCase(state.email, state.password).onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    state = AuthState(user = result.data!!)
-                    levelCalculator(state.user.experience)
-                }
-
-                is Resource.Error -> {
-                    state = state.copy(
-                        error = result.message ?: "An unexpected error occurred",
-                        isLoading = false,
-                    )
-                }
-
-                is Resource.Loading -> {
-                    state = state.copy(isLoading = true)
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    fun switchIsRegistering() {
-        state = state.copy(
-            registerNewUser = !state.registerNewUser,
-            error = "",
-        )
-    }
-
-    fun onEvent(event: AuthenticationFormEvent) {
-        when (event) {
-            is AuthenticationFormEvent.UsernameChanged -> {
-                state = state.copy(username = event.username)
-            }
-            is AuthenticationFormEvent.EmailChanged -> {
-                state = state.copy(email = event.email)
-            }
-            is AuthenticationFormEvent.PasswordChanged -> {
-                state = state.copy(password = event.password)
-            }
-            is AuthenticationFormEvent.ConfirmPasswordChanged -> {
-                state = state.copy(confirmPassword = event.confirmPassword)
-            }
-            is AuthenticationFormEvent.RegisterClicked -> {
-                registerUser()
-            }
-        }
-    }
-
-    fun registerUser() {
-        val emailResult = validators.emailValidator(state.email)
-        var passwordResult = ValidationResult(successful = true)
-        var usernameResult = ValidationResult(successful = true)
-
-        // Only validate password if a user is registering, could change passwordResult to a error message
-        if (state.registerNewUser) {
-            usernameResult = validators.usernameValidator(state.username)
-            passwordResult = validators.passwordValidator(state.password, state.confirmPassword)
-        }
-
-        val hasErrors = listOf(
-            emailResult,
-            usernameResult,
-            passwordResult,
-        ).any { !it.successful }
-
-        if (hasErrors) {
-            state = state.copy(
-                usernameError = usernameResult.errorMessage,
-                emailError = emailResult.errorMessage,
-                passwordError = passwordResult.errorMessage,
-                confirmPasswordError = passwordResult.errorMessage,
-            )
-            return
-        } else {
-            registerUseCase(state.username, state.email, state.password).onEach { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        state = AuthState(user = result.data!!)
-                        levelCalculator(state.user.experience)
-                    }
-                    is Resource.Error -> {
-                        state = state.copy(
-                            error = result.message ?: "An unexpected error occurred",
-                            isLoading = false,
-                        )
-                    }
-                    is Resource.Loading -> {
-                        state = state.copy(
-                            error = "",
-                            isLoading = true,
-                        )
-                    }
-                }
-            }.launchIn(viewModelScope)
-        }
-
-        viewModelScope.launch {
-            // will notify the ui that the validation was successful (ui is an observer here of the channel)
-            validationEventChannel.send(ValidationEvent.Success)
-        }
-    }
-
     private fun levelCalculator(experience: Int) {
         Log.d("AuthViewModel", "levelCalculator: ${log(experience.toDouble() / 60, 2.0)}")
 

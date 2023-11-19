@@ -1,6 +1,7 @@
 package com.qwict.studyplanetandroid.presentation.screens
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.components.AlertDialog
 import com.qwict.studyplanetandroid.presentation.components.study.CustomCountDownTimer
 import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
+import com.qwict.studyplanetandroid.presentation.viewmodels.states.StudyState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -44,33 +46,42 @@ fun ExplorerScreen(
     modifier: Modifier = Modifier,
     selectedPlanet: Planet,
     studyViewModel: StudyViewModel = hiltViewModel(),
+    startCountDown: suspend () -> Unit,
     selectedTimeInMinutes: Float,
+    studyState: StudyState,
+    resetAction: () -> Unit,
+    startDiscovering: () -> Unit,
+    stopDiscovering: () -> Unit,
+    startExploring: () -> Unit,
+    stopExploring: () -> Unit,
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    val studyState by remember { studyViewModel.state }
-
     var currentProgress by remember { mutableStateOf(0f) }
+    BackHandler {
+        openAlertDialog.value = true
+    }
+
     LaunchedEffect(true) {
         scope.launch {
-            studyViewModel.resetAction()
+            resetAction()
             Log.i("StudyViewModel", "Started studying, ${studyState.selectedPlanet.name} for $selectedTimeInMinutes minutes; Discovering: $isDiscovering")
             studyState.updatedTime = selectedTimeInMinutes.toInt() * 60 * 1000
             try {
                 studyState.selectedTime = selectedTimeInMinutes.toInt() * 60 * 1000
                 if (isDiscovering) {
-                    studyViewModel.startDiscovering()
+                    startDiscovering()
                 } else {
-                    studyViewModel.startExploring()
+                    startExploring()
                 }
                 loadProgress({ progress ->
                     currentProgress = progress
                 }, studyState.selectedTime.toLong())
                 if (isDiscovering) {
-                    studyViewModel.stopDiscovering()
+                    stopDiscovering()
                 } else {
-                    studyViewModel.stopExploring()
+                    stopExploring()
                 }
             } catch (e: Exception) {
                 Log.i("ExplorerScreen", e.toString())
@@ -124,7 +135,7 @@ fun ExplorerScreen(
                 studyState.hours,
                 studyState.minutes,
                 studyState.seconds,
-            ) { studyViewModel.startCountDown() }
+            ) { startCountDown() }
             LinearProgressIndicator(
                 modifier = Modifier
                     .width(300.dp)

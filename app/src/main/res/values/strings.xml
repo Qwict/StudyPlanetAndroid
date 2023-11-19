@@ -1,10 +1,14 @@
 <resources>
     <string name="app_name">Study Planet</string>
 
+    <string name="main_route">main_route</string>
+    <string name="login_route">login_route</string>
+
+    <string name="title_login_screen">Login</string>
+    <string name="title_register_screen">Register</string>
     <string name="title_main_screen">Study Planet</string>
     <string name="title_discovered_planets_screen">Discovered Planets</string>
     <string name="title_explorer_screen">Exploring Planet</string>
-    <string name="title_authentication_screen">Authentication</string>
     <string name="title_time_selection_screen">Select time</string>
 
 
@@ -64,7 +68,6 @@
     <string name="name_label">Name</string>
     <string name="email_label">Email</string>
     <string name="user_icon_url">https://images.ctfassets.net/23aumh6u8s0i/5hHkO5DxWMPxDjc2QZLXYf/403128092dedc8eb3395314b1d3545ad/icon-user.png</string>
-    <string name="title_start_screen">Start Adventure\n</string>
 
 
 </resources>

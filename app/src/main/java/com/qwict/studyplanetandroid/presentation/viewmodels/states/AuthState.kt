@@ -9,6 +9,8 @@ data class AuthState(
     val password: String = "",
     val confirmPassword: String = "",
 
+    val isPasswordVisible: Boolean = false,
+
     val usernameError: String = "",
     val emailError: String = "",
     val passwordError: String = "",

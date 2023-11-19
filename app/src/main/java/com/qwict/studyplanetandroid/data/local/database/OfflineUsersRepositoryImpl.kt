@@ -1,27 +1,17 @@
 package com.qwict.studyplanetandroid.data.local.database
 
-import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import com.qwict.studyplanetandroid.data.local.dao.UserDao
+import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 class OfflineUsersRepositoryImpl(private val userDao: UserDao) : OfflineUsersRepository {
     override fun getUserById(id: Int): Flow<UserRoomEntity> {
         return userDao.getFlowUserById(id)
     }
 
-    override fun getUserFlowByUuid(uuid: UUID): Flow<UserRoomEntity> {
-        return userDao.getFlowUserByUuid(uuid)
+    override suspend fun getUserByRemoteId(remoteId: Int): UserRoomEntity {
+        return userDao.getUserByRemoteId(remoteId)
     }
-
-    override suspend fun getUserByEmail(email: String): UserRoomEntity {
-        return userDao.getUserByEmail(email)
-    }
-
-    override suspend fun getUserByUuid(uuid: UUID): UserRoomEntity {
-        return userDao.getUserByUuid(uuid)
-    }
-
     override suspend fun insert(user: UserRoomEntity) {
         userDao.insert(user)
     }

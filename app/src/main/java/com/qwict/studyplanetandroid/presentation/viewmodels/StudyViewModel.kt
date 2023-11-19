@@ -1,8 +1,9 @@
 package com.qwict.studyplanetandroid.presentation.viewmodels
 
 import android.util.Log
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.qwict.studyplanetandroid.common.Resource
@@ -25,24 +26,24 @@ class StudyViewModel @Inject constructor(
     private val stopExploringUseCase: StopExploringUseCase,
 ) : ViewModel() {
 
-    private var _state = mutableStateOf(StudyState())
-    val state: State<StudyState> = _state
+    var state by mutableStateOf(StudyState())
+        private set
 
     fun startDiscovering() {
         Log.i("StudyViewModel", "startDiscovering")
-        startDiscoveringUseCase(_state.value.selectedTime).onEach { result ->
+        startDiscoveringUseCase(state.selectedTime).onEach { result ->
             when (result) {
                 is Resource.Success -> {
                     Log.i("StudyViewModel", "startDiscovering: ${result.data}")
-                    _state.value = StudyState()
+                    state = StudyState()
                 }
 
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(error = result.message ?: "An unexpected error occurred")
+                    state = state.copy(error = result.message ?: "An unexpected error occurred")
                 }
 
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
+                    state = state.copy(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)
@@ -50,12 +51,12 @@ class StudyViewModel @Inject constructor(
 
     fun stopDiscovering() {
         Log.i("StudyViewModel", "stopDiscovering")
-        stopDiscoveringUseCase(_state.value.selectedTime).onEach { result ->
+        stopDiscoveringUseCase(state.selectedTime).onEach { result ->
             when (result) {
                 is Resource.Success -> {
                     Log.i("StudyViewModel", "stopDiscovering: ${result.data}")
                     if (result.data != null) {
-                        _state.value = _state.value.copy(
+                        state = state.copy(
                             discoveredPlanet = result.data,
                             haseDiscoveredPlanet = true,
                         )
@@ -63,30 +64,30 @@ class StudyViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(error = result.message ?: "An unexpected error occurred")
+                    state = state.copy(error = result.message ?: "An unexpected error occurred")
                 }
 
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
+                    state = state.copy(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)
     }
     fun startExploring() {
         Log.i("StudyViewModel", "startExploring")
-        startExploringUseCase(_state.value.selectedTime, selectedPlanetId = state.value.selectedPlanet.id).onEach { result ->
+        startExploringUseCase(state.selectedTime, selectedPlanetId = state.selectedPlanet.id).onEach { result ->
             when (result) {
                 is Resource.Success -> {
                     Log.i("StudyViewModel", "startExploring: ${result.data}")
-                    _state.value = StudyState()
+                    state = StudyState()
                 }
 
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(error = result.message ?: "An unexpected error occurred")
+                    state = state.copy(error = result.message ?: "An unexpected error occurred")
                 }
 
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
+                    state = state.copy(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)
@@ -95,18 +96,18 @@ class StudyViewModel @Inject constructor(
     fun stopExploring() {
     }
     fun resetAction() {
-        _state.value.selectedTime = 0
-        _state.value.hours = 0
-        _state.value.minutes = 0
-        _state.value.seconds = 0
-        _state.value.updatedTime = 0
+        state.selectedTime = 0
+        state.hours = 0
+        state.minutes = 0
+        state.seconds = 0
+        state.updatedTime = 0
     }
     suspend fun startCountDown() {
-        while (_state.value.updatedTime > 0) {
-            _state.value.updatedTime -= 1000
-            _state.value.hours = (_state.value.updatedTime / (1000 * 60 * 60)).toInt()
-            _state.value.minutes = (_state.value.updatedTime % (1000 * 60 * 60) / (1000 * 60)).toInt()
-            _state.value.seconds = (_state.value.updatedTime % (1000 * 60 * 60) % (1000 * 60) / 1000).toInt()
+        while (state.updatedTime > 0) {
+            state.updatedTime -= 1000
+            state.hours = (state.updatedTime / (1000 * 60 * 60)).toInt()
+            state.minutes = (state.updatedTime % (1000 * 60 * 60) / (1000 * 60)).toInt()
+            state.seconds = (state.updatedTime % (1000 * 60 * 60) % (1000 * 60) / 1000).toInt()
             delay(1000)
         }
     }

@@ -5,22 +5,19 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getUUID
 import com.qwict.studyplanetandroid.domain.model.User
-import java.util.UUID
 
 @Entity(
     tableName = "users",
     indices = [
         Index(
-            value = arrayOf("userUuid"),
+            value = arrayOf("remoteId"),
             unique = true,
         ),
     ],
 )
 data class UserRoomEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    var userUuid: UUID = getUUID(),
     var experience: Int = 0,
     var remoteId: Int = 0,
     var email: String = "",
@@ -30,13 +27,13 @@ data class UserRoomEntity(
 data class DatabaseUserWithPlanets(
     @Embedded val user: UserRoomEntity,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
+        parentColumn = "remoteId",
+        entityColumn = "userOwnerId",
     )
     val planets: List<PlanetRoomEntity>,
 )
 
-fun DatabaseUserWithPlanets.toUser() = User(
+fun DatabaseUserWithPlanets.asDomainModel() = User(
     discoveredPlanets = planets.map { it.toPlanet() },
     email = user.email,
     experience = user.experience,

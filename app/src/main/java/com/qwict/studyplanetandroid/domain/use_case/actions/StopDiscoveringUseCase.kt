@@ -1,6 +1,6 @@
 package com.qwict.studyplanetandroid.domain.use_case.actions // ktlint-disable package-name
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getUUID
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getRemoteId
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
@@ -27,9 +27,9 @@ class StopDiscoveringUseCase @Inject constructor(
             validateUser()
             if (isUserAuthenticated) {
                 val discoveredPlanet = repo.stopDiscovering(DiscoverActionDto(selectedTime = selectedTime), token = getEncryptedPreference("token"))
-                val currentDatabaseUser = repo.getUserByUuid(getUUID())
+                val currentDatabaseUser = repo.getUserByRemoteId(getRemoteId())
                 if (discoveredPlanet != null) {
-                    val newDatabasePlanet = discoveredPlanet.asDatabaseModel(currentDatabaseUser.id, currentDatabaseUser.userUuid)
+                    val newDatabasePlanet = discoveredPlanet.asDatabaseModel(currentDatabaseUser.remoteId)
                     repo.insertPlanet(newDatabasePlanet)
                     emit(Resource.Success(newDatabasePlanet.toPlanet()))
                 } else {

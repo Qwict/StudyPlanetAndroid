@@ -12,7 +12,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.qwict.studyplanetandroid.StudyPlanetScreens
+import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,7 +21,6 @@ fun AppBar(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    onAccountButtonClicked: () -> Unit = {},
 ) {
     TopAppBar(
         title = { Text(stringResource(currentScreen.title)) },
@@ -39,16 +38,7 @@ fun AppBar(
                 }
             }
         },
-        actions = {
-//            if (userViewModel.userIsAuthenticated) {
-//            TODO: This guy seems to cause a lot of rerenders..
-//            ExperienceBar()
-//            }
-
-            if (currentScreen.name != StudyPlanetScreens.PlanetExplorerScreen.name) {
-                AppBarAccountButton(onAccountButtonClicked, currentScreen)
-            }
-        },
+        actions = { AppBarAccountButton() },
 
     )
 }

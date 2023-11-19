@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.domain.use_case.validator
+package com.qwict.studyplanetandroid.domain.validator
 
 import android.util.Patterns
 

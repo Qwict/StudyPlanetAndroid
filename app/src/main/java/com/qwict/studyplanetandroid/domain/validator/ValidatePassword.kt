@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.domain.use_case.validator
+package com.qwict.studyplanetandroid.domain.validator
 
 class ValidatePassword {
     operator fun invoke(password: String, confirmPassword: String): ValidationResult {

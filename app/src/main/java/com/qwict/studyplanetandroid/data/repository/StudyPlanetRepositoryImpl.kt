@@ -13,10 +13,9 @@ import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
 import com.qwict.studyplanetandroid.data.remote.dto.PlanetDto
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
 import com.qwict.studyplanetandroid.data.remote.dto.UserDto
-import com.qwict.studyplanetandroid.data.remote.dto.toDatabaseUser
+import com.qwict.studyplanetandroid.data.remote.dto.toDatabaseUserWithPlanets
 import com.qwict.studyplanetandroid.domain.model.User
 import retrofit2.Response
-import java.util.UUID
 import javax.inject.Inject
 
 class StudyPlanetRepositoryImpl @Inject constructor(
@@ -28,16 +27,12 @@ class StudyPlanetRepositoryImpl @Inject constructor(
         return api.getHealth()
     }
 
-    override suspend fun getUserByUuid(uuid: UUID): UserRoomEntity {
-        return userDatabase.getUserByUuid(uuid)
+    override suspend fun getUserByRemoteId(remoteId: Int): UserRoomEntity {
+        return userDatabase.getUserByRemoteId(remoteId)
     }
 
-    override suspend fun getUserByEmail(email: String): UserRoomEntity {
-        return userDatabase.getUserByEmail(email)
-    }
-
-    override suspend fun getPlanetsByUserUuid(uuid: UUID): List<PlanetRoomEntity> {
-        return planetDatabase.getPlanetsByUserUuid(uuid)
+    override suspend fun getPlanetsByRemoteId(remoteId: Int): List<PlanetRoomEntity> {
+        return planetDatabase.getPlanetsByRemoteId(remoteId)
     }
 
     override suspend fun insertPlanet(planet: PlanetRoomEntity) {
@@ -54,12 +49,18 @@ class StudyPlanetRepositoryImpl @Inject constructor(
 
     override suspend fun login(body: LoginDto): AuthenticatedUserDto {
         val authenticatedUserDto = api.login(body)
-        userDatabase.insert(authenticatedUserDto.toDatabaseUser())
+        val userWithPlanets = authenticatedUserDto.toDatabaseUserWithPlanets()
+        userDatabase.insert(userWithPlanets.user)
+        planetDatabase.insertAll(userWithPlanets.planets)
         return authenticatedUserDto
     }
 
     override suspend fun authenticate(token: String): AuthenticatedUserDto {
-        return api.authenticate(token)
+        val authenticatedUserDto = api.authenticate(token)
+        val userWithPlanets = authenticatedUserDto.toDatabaseUserWithPlanets()
+        userDatabase.insert(userWithPlanets.user)
+        planetDatabase.insertAll(userWithPlanets.planets)
+        return authenticatedUserDto
     }
 
     override suspend fun registerLocalUser(): User {

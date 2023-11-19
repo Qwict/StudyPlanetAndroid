@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
-import java.util.UUID
 
 @Dao
 interface PlanetDao {
@@ -26,9 +25,6 @@ interface PlanetDao {
     @Query("SELECT * FROM planets WHERE id = :id")
     suspend fun getPlanetById(id: Int): PlanetRoomEntity
 
-    @Query("SELECT * FROM planets WHERE userUuid = :uuid")
-    suspend fun getPlanetsByUserUuid(uuid: UUID): List<PlanetRoomEntity>
-
-    @Query("SELECT * FROM planets WHERE userOwnerId = :userOwnerId")
-    suspend fun getPlanetsByOwnerId(userOwnerId: Int): List<PlanetRoomEntity>
+    @Query("SELECT * FROM planets WHERE userOwnerId = :remoteId")
+    suspend fun getPlanetsByRemoteId(remoteId: Int): List<PlanetRoomEntity>
 }

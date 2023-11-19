@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.ui.theme
+package com.qwict.studyplanetandroid.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

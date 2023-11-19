@@ -12,13 +12,11 @@ import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
 import com.qwict.studyplanetandroid.data.remote.dto.UserDto
 import com.qwict.studyplanetandroid.domain.model.User
 import retrofit2.Response
-import java.util.UUID
 
 interface StudyPlanetRepository {
     suspend fun getHealth(): HealthDto
-    suspend fun getUserByUuid(uuid: UUID): UserRoomEntity
-    suspend fun getUserByEmail(email: String): UserRoomEntity
-    suspend fun getPlanetsByUserUuid(uuid: UUID): List<PlanetRoomEntity>
+    suspend fun getUserByRemoteId(remoteId: Int): UserRoomEntity
+    suspend fun getPlanetsByRemoteId(remoteId: Int): List<PlanetRoomEntity>
 
     suspend fun insertPlanet(planet: PlanetRoomEntity)
     suspend fun insertPlanets(planets: List<PlanetRoomEntity>)

@@ -1,7 +1,7 @@
 package com.qwict.studyplanetandroid.data.remote.dto
 
-import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import com.qwict.studyplanetandroid.data.local.schema.DatabaseUserWithPlanets
+import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import com.qwict.studyplanetandroid.domain.model.User
 import com.squareup.moshi.JsonClass
 
@@ -25,14 +25,13 @@ data class AuthenticatedUserDto(
 fun AuthenticatedUserDto.toDatabaseUser() = UserRoomEntity(
     email = user.email,
     name = user.name,
-    userUuid = user.userUuid,
     experience = user.experience,
     remoteId = user.id,
 )
 
 fun AuthenticatedUserDto.toDatabaseUserWithPlanets() = DatabaseUserWithPlanets(
     user = user.asDatabaseModel(),
-    planets = user.discoveredPlanets.map { it.asDatabaseModel(user.id, user.userUuid) },
+    planets = user.discoveredPlanets.map { it.asDatabaseModel(user.id) },
 )
 
 fun AuthenticatedUserDto.asDomainModel() = User(

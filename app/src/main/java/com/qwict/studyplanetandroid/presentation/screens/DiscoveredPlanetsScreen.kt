@@ -30,9 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.domain.model.Planet
-import com.qwict.studyplanetandroid.presentation.viewmodels.DiscoveredPlanetsViewModel
+import com.qwict.studyplanetandroid.presentation.viewmodels.states.UserState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -41,20 +40,21 @@ fun DiscoveredPlanetsScreen(
     onMineButtonClicked: (Planet) -> Unit = {},
     onDiscoverPlanetsButtonClicked: () -> Unit = {},
     onCancelMiningButtonClicked: () -> Unit = {},
-    userViewModel: DiscoveredPlanetsViewModel = hiltViewModel(),
+    getOnlinePlanets: () -> Unit,
+    getLocalPlanets: () -> Unit,
+    userState: UserState,
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val userState = userViewModel.state.value
     val pullRefreshState = rememberPullRefreshState(
         refreshing = userState.isRefreshing,
         onRefresh = {
             scope.launch {
-                userViewModel.getOnlinePlanets()
-                if (userViewModel.state.value.refreshError != "") {
+                getOnlinePlanets()
+                if (userState.refreshError != "") {
                     snackbarHostState.showSnackbar(
-                        message = userViewModel.state.value.refreshError,
+                        message = userState.refreshError,
                     )
                 }
             }
@@ -62,7 +62,7 @@ fun DiscoveredPlanetsScreen(
     )
 
     LaunchedEffect(true) {
-        userViewModel.getLocalPlanets()
+        getLocalPlanets()
     }
 
     Scaffold(
@@ -107,10 +107,10 @@ fun DiscoveredPlanetsScreen(
                 }
 
                 PullRefreshIndicator(
-                    refreshing = userViewModel.state.value.isRefreshing,
+                    refreshing = userState.isRefreshing,
                     state = pullRefreshState,
                     modifier = Modifier.align(Alignment.TopCenter),
-                    backgroundColor = if (userViewModel.state.value.isRefreshing) Color.Red else Color.Green,
+                    backgroundColor = if (userState.isRefreshing) Color.Red else Color.Green,
                 )
             }
         }

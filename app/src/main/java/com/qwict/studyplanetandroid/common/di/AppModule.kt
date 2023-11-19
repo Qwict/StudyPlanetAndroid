@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.di
+package com.qwict.studyplanetandroid.common.di
 
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Constants.BASE_URL
@@ -15,7 +15,7 @@ import com.qwict.studyplanetandroid.domain.use_case.planets.GetOnlinePlanetsUseC
 import com.qwict.studyplanetandroid.domain.use_case.user.AuthenticateUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.LoginUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.RegisterUseCase
-import com.qwict.studyplanetandroid.domain.use_case.validator.Validators
+import com.qwict.studyplanetandroid.domain.validator.Validators
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,6 +41,12 @@ object AppModule {
             .build()
             .create(StudyPlanetApi::class.java)
     }
+
+//    @Provides
+//    @Singleton
+//    fun provideAuthenticationSingleton(): AuthenticationSingleton {
+//        return AuthenticationSingleton()
+//    }
 
     @Provides
     @Singleton

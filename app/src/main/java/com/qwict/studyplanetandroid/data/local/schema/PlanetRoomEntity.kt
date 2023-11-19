@@ -3,11 +3,9 @@ package com.qwict.studyplanetandroid.data.local.schema
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.qwict.studyplanetandroid.common.Constants.DEFAULT_UUID
 import com.qwict.studyplanetandroid.domain.model.Planet
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import java.util.UUID
 
 @Entity(
     tableName = "planets",
@@ -23,7 +21,6 @@ data class PlanetRoomEntity(
     val remoteId: Int = 0,
     val name: String,
     val userOwnerId: Int,
-    val userUuid: UUID,
 )
 
 fun populatePlanets(): List<PlanetRoomEntity> {
@@ -31,47 +28,38 @@ fun populatePlanets(): List<PlanetRoomEntity> {
         PlanetRoomEntity(
             name = "Mercury",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Venus",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Earth",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Mars",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Jupiter",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Europe",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Saturn",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Uranus",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
         PlanetRoomEntity(
             name = "Neptune",
             userOwnerId = 0,
-            userUuid = DEFAULT_UUID,
         ),
     )
 }
@@ -81,7 +69,6 @@ fun toPlanet(jsonPlanet: JsonObject, userId: Int): PlanetRoomEntity {
         id = jsonPlanet.jsonObject["id"].toString().toInt(),
         name = jsonPlanet.jsonObject["name"].toString(),
         userOwnerId = userId,
-        userUuid = DEFAULT_UUID,
     )
 }
 

@@ -1,12 +1,13 @@
-package com.qwict.studyplanetandroid.domain.use_case.actions
+package com.qwict.studyplanetandroid.domain.use_case.actions // ktlint-disable package-name
 
+import android.util.Log
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.common.getEncryptedPreference
 import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionDto
-import com.qwict.studyplanetandroid.domain.model.User
 import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
+import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -33,7 +34,7 @@ class StartExploringUseCase @Inject constructor(
         } catch (e: HttpException) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
         } catch (e: IOException) {
-            // No internet connection or whatever...
+            Log.e("StartExploringUseCase", e.localizedMessage ?: "An unexpected error occurred")
             emit(Resource.Error("Couldn't reach server. Check your internet connection."))
         }
     }

@@ -3,7 +3,6 @@ package com.qwict.studyplanetandroid.common
 import android.util.Base64
 import android.util.Log
 import com.auth0.android.jwt.JWT
-import java.util.UUID
 
 fun decodeToken(jwt: String): String {
     val (header, payload, signature) = jwt.split(".")
@@ -16,16 +15,17 @@ fun decodeToken(jwt: String): String {
     }
 }
 
-fun getDecodedUserFromToken(token: String): DecodedUser {
+fun getDecodedPayload(token: String): DecodedPayload {
     val jwt = JWT(token)
     try {
-        return DecodedUser(
-            id = jwt.getClaim("id").asInt()!!,
-            uuid = UUID.fromString(jwt.getClaim("uuid").asString()),
-            name = jwt.getClaim("name").asString()!!,
+        return DecodedPayload(
             email = jwt.getClaim("email").asString()!!,
+            remoteId = jwt.getClaim("id").asInt()!!,
+            iat = jwt.getClaim("iat").asInt()!!,
+            exp = jwt.getClaim("exp").asInt()!!,
         )
     } catch (e: NullPointerException) {
+        removeEncryptedPreference("token")
         throw IllegalArgumentException("JWT is not valid")
     }
 }

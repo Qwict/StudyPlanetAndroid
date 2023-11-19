@@ -1,7 +1,7 @@
 package com.qwict.studyplanetandroid.domain.use_case.user // ktlint-disable package-name
 
 import android.util.Log
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getUUID
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getRemoteId
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
@@ -23,8 +23,7 @@ class AuthenticateUseCase @Inject constructor(
             emit(Resource.Loading())
             validateUser()
             if (isUserAuthenticated) {
-                Log.e("AuthenticateUseCase", "getting local user with: ${getUUID()}")
-                val databaseUser = repo.getUserByUuid(getUUID())
+                val databaseUser = repo.getUserByRemoteId(getRemoteId())
                 try {
                     emit(Resource.Success(databaseUser.toUser()))
                     emit(Resource.Loading())
@@ -46,6 +45,9 @@ class AuthenticateUseCase @Inject constructor(
         } catch (e: IOException) {
             // No internet connection or whatever...
             emit(Resource.Error("Couldn't reach server. Check your internet connection."))
+        } catch (e: Exception) {
+            Log.e("LoginUseCase", "invoke: ${e.message}", e)
+            emit(Resource.Error("The developer didn't do his job..."))
         }
     }
 }

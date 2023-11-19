@@ -1,11 +1,8 @@
 package com.qwict.studyplanetandroid.domain.use_case.user // ktlint-disable package-name
 
 import android.util.Log
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.common.Resource
-import com.qwict.studyplanetandroid.common.saveEncryptedPreference
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
-import com.qwict.studyplanetandroid.data.remote.dto.asDomainModel
 import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
 import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
@@ -39,8 +36,11 @@ class LoginUseCase @Inject constructor(
                 emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
             }
         } catch (e: IOException) {
-            // No internet connection or whatever...
+            Log.e("LoginUseCase", e.message ?: "An unexpected error occurred", e)
             emit(Resource.Error("Couldn't reach server. Check your internet connection."))
+        } catch (e: Exception) {
+            Log.e("LoginUseCase", "invoke: ${e.message}", e)
+            emit(Resource.Error("The developer didn't do his job..."))
         }
     }
 }

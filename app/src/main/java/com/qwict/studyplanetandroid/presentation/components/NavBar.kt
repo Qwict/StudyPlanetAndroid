@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.qwict.studyplanetandroid.StudyPlanetScreens
+import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
 import com.qwict.studyplanetandroid.presentation.viewmodels.MainViewModel
 
 @Composable

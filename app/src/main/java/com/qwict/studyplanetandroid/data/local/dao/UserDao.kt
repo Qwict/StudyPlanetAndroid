@@ -10,7 +10,6 @@ import androidx.room.Update
 import com.qwict.studyplanetandroid.data.local.schema.DatabaseUserWithPlanets
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
 
 @Dao
 interface UserDao {
@@ -29,17 +28,11 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE id = :id")
     fun getFlowUserById(id: Int): Flow<UserRoomEntity>
 
-    @Query("SELECT * FROM users WHERE userUuid = :uuid")
-    fun getFlowUserByUuid(uuid: UUID): Flow<UserRoomEntity>
-
     @Query("SELECT * FROM users WHERE id = :id")
     fun getUserById(id: Int): UserRoomEntity
 
-    @Query("SELECT * FROM users WHERE userUuid = :uuid")
-    suspend fun getUserByUuid(uuid: UUID): UserRoomEntity
-
-    @Query("SELECT * FROM users WHERE email = :email")
-    suspend fun getUserByEmail(email: String): UserRoomEntity
+    @Query("SELECT * FROM users WHERE remoteId = :remoteId")
+    suspend fun getUserByRemoteId(remoteId: Int): UserRoomEntity
 
     @Transaction
     @Query("SELECT * FROM users")

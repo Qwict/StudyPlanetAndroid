@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.domain.use_case.user // ktlint-disable package-name
 
 import android.util.Log
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getUUID
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
 import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
@@ -25,7 +24,6 @@ class RegisterUseCase @Inject constructor(
             emit(Resource.Loading())
             val authenticatedUser = repo.register(
                 RegisterDto(
-                    userUuid = getUUID(),
                     name = name,
                     email = email,
                     password = password,
@@ -47,6 +45,9 @@ class RegisterUseCase @Inject constructor(
         } catch (e: IOException) {
             // No internet connection or whatever...
             emit(Resource.Error("Couldn't reach server. Check your internet connection."))
+        } catch (e: Exception) {
+            Log.e("LoginUseCase", "invoke: ${e.message}", e)
+            emit(Resource.Error("The developer didn't do his job..."))
         }
     }
 }
