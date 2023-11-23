@@ -29,7 +29,7 @@ fun AppBar(
         ),
         modifier = modifier,
         navigationIcon = {
-            if (canNavigateBack) {
+            if (canNavigateBack && currentScreen != StudyPlanetScreens.PlanetExplorerScreen) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.presentation.StudyPlanetNavigation
 import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
 import com.qwict.studyplanetandroid.presentation.components.AppBar
@@ -52,7 +53,7 @@ fun StudyPlanetApp(
                 navigateUp = { navController.navigateUp() },
             )
         },
-        bottomBar = { NavBar(currentScreen, navController) },
+        bottomBar = { if (AuthenticationSingleton.isUserAuthenticated) { NavBar(currentScreen, navController) } },
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             StudyPlanetNavigation(navController = navController)

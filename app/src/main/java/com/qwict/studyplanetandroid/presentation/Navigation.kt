@@ -83,7 +83,9 @@ fun StudyPlanetNavigation(
                     authState = authViewModel.state,
                     registerUser = { authViewModel.registerUser() },
                     navigateToLoginScreen = {
-                        navController.navigate(StudyPlanetScreens.LoginScreen.name)
+                        navController.navigate(StudyPlanetScreens.LoginScreen.name) {
+                            popUpTo(StudyPlanetScreens.LoginScreen.name) { inclusive = true }
+                        }
                     },
                     validationEvent = authViewModel.validationEvent,
                     onEvent = authViewModel::onEvent,
@@ -150,7 +152,9 @@ fun StudyPlanetNavigation(
                 }
                 ExplorerScreen(
                     onCancelStudyButtonClicked = {
-                        navController.navigate(StudyPlanetScreens.MainScreen.name)
+                        navController.navigate(StudyPlanetScreens.MainScreen.name) {
+                            popUpTo(StudyPlanetScreens.MainScreen.name) { inclusive = true }
+                        }
                     },
                     modifier = Modifier.fillMaxHeight(),
                     isDiscovering = true,

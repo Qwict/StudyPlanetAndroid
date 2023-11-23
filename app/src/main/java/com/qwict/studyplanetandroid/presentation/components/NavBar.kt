@@ -15,16 +15,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
-import com.qwict.studyplanetandroid.presentation.viewmodels.MainViewModel
 
 @Composable
 fun NavBar(
     currentScreen: StudyPlanetScreens,
     navController: NavHostController,
-    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     data class NavbarItem(
         var text: String = "",
@@ -42,24 +39,18 @@ fun NavBar(
             name = StudyPlanetScreens.MainScreen.name,
             icon = Icons.Filled.Rocket,
             contentDescription = "Mission Control Center",
-            onClick = { navController.navigate(StudyPlanetScreens.MainScreen.name) },
         ),
         NavbarItem(
             text = "Discover",
             name = StudyPlanetScreens.TimeSelectionScreen.name,
             icon = Icons.Filled.SatelliteAlt,
             contentDescription = "Discover a new planet",
-            onClick = {
-                mainViewModel.isDiscovering = true
-                navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
-            },
         ),
         NavbarItem(
             text = "Explore",
             name = StudyPlanetScreens.DiscoveredPlanetsScreen.name,
             icon = Icons.Filled.TravelExplore,
             contentDescription = "Explore a planet",
-            onClick = { navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name) },
         ),
     )
 
@@ -72,8 +63,11 @@ fun NavBar(
                     label = { if (currentScreen.name == navbarItem.name) Text(navbarItem.text) },
                     selected = currentScreen.name == navbarItem.name,
                     onClick = {
+                        navController.navigate(navbarItem.name) {
+                            popUpTo(navbarItem.name) { inclusive = true }
+                        }
                         selectedNavbarItemIndex = index
-                        navbarItem.onClick()
+//                        navbarItem.onClick()
                     },
                 )
             }

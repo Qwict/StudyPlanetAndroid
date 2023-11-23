@@ -68,6 +68,7 @@ fun RegisterScreen(
                         Toast.LENGTH_LONG,
                     ).show()
                 }
+                else -> {}
             }
         }
     }
