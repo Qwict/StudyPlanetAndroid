@@ -108,7 +108,7 @@ fun StudyPlanetNavigation(
                         )
                     },
                     onDiscoverPlanetsButtonClicked = {
-                        mainViewModel.isDiscovering = true
+//                        mainViewModel.isDiscovering = true
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier

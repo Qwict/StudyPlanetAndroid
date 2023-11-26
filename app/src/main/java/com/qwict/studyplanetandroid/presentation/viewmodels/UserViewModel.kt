@@ -33,11 +33,16 @@ class UserViewModel @Inject constructor(
     }
 
     fun getLocalPlanets() {
-        Log.i("UserViewModel", "getPlanets: ")
+        Log.i("UserViewModel", "getLocalPlanets")
         getLocalPlanetsUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    state = state.copy(planets = result.data ?: emptyList())
+                    val planets = result.data ?: emptyList()
+                    if (planets.isNotEmpty()) {
+                        state = state.copy(planets = planets)
+                    } else {
+                        getOnlinePlanets()
+                    }
                 }
 
                 is Resource.Error -> {
@@ -52,11 +57,11 @@ class UserViewModel @Inject constructor(
     }
 
     fun getOnlinePlanets() {
-        Log.i("UserViewModel", "getPlanets: ")
+        Log.i("UserViewModel", "getOnlinePlanets")
         getOnlinePlanetsUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    state = state.copy(planets = result.data ?: emptyList())
+                    state = state.copy(planets = result.data ?: emptyList(), isRefreshing = false)
                 }
 
                 is Resource.Error -> {

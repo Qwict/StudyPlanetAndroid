@@ -9,7 +9,7 @@ class OfflinePlanetsRepositoryImpl(private val planetDao: PlanetDao) : OfflinePl
     }
 
     override suspend fun getPlanetById(id: Int): PlanetRoomEntity {
-        return planetDao.getPlanetById(id)
+        return planetDao.getPlanetByRemoteId(id)
     }
 
     override suspend fun insert(planet: PlanetRoomEntity) {

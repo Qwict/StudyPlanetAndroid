@@ -1,6 +1,7 @@
 package com.qwict.studyplanetandroid.common.di
 
 import com.qwict.studyplanetandroid.StudyPlanetApplication
+import com.qwict.studyplanetandroid.common.AuthInterceptor
 import com.qwict.studyplanetandroid.common.Constants.BASE_URL
 import com.qwict.studyplanetandroid.data.local.StudyPlanetDatabase
 import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepository
@@ -23,6 +24,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -30,7 +32,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     // Provides the API (remote server) to application
     @Provides
     @Singleton
@@ -38,8 +39,18 @@ object AppModule {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okhttpClient()) // Add our Okhttp client
             .build()
             .create(StudyPlanetApi::class.java)
+    }
+
+    // Provides the Okhttp client to application
+    @Provides
+    @Singleton
+    fun okhttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor())
+            .build()
     }
 
 //    @Provides
@@ -88,33 +99,6 @@ object AppModule {
     fun provideValidators(): Validators {
         return Validators()
     }
-
-//    @Provides
-//    @Singleton
-//    fun provideOfflinePlanetsRepository(): OfflinePlanetsRepository {
-//        return AppDataContainer(
-//            StudyPlanetApplication.appContext,
-//            CoroutineScope(SupervisorJob() + Dispatchers.Main),
-//        ).planetsRepository
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideOfflineUsersRepository(): OfflineUsersRepository {
-//        return AppDataContainer(
-//            StudyPlanetApplication.appContext,
-//            CoroutineScope(SupervisorJob() + Dispatchers.Main),
-//        ).usersRepository
-//    }
-
-//    @Provides
-//    @Singleton
-//    fun provideAppContainer(): AppDataContainer {
-//        return AppDataContainer(
-//            StudyPlanetApplication.appContext,
-//            CoroutineScope(SupervisorJob() + Dispatchers.Main),
-//        )
-//    }
 
     // for use cases
     @Provides

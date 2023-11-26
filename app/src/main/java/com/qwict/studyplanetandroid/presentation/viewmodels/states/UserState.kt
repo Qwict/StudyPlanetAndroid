@@ -15,4 +15,6 @@ data class UserState(
     val experienceForNextLevel: Int = 0,
     val currentLevel: Int = 0,
     val experienceProgress: Float = 0f,
+
+    val selectedTime: Int = 0,
 )

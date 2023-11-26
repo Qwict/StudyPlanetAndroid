@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.domain.use_case.actions
+package com.qwict.studyplanetandroid.domain.use_case.actions // ktlint-disable package-name
 
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
@@ -23,7 +23,7 @@ class StartDiscoveringUseCase @Inject constructor(
             emit(Resource.Loading())
             validateUser()
             if (isUserAuthenticated) {
-                repo.startDiscovering(DiscoverActionDto(selectedTime = selectedTime), token = getEncryptedPreference("token"))
+                repo.startDiscovering(DiscoverActionDto(selectedTime = selectedTime))
             } else if (getEncryptedPreference("token") == "expired") {
                 emit(Resource.Error("Your access to the universe has expired. Please log in again to discover a new planet."))
             } else {

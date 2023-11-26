@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qwict.studyplanetandroid.domain.model.Planet
@@ -38,8 +37,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun DiscoveredPlanetsScreen(
     onMineButtonClicked: (Planet) -> Unit = {},
-    onDiscoverPlanetsButtonClicked: () -> Unit = {},
-    onCancelMiningButtonClicked: () -> Unit = {},
     getOnlinePlanets: () -> Unit,
     getLocalPlanets: () -> Unit,
     userState: UserState,
@@ -80,13 +77,13 @@ fun DiscoveredPlanetsScreen(
                 Column() {
                     if (userState.planets.isEmpty()) {
                         Text(
-                            text = userState.error,
+                            text = "You have not discovered any planets yet.",
                             modifier = Modifier.padding(16.dp),
                             textAlign = TextAlign.Center,
                         )
 
                         Button(onClick = { /*TODO*/ }) {
-                            Text(text = "Discover")
+                            Text(text = "Refresh")
                         }
                     } else {
                         Text(
@@ -110,7 +107,6 @@ fun DiscoveredPlanetsScreen(
                     refreshing = userState.isRefreshing,
                     state = pullRefreshState,
                     modifier = Modifier.align(Alignment.TopCenter),
-                    backgroundColor = if (userState.isRefreshing) Color.Red else Color.Green,
                 )
             }
         }

@@ -22,8 +22,8 @@ interface PlanetDao {
     @Delete
     suspend fun delete(planet: PlanetRoomEntity)
 
-    @Query("SELECT * FROM planets WHERE id = :id")
-    suspend fun getPlanetById(id: Int): PlanetRoomEntity
+    @Query("SELECT * FROM planets WHERE remoteId = :remoteId")
+    suspend fun getPlanetByRemoteId(remoteId: Int): PlanetRoomEntity
 
     @Query("SELECT * FROM planets WHERE userOwnerId = :remoteId")
     suspend fun getPlanetsByRemoteId(remoteId: Int): List<PlanetRoomEntity>

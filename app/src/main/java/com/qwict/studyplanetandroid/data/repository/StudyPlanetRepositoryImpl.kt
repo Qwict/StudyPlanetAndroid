@@ -1,5 +1,6 @@
 package com.qwict.studyplanetandroid.data.repository
 
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepository
 import com.qwict.studyplanetandroid.data.local.database.OfflineUsersRepository
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
@@ -13,6 +14,7 @@ import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
 import com.qwict.studyplanetandroid.data.remote.dto.PlanetDto
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
 import com.qwict.studyplanetandroid.data.remote.dto.UserDto
+import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseModel
 import com.qwict.studyplanetandroid.data.remote.dto.toDatabaseUserWithPlanets
 import com.qwict.studyplanetandroid.domain.model.User
 import retrofit2.Response
@@ -56,7 +58,7 @@ class StudyPlanetRepositoryImpl @Inject constructor(
     }
 
     override suspend fun authenticate(token: String): AuthenticatedUserDto {
-        val authenticatedUserDto = api.authenticate(token)
+        val authenticatedUserDto = api.authenticate()
         val userWithPlanets = authenticatedUserDto.toDatabaseUserWithPlanets()
         userDatabase.insert(userWithPlanets.user)
         planetDatabase.insertAll(userWithPlanets.planets)
@@ -67,19 +69,23 @@ class StudyPlanetRepositoryImpl @Inject constructor(
         throw NotImplementedError()
     }
 
-    override suspend fun startDiscovering(body: DiscoverActionDto, token: String): Response<Unit> {
-        return api.startDiscovering(body, token)
+    override suspend fun startDiscovering(body: DiscoverActionDto): Response<Unit> {
+        return api.startDiscovering(body)
     }
 
-    override suspend fun stopDiscovering(body: DiscoverActionDto, token: String): PlanetDto? {
-        return api.stopDiscovering(body, token).body()
+    override suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto? {
+        val planetDto = api.stopDiscovering(body).body()
+        if (planetDto != null) {
+            planetDatabase.insert(planetDto.asDatabaseModel(AuthenticationSingleton.getRemoteId()))
+        }
+        return planetDto
     }
 
-    override suspend fun startExploring(body: ExploreActionDto, token: String): Response<Unit> {
-        return api.startExploring(body, token)
+    override suspend fun startExploring(body: ExploreActionDto): Response<Unit> {
+        return api.startExploring(body)
     }
 
-    override suspend fun stopExploring(body: ExploreActionDto, token: String): UserDto {
-        return api.stopExploring(body, token)
+    override suspend fun stopExploring(body: ExploreActionDto): UserDto {
+        return api.stopExploring(body)
     }
 }

@@ -25,8 +25,8 @@ interface StudyPlanetRepository {
     suspend fun authenticate(token: String): AuthenticatedUserDto
     suspend fun register(body: RegisterDto): AuthenticatedUserDto
     suspend fun registerLocalUser(): User
-    suspend fun startDiscovering(body: DiscoverActionDto, token: String): Response<Unit>
-    suspend fun stopDiscovering(body: DiscoverActionDto, token: String): PlanetDto?
-    suspend fun startExploring(body: ExploreActionDto, token: String): Response<Unit>
-    suspend fun stopExploring(body: ExploreActionDto, token: String): UserDto
+    suspend fun startDiscovering(body: DiscoverActionDto): Response<Unit>
+    suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto?
+    suspend fun startExploring(body: ExploreActionDto): Response<Unit>
+    suspend fun stopExploring(body: ExploreActionDto): UserDto
 }

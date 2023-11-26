@@ -25,7 +25,7 @@ class StartExploringUseCase @Inject constructor(
             emit(Resource.Loading())
             validateUser()
             if (isUserAuthenticated) {
-                repo.startExploring(ExploreActionDto(planetId = selectedPlanetId, selectedTime = selectedTime), token = getEncryptedPreference("token"))
+                repo.startExploring(ExploreActionDto(planetId = selectedPlanetId, selectedTime = selectedTime))
             } else if (getEncryptedPreference("token") == "expired") {
                 emit(Resource.Error("Your access to the universe has expired. Please log in again to discover a new planet."))
             } else {

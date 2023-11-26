@@ -11,7 +11,6 @@ import com.qwict.studyplanetandroid.data.remote.dto.UserDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 
@@ -26,17 +25,17 @@ interface StudyPlanetApi {
     suspend fun register(@Body body: RegisterDto): AuthenticatedUserDto
 
     @GET("v1/users")
-    suspend fun authenticate(@Header("authorization") bearerToken: String): AuthenticatedUserDto
+    suspend fun authenticate(): AuthenticatedUserDto
 
     @POST("v1/actions/discover")
-    suspend fun startDiscovering(@Body body: DiscoverActionDto, @Header("authorization") bearerToken: String): Response<Unit>
+    suspend fun startDiscovering(@Body body: DiscoverActionDto): Response<Unit>
 
     @PUT("v1/actions/discover")
-    suspend fun stopDiscovering(@Body body: DiscoverActionDto, @Header("authorization") bearerToken: String): Response<PlanetDto?>
+    suspend fun stopDiscovering(@Body body: DiscoverActionDto): Response<PlanetDto?>
 
     @POST("v1/actions/explore")
-    suspend fun startExploring(@Body body: ExploreActionDto, @Header("authorization") bearerToken: String): Response<Unit>
+    suspend fun startExploring(@Body body: ExploreActionDto): Response<Unit>
 
     @PUT("v1/actions/explore")
-    suspend fun stopExploring(@Body body: ExploreActionDto, @Header("authorization") bearerToken: String): UserDto
+    suspend fun stopExploring(@Body body: ExploreActionDto): UserDto
 }

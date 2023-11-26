@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [PlanetRoomEntity::class, UserRoomEntity::class],
-    version = 2,
+    version = 4,
     exportSchema = false,
 )
 abstract class StudyPlanetDatabase : RoomDatabase() {
