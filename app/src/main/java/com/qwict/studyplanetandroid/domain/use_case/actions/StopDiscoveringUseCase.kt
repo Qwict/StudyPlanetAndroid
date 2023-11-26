@@ -32,7 +32,7 @@ class StopDiscoveringUseCase @Inject constructor(
                     repo.insertPlanet(newDatabasePlanet)
                     emit(Resource.Success(newDatabasePlanet.toPlanet()))
                 } else {
-                    emit(Resource.Error("Failed to discover a new planet."))
+                    emit(Resource.Success(null))
                 }
             } else {
                 emit(Resource.Error("Failed to discover a new planet."))

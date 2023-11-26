@@ -5,7 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import javax.inject.Singleton
 
+@Singleton
 object AuthenticationSingleton {
     var isUserAuthenticated by mutableStateOf(false)
         private set

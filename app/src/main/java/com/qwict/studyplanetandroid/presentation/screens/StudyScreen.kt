@@ -21,7 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -31,9 +31,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.components.AlertDialog
 import com.qwict.studyplanetandroid.presentation.components.study.CustomCountDownTimer
+import com.qwict.studyplanetandroid.presentation.components.study.PlanetDiscoveredDialog
 import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
 import com.qwict.studyplanetandroid.presentation.viewmodels.states.StudyState
 import kotlinx.coroutines.delay
@@ -41,47 +43,45 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ExplorerScreen(
-    onCancelStudyButtonClicked: () -> Unit = {},
-    isDiscovering: Boolean,
+    navigateBackToMainScreen: () -> Unit = {},
+    navigateBackToDiscoveredPlanetsScreen: () -> Unit = {},
     modifier: Modifier = Modifier,
-    selectedPlanet: Planet,
     studyViewModel: StudyViewModel = hiltViewModel(),
-    startCountDown: suspend () -> Unit,
+    state: StudyState = studyViewModel.state,
+    isDiscovering: Boolean,
+    selectedPlanet: Planet,
     selectedTimeInMinutes: Float,
-    studyState: StudyState,
-    resetAction: () -> Unit,
-    startDiscovering: () -> Unit,
-    stopDiscovering: () -> Unit,
-    startExploring: () -> Unit,
-    stopExploring: () -> Unit,
 ) {
-    val openAlertDialog = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
-    var currentProgress by remember { mutableStateOf(0f) }
+    val imageId = if (isDiscovering) {
+        R.drawable.galaxy
+    } else {
+        selectedPlanet.imageId
+    }
+    var currentProgress by remember { mutableFloatStateOf(0f) }
     BackHandler {
-        openAlertDialog.value = true
+        studyViewModel.openOnBackAlertDialog()
     }
 
     LaunchedEffect(true) {
         scope.launch {
-            resetAction()
-            Log.i("StudyViewModel", "Started studying, ${studyState.selectedPlanet.name} for $selectedTimeInMinutes minutes; Discovering: $isDiscovering")
-            studyState.updatedTime = selectedTimeInMinutes.toInt() * 60 * 1000
+            studyViewModel.resetAction()
+            Log.i("StudyViewModel", "Started studying, ${state.selectedPlanet.name} for $selectedTimeInMinutes minutes; Discovering: $isDiscovering")
+            state.updatedTime = selectedTimeInMinutes.toInt() * 60 * 1000
             try {
-                studyState.selectedTime = selectedTimeInMinutes.toInt() * 60 * 1000
+                state.selectedTime = selectedTimeInMinutes.toInt() * 60 * 1000
                 if (isDiscovering) {
-                    startDiscovering()
+                    studyViewModel.startDiscovering()
                 } else {
-                    startExploring()
+                    studyViewModel.startExploring()
                 }
                 loadProgress({ progress ->
                     currentProgress = progress
-                }, studyState.selectedTime.toLong())
+                }, state.selectedTime.toLong())
                 if (isDiscovering) {
-                    stopDiscovering()
+                    studyViewModel.stopDiscovering()
                 } else {
-                    stopExploring()
+                    studyViewModel.stopExploring()
                 }
             } catch (e: Exception) {
                 Log.i("ExplorerScreen", e.toString())
@@ -113,11 +113,11 @@ fun ExplorerScreen(
                     textAlign = TextAlign.Center,
                 )
                 Image(
-                    painter = painterResource(selectedPlanet.imageId),
+                    painter = painterResource(imageId),
                     contentDescription = selectedPlanet.name,
                 )
                 Text(
-                    text = (studyState.selectedTime / 1000 / 60).toString() + " Minutes",
+                    text = (state.selectedTime / 1000 / 60).toString() + " Minutes",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
@@ -132,10 +132,10 @@ fun ExplorerScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CustomCountDownTimer(
-                studyState.hours,
-                studyState.minutes,
-                studyState.seconds,
-            ) { startCountDown() }
+                state.hours,
+                state.minutes,
+                state.seconds,
+            ) { studyViewModel.startCountDown() }
             LinearProgressIndicator(
                 modifier = Modifier
                     .width(300.dp)
@@ -144,7 +144,10 @@ fun ExplorerScreen(
             )
 
             OutlinedButton(
-                onClick = { openAlertDialog.value = true },
+                onClick = {
+                    studyViewModel.openOnBackAlertDialog()
+//                    openOnBackAlertDialog.value = true
+                },
                 modifier = Modifier
                     .padding(16.dp),
 
@@ -154,16 +157,29 @@ fun ExplorerScreen(
         }
 
         when {
-            openAlertDialog.value -> {
+            state.openOnBackAlertDialog -> {
                 AlertDialog(
-                    onDismissRequest = { openAlertDialog.value = false },
+                    onDismissRequest = {
+                        studyViewModel.closeBackAlertDialog()
+//                        openOnBackAlertDialog.value = false
+                    },
                     onConfirmation = {
-                        onCancelStudyButtonClicked()
-                        openAlertDialog.value = false
+                        navigateBackToMainScreen()
+                        studyViewModel.closeBackAlertDialog()
+//                        openOnBackAlertDialog.value = false
                     },
                     dialogTitle = "Cancel mining operation?",
                     dialogText = "Are you sure you want to stop mining ${selectedPlanet.name}? All progress will be lost.",
                     icon = Icons.Default.Info,
+                )
+            }
+            state.openPlanetDiscoveredDialog -> {
+//            true -> {
+                PlanetDiscoveredDialog(
+                    navigateHome = { navigateBackToMainScreen() },
+                    navigateToDiscoveredPlanets = { navigateBackToDiscoveredPlanetsScreen() },
+                    planet = state.discoveredPlanet,
+                    hasDiscoveredPlanet = state.hasDiscoveredPlanet,
                 )
             }
         }

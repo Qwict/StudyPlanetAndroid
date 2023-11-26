@@ -58,7 +58,7 @@ fun SliderAdvancedExample(selectedTimeInMinutes: Float, setSelectedTimeInMinutes
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
             steps = 6,
-            valueRange = 1f..15f,
+            valueRange = 0.1f..0.6f,
 //            valueRange = 15f..120f,
         )
 //        Large text that shows how long the user has selected must be centered

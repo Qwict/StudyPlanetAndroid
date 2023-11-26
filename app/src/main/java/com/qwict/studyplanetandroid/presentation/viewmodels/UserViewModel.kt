@@ -41,7 +41,7 @@ class UserViewModel @Inject constructor(
                     if (planets.isNotEmpty()) {
                         state = state.copy(planets = planets)
                     } else {
-                        getOnlinePlanets()
+                        getOnlinePlanets(false)
                     }
                 }
 
@@ -56,7 +56,7 @@ class UserViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun getOnlinePlanets() {
+    fun getOnlinePlanets(showRefreshing: Boolean) {
         Log.i("UserViewModel", "getOnlinePlanets")
         getOnlinePlanetsUseCase().onEach { result ->
             when (result) {
@@ -69,7 +69,7 @@ class UserViewModel @Inject constructor(
                 }
 
                 is Resource.Loading -> {
-                    state = state.copy(isRefreshing = true)
+                    state = state.copy(isRefreshing = showRefreshing)
                 }
             }
         }.launchIn(viewModelScope)

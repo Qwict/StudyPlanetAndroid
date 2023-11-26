@@ -6,7 +6,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -16,9 +15,11 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.presentation.screens.DiscoveredPlanetsScreen
@@ -28,8 +29,7 @@ import com.qwict.studyplanetandroid.presentation.screens.TimeSelectionScreen
 import com.qwict.studyplanetandroid.presentation.screens.auth.LoginScreen
 import com.qwict.studyplanetandroid.presentation.screens.auth.RegisterScreen
 import com.qwict.studyplanetandroid.presentation.viewmodels.AuthViewModel
-import com.qwict.studyplanetandroid.presentation.viewmodels.MainViewModel
-import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
+import com.qwict.studyplanetandroid.presentation.viewmodels.SelectedPlanetViewModel
 import com.qwict.studyplanetandroid.presentation.viewmodels.UserViewModel
 
 enum class StudyPlanetScreens(@StringRes val title: Int) {
@@ -45,11 +45,9 @@ enum class StudyPlanetScreens(@StringRes val title: Int) {
     PlanetExplorerScreen(title = R.string.title_explorer_screen),
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyPlanetNavigation(
     navController: NavHostController,
-    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -101,6 +99,8 @@ fun StudyPlanetNavigation(
         ) {
             composable(route = StudyPlanetScreens.MainScreen.name) {
                 val userViewModel = it.sharedViewModel<UserViewModel>(navController)
+                val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
+                selectedPlanetViewModel.reset()
                 MainScreen(
                     onStartExploringButtonClicked = {
                         navController.navigate(
@@ -108,7 +108,6 @@ fun StudyPlanetNavigation(
                         )
                     },
                     onDiscoverPlanetsButtonClicked = {
-//                        mainViewModel.isDiscovering = true
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier
@@ -117,56 +116,64 @@ fun StudyPlanetNavigation(
                     userState = userViewModel.state,
                 )
             }
-            composable(route = StudyPlanetScreens.TimeSelectionScreen.name) {
+            composable(
+                route = StudyPlanetScreens.TimeSelectionScreen.name,
+                arguments = listOf(
+                    navArgument("selectedPlanet") {
+                        defaultValue = 0
+                        type = NavType.IntType
+                    },
+                ),
+            ) {
                 val userViewModel = it.sharedViewModel<UserViewModel>(navController)
+                val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 TimeSelectionScreen(
                     onStartActionButtonClicked = {
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    isDiscovering = mainViewModel.isDiscovering,
-                    selectedTimeInMinutes = mainViewModel.selectedTimeInMinutes,
-                    setSelectedTimeInMinutes = { mainViewModel.selectedTimeInMinutes = it },
+                    isDiscovering = selectedPlanetViewModel.isDiscovering,
+                    selectedTimeInMinutes = selectedPlanetViewModel.selectedTimeInMinutes,
+                    setSelectedTimeInMinutes = { selectedPlanetViewModel.selectedTimeInMinutes = it },
                 )
             }
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
                 val userViewModel = it.sharedViewModel<UserViewModel>(navController)
+                val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 DiscoveredPlanetsScreen(
-                    onMineButtonClicked = {
-                        mainViewModel.selectedPlanet = it
-                        mainViewModel.isDiscovering = false
+                    navigateToTimeSelectionScreen = {
+                        selectedPlanetViewModel.selectedPlanet = it
+                        selectedPlanetViewModel.isDiscovering = false
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    getOnlinePlanets = { userViewModel.getOnlinePlanets() },
+                    getOnlinePlanets = { userViewModel.getOnlinePlanets(it) },
                     getLocalPlanets = { userViewModel.getLocalPlanets() },
                     userState = userViewModel.state,
                 )
             }
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
                 val userViewModel = it.sharedViewModel<UserViewModel>(navController)
-                val studyViewModel = it.sharedViewModel<StudyViewModel>(navController)
+                val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 BackHandler(true) {
                     // Or do nothing
                     Log.i("Application", "Clicked back")
                 }
                 ExplorerScreen(
-                    onCancelStudyButtonClicked = {
+                    navigateBackToMainScreen = {
                         navController.navigate(StudyPlanetScreens.MainScreen.name) {
                             popUpTo(StudyPlanetScreens.MainScreen.name) { inclusive = true }
                         }
                     },
+                    navigateBackToDiscoveredPlanetsScreen = {
+                        navController.navigate(StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
+                            popUpTo(StudyPlanetScreens.DiscoveredPlanetsScreen.name) { inclusive = true }
+                        }
+                    },
                     modifier = Modifier.fillMaxHeight(),
                     isDiscovering = true,
-                    selectedPlanet = mainViewModel.selectedPlanet,
-                    selectedTimeInMinutes = mainViewModel.selectedTimeInMinutes,
-                    studyState = studyViewModel.state,
-                    startCountDown = { studyViewModel.startCountDown() },
-                    resetAction = { studyViewModel.resetAction() },
-                    startDiscovering = { studyViewModel.startDiscovering() },
-                    stopDiscovering = { studyViewModel.stopDiscovering() },
-                    startExploring = { studyViewModel.startExploring() },
-                    stopExploring = { studyViewModel.stopExploring() },
+                    selectedPlanet = selectedPlanetViewModel.selectedPlanet,
+                    selectedTimeInMinutes = selectedPlanetViewModel.selectedTimeInMinutes,
                 )
             }
         }

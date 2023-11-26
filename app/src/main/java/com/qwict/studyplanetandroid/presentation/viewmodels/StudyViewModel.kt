@@ -58,7 +58,13 @@ class StudyViewModel @Inject constructor(
                     if (result.data != null) {
                         state = state.copy(
                             discoveredPlanet = result.data,
-                            haseDiscoveredPlanet = true,
+                            hasDiscoveredPlanet = true,
+                            openPlanetDiscoveredDialog = true,
+                        )
+                    } else {
+                        state = state.copy(
+                            hasDiscoveredPlanet = false,
+                            openPlanetDiscoveredDialog = true,
                         )
                     }
                 }
@@ -95,6 +101,10 @@ class StudyViewModel @Inject constructor(
 
     fun stopExploring() {
     }
+
+    fun closeBackAlertDialog() { state = state.copy(openOnBackAlertDialog = false) }
+    fun openOnBackAlertDialog() { state = state.copy(openOnBackAlertDialog = true) }
+
     fun resetAction() {
         state.selectedTime = 0
         state.hours = 0
