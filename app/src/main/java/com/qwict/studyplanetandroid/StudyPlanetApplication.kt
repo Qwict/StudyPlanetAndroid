@@ -15,8 +15,8 @@ import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.presentation.StudyPlanetNavigation
 import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
-import com.qwict.studyplanetandroid.presentation.components.AppBar
-import com.qwict.studyplanetandroid.presentation.components.NavBar
+import com.qwict.studyplanetandroid.presentation.components.nav.AppBar
+import com.qwict.studyplanetandroid.presentation.components.nav.NavBar
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

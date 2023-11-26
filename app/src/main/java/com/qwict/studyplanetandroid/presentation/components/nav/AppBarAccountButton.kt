@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.presentation.components
+package com.qwict.studyplanetandroid.presentation.components.nav
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout

@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.presentation.components
+package com.qwict.studyplanetandroid.presentation.components.nav
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -15,14 +15,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalView
 import androidx.navigation.NavHostController
 import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
+import com.qwict.studyplanetandroid.presentation.components.invokeHapticFeedback
 
 @Composable
 fun NavBar(
     currentScreen: StudyPlanetScreens,
     navController: NavHostController,
 ) {
+    // for haptic feedback
+    var view = LocalView.current
     data class NavbarItem(
         var text: String = "",
         var name: String = "",
@@ -55,7 +59,6 @@ fun NavBar(
     )
 
     NavigationBar {
-//        The user should not be allowed to leave the study screen by clicking the navbar
         if (currentScreen.name != StudyPlanetScreens.PlanetExplorerScreen.name) {
             items.forEachIndexed { index, navbarItem ->
                 NavigationBarItem(
@@ -63,11 +66,14 @@ fun NavBar(
                     label = { if (currentScreen.name == navbarItem.name) Text(navbarItem.text) },
                     selected = currentScreen.name == navbarItem.name,
                     onClick = {
-                        navController.navigate(navbarItem.name) {
-                            popUpTo(navbarItem.name) { inclusive = true }
+                        if (currentScreen.name != navbarItem.name) {
+                            navController.navigate(navbarItem.name) {
+                                popUpTo(navbarItem.name) { inclusive = true }
+                            }
+                            selectedNavbarItemIndex = index
+                        } else {
+                            invokeHapticFeedback(view)
                         }
-                        selectedNavbarItemIndex = index
-//                        navbarItem.onClick()
                     },
                 )
             }
