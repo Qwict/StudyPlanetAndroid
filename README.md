@@ -10,7 +10,8 @@ Benefits include enhanced focus, gamified learning, and productivity even offlin
 Dependencies include Room, Retrofit, Kotlin Coroutines, Dagger Hilt, OkHttp, and Gson. 
 The backend is hosted at [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version). 
 For detailed documentation, visit [doc.sp.qwict.com](https://doc.sp.qwict.com). 
-Feedback and issues can be reported on the GitHub repository.
+The application is automatically built and released on Github.
+Feedback and issues can be reported on the [GitHub releases](https://github.com/Qwict/StudyPlanetAndroid/releases).
 
 ## Features
 
@@ -64,7 +65,7 @@ Make sure to check the `build.gradle.kts` file for the most up-to-date list of d
 
 The backend for Study Planet is hosted on [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version).
 This backend is also available on Github at [Qwict/StudyPlanetNodeAPI](https://github.com/Qwict/StudyPlanetNodeAPI).
-The connection to this backend is defined in [Constants](https://doc.sp.qwict.com/app/com.qwict.studyplanetandroid.common/-constants/) as `BASE_URL`.
+The connection to this backend is defined in [Constants](https://doc.sp.qwict.com/-study-planet/com.qwict.studyplanetandroid.common/-constants/index.html) as `BASE_URL`.
 
 ## Feedback and Issues
 
