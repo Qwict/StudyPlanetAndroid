@@ -1,0 +1,28 @@
+name: Manually generate documentation
+on: workflow_dispatch
+
+jobs:
+  build:
+    name: Manually generate documentation
+    runs-on: ubuntu-latest
+    steps:
+    - name: Complete rerun of Documentation creation with dokka
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SP_DEPLOY }}
+        port: ${{ secrets.PORT }}
+        passphrase: ${{ secrets.PASSPHRASE }}
+        script: |
+          cd /var/www/qwict/StudyPlanet/
+          rm -rf StudyPlanetAndroid
+          git clone https://github.com/Qwict/StudyPlanetAndroid.git
+          cd StudyPlanetAndroid/
+          git status
+          cp ../local.properties ./
+          cp -R ./licenses/* /usr/lib/android-sdk/licenses/
+          ./gradlew dokkaHtml
+          rm -rf ../StudyPlanetDocumentation/*
+          cp -R ./app/build/dokka/html/* ../StudyPlanetDocumentation
+          
