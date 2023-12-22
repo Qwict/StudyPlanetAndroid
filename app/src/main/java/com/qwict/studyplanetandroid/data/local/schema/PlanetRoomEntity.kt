@@ -2,9 +2,14 @@ package com.qwict.studyplanetandroid.data.local.schema
 
 import androidx.room.Entity
 import com.qwict.studyplanetandroid.domain.model.Planet
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 
+/**
+ * Room Entity representing a planet in the local database.
+ *
+ * @property remoteId The remote identifier of the planet.
+ * @property name The name of the planet.
+ * @property userOwnerId The remote identifier of the user to whom the planet belongs.
+ */
 @Entity(
     tableName = "planets",
     primaryKeys = ["userOwnerId", "name"],
@@ -15,6 +20,11 @@ data class PlanetRoomEntity(
     val userOwnerId: Int,
 )
 
+/**
+ * Populates a list of default [PlanetRoomEntity] objects.
+ *
+ * @return A list of default planets.
+ */
 fun populatePlanets(): List<PlanetRoomEntity> {
     return listOf(
         PlanetRoomEntity(
@@ -56,13 +66,11 @@ fun populatePlanets(): List<PlanetRoomEntity> {
     )
 }
 
-fun toPlanet(jsonPlanet: JsonObject, userId: Int): PlanetRoomEntity {
-    return PlanetRoomEntity(
-        name = jsonPlanet.jsonObject["name"].toString(),
-        userOwnerId = userId,
-    )
-}
-
+/**
+ * Converts a [PlanetRoomEntity] into a [Planet] domain model.
+ *
+ * @return A [Planet] instance.
+ */
 fun PlanetRoomEntity.toPlanet() = Planet(
     id = remoteId,
     name = name,

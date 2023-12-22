@@ -11,9 +11,22 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use case for handling user registration.
+ *
+ * @param repo The repository providing access to the study planet data.
+ */
 class RegisterUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
 ) {
+    /**
+     * Invokes the registration use case with the provided user details.
+     *
+     * @param name The user's name.
+     * @param email The user's email address.
+     * @param password The user's password.
+     * @return A [Flow] emitting [Resource] representing the registration operation result.
+     */
     operator fun invoke(
         name: String,
         email: String,

@@ -19,6 +19,17 @@ import kotlin.math.ceil
 import kotlin.math.log
 import kotlin.math.pow
 
+/**
+ * ViewModel responsible for managing user-related functionality and state.
+ *
+ * The [UserViewModel] class is a Hilt-aware ViewModel that orchestrates interactions between the UI and the
+ * underlying use cases for user authentication and planet data retrieval. It also handles the calculation of
+ * user levels based on experience points.
+ *
+ * @property authenticateUseCase The use case responsible for authenticating the user and retrieving user data.
+ * @property getLocalPlanetsUseCase The use case responsible for retrieving locally stored planet data.
+ * @property getOnlinePlanetsUseCase The use case responsible for retrieving planet data from an online source.
+ */
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val authenticateUseCase: AuthenticateUseCase,
@@ -32,6 +43,16 @@ class UserViewModel @Inject constructor(
         getUserWithToken()
     }
 
+    /**
+     * Retrieves locally stored planet data and updates the [UserState] accordingly.
+     *
+     * This function uses the [getLocalPlanetsUseCase] to retrieve locally stored planet data. It observes
+     * the result of the process and updates the [UserState] based on the result:
+     * - If the process is successful ([Resource.Success]), it updates the state with the retrieved planets.
+     * - If no local planets are available, it triggers the retrieval of online planets using [getOnlinePlanets].
+     * - If an error occurs during the process ([Resource.Error]), it updates the state with the error message.
+     * - During the loading phase ([Resource.Loading]), it updates the state to indicate loading.
+     */
     fun getLocalPlanets() {
         Log.i("UserViewModel", "getLocalPlanets")
         getLocalPlanetsUseCase().onEach { result ->
@@ -56,6 +77,17 @@ class UserViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    /**
+     * Retrieves planet data from an online source and updates the [UserState] accordingly.
+     *
+     * This function uses the [getOnlinePlanetsUseCase] to retrieve planet data from an online source. It observes
+     * the result of the process and updates the [UserState] based on the result:
+     * - If the process is successful ([Resource.Success]), it updates the state with the retrieved online planets.
+     * - If an error occurs during the process ([Resource.Error]), it updates the state with the error message.
+     * - During the loading phase ([Resource.Loading]), it updates the state to indicate loading.
+     *
+     * @param showRefreshing Flag indicating whether to show a refreshing indicator during the process.
+     */
     fun getOnlinePlanets(showRefreshing: Boolean) {
         Log.i("UserViewModel", "getOnlinePlanets")
         getOnlinePlanetsUseCase().onEach { result ->
@@ -79,6 +111,16 @@ class UserViewModel @Inject constructor(
         data object Success : ValidationEvent()
     }
 
+    /**
+     * Initiates the user authentication process and retrieves user data based on the authentication result.
+     *
+     * This function uses the [authenticateUseCase] to authenticate the user and retrieve user data. It observes
+     * the result of the process and updates the [UserState] based on the result:
+     * - If the process is successful ([Resource.Success]), it updates the state with the authenticated user data
+     *   and triggers the calculation of user levels using [levelCalculator].
+     * - If an error occurs during the process ([Resource.Error]), it updates the state with the error message.
+     * - During the loading phase ([Resource.Loading]), it updates the state to indicate loading.
+     */
     private fun getUserWithToken() {
         authenticateUseCase().onEach { result ->
             when (result) {
@@ -97,6 +139,15 @@ class UserViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
+
+    /**
+     * Calculates user levels based on the provided experience points and updates the [UserState].
+     *
+     * This function uses logarithmic calculations to determine the current user level, experience points required
+     * for the next level, and the progress towards the next level. It updates the [UserState] with the calculated values.
+     *
+     * @param experience The user's experience points.
+     */
     private fun levelCalculator(experience: Int) {
         Log.d("AuthViewModel", "levelCalculator: ${log(experience.toDouble() / 60, 2.0)}")
 

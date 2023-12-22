@@ -11,9 +11,21 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use case for handling user login.
+ *
+ * @param repo The repository providing access to the study planet data.
+ */
 class LoginUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
 ) {
+    /**
+     * Invokes the login use case with the provided email and password.
+     *
+     * @param email The user's email address.
+     * @param password The user's password.
+     * @return A [Flow] emitting [Resource] representing the login operation result.
+     */
     operator fun invoke(
         email: String,
         password: String,

@@ -6,6 +6,12 @@ import com.qwict.studyplanetandroid.data.remote.dto.AuthenticatedUserDto
 import com.qwict.studyplanetandroid.data.remote.dto.asDomainModel
 import com.qwict.studyplanetandroid.domain.model.User
 
+/**
+ * Use case for inserting a locally authenticated user.
+ *
+ * @param authenticatedUserDto The data transfer object representing the authenticated user.
+ * @return The user domain model after insertion.
+ */
 fun insertLocalUserUseCase(authenticatedUserDto: AuthenticatedUserDto): User {
     // Shared Preferences Part
     saveEncryptedPreference("token", authenticatedUserDto.token)

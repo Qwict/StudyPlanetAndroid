@@ -13,9 +13,21 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use case for stopping the process of exploring a discovered planet.
+ *
+ * @property repo The repository responsible for interacting with data sources.
+ */
 class StopExploringUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
 ) {
+    /**
+     * Invokes the use case to stop the process of exploring a discovered planet.
+     *
+     * @param selectedTime The selected time for the exploration process.
+     * @param selectedPlanetId The ID of the planet to explore.
+     * @return Flow<Resource<User>> representing the result of the operation.
+     */
     operator fun invoke(
         selectedTime: Int,
         selectedPlanetId: Int,

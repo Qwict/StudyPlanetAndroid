@@ -7,6 +7,15 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.qwict.studyplanetandroid.domain.model.User
 
+/**
+ * Room Entity representing a user in the local database.
+ *
+ * @property id The local database identifier for the user.
+ * @property experience The experience level of the user.
+ * @property remoteId The remote identifier of the user.
+ * @property email The email address of the user.
+ * @property name The name of the user.
+ */
 @Entity(
     tableName = "users",
     indices = [
@@ -24,6 +33,12 @@ data class UserRoomEntity(
     var name: String = "",
 )
 
+/**
+ * Data class representing a user with associated planets in the local database.
+ *
+ * @property user The user information.
+ * @property planets The list of planets associated with the user.
+ */
 data class DatabaseUserWithPlanets(
     @Embedded val user: UserRoomEntity,
     @Relation(
@@ -33,6 +48,11 @@ data class DatabaseUserWithPlanets(
     val planets: List<PlanetRoomEntity>,
 )
 
+/**
+ * Converts a [DatabaseUserWithPlanets] into a [User] domain model.
+ *
+ * @return A [User] instance.
+ */
 fun DatabaseUserWithPlanets.asDomainModel() = User(
     discoveredPlanets = planets.map { it.toPlanet() },
     email = user.email,
@@ -41,6 +61,11 @@ fun DatabaseUserWithPlanets.asDomainModel() = User(
     name = user.name,
 )
 
+/**
+ * Converts a [UserRoomEntity] into a [User] domain model.
+ *
+ * @return A [User] instance.
+ */
 fun UserRoomEntity.toUser() = User(
     discoveredPlanets = emptyList(),
     email = email,

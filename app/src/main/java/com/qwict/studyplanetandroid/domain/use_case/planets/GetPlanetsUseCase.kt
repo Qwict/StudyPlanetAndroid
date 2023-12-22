@@ -13,9 +13,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+/**
+ * Use case for fetching local planets based on user authentication status.
+ *
+ * @property repo The repository responsible for interacting with data sources.
+ */
 class GetLocalPlanetsUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
 ) {
+    /**
+     * Invokes the use case to fetch local planets.
+     *
+     * @return Flow<Resource<List<Planet>>> representing the result of the operation.
+     */
     operator fun invoke(): Flow<Resource<List<Planet>>> = flow {
         try {
             emit(Resource.Loading())
@@ -32,9 +42,19 @@ class GetLocalPlanetsUseCase @Inject constructor(
     }
 }
 
+/**
+ * Use case for fetching online planets based on user authentication status.
+ *
+ * @property repo The repository responsible for interacting with data sources.
+ */
 class GetOnlinePlanetsUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
 ) {
+    /**
+     * Invokes the use case to fetch online planets.
+     *
+     * @return Flow<Resource<List<Planet>>> representing the result of the operation.
+     */
     operator fun invoke(): Flow<Resource<List<Planet>>> = flow {
         Log.d("GetUserUseCase", "Getting online user to refresh planets")
         try {

@@ -15,9 +15,19 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use case for authenticating the user and fetching user information.
+ *
+ * @property repo The repository responsible for interacting with data sources.
+ */
 class AuthenticateUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
 ) {
+    /**
+     * Invokes the use case to authenticate the user and fetch user information.
+     *
+     * @return Flow<Resource<User>> representing the result of the operation.
+     */
     operator fun invoke(): Flow<Resource<User>> = flow {
         try {
             emit(Resource.Loading())

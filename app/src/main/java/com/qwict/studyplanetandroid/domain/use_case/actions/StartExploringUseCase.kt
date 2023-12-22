@@ -14,9 +14,21 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use case for initiating the process of exploring a selected planet.
+ *
+ * @property repo The repository responsible for interacting with data sources.
+ */
 class StartExploringUseCase @Inject constructor(
     private val repo: StudyPlanetRepository,
 ) {
+    /**
+     * Invokes the use case to start the process of exploring a selected planet.
+     *
+     * @param selectedTime The selected time for the exploration process.
+     * @param selectedPlanetId The ID of the planet to explore.
+     * @return Flow<Resource<User>> representing the result of the operation.
+     */
     operator fun invoke(
         selectedTime: Int,
         selectedPlanetId: Int,

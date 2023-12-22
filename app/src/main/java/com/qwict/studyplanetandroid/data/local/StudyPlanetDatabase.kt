@@ -14,6 +14,12 @@ import com.qwict.studyplanetandroid.data.local.schema.populatePlanets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * Room Database for the Study Planet application, managing entities such as [PlanetRoomEntity] and [UserRoomEntity].
+ *
+ * @property planetDao The Data Access Object (DAO) for interacting with the "planets" table.
+ * @property userDao The Data Access Object (DAO) for interacting with the "users" table.
+ */
 @Database(
     entities = [PlanetRoomEntity::class, UserRoomEntity::class],
     version = 4,
@@ -28,6 +34,13 @@ abstract class StudyPlanetDatabase : RoomDatabase() {
         @Volatile
         private var Instance: StudyPlanetDatabase? = null
 
+        /**
+         * Gets an instance of the [StudyPlanetDatabase].
+         *
+         * @param context The application context.
+         * @param scope The coroutine scope for database operations.
+         * @return The [StudyPlanetDatabase] instance.
+         */
         fun getDatabase(context: Context, scope: CoroutineScope): StudyPlanetDatabase {
             Log.d("StudyPlanetDatabase", "Creating database")
             return Instance ?: synchronized(this) {
