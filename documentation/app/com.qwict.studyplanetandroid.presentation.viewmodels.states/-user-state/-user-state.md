@@ -1,6 +1,0 @@
-//[app](../../../index.md)/[com.qwict.studyplanetandroid.presentation.viewmodels.states](../index.md)/[UserState](index.md)/[UserState](-user-state.md)
-
-# UserState
-
-[androidJvm]\
-constructor(isLoading: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) = false, isRefreshing: [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) = false, refreshError: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, error: [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) = &quot;&quot;, user: [User](../../com.qwict.studyplanetandroid.domain.model/-user/index.md) = EMPTY_USER, planets: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)&lt;[Planet](../../com.qwict.studyplanetandroid.domain.model/-planet/index.md)&gt; = emptyList(), experienceForNextLevel: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, currentLevel: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0, experienceProgress: [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) = 0.0f, selectedTime: [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) = 0)

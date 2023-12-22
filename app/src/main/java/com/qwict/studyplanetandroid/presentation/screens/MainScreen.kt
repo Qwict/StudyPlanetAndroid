@@ -52,6 +52,10 @@ fun MainScreen(
             experienceProgress = userState.experienceProgress,
         )
 
+        Row() {
+//            VideoPlayer()
+        }
+
         Column {
             OutlinedButton(onClick = { onDiscoverPlanetsButtonClicked() }) {
                 Text(text = "Discover Planets")

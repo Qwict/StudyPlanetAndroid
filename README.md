@@ -37,7 +37,7 @@ Here's a detailed overview of the app's features:
 
 ## Documentation
 
->  The [documentation](documentation/index.md) for this project is generated using **Dokka**. It can be read in MarkDown format on Github. 
+>  The [documentation](documentation/app/[root]/index.md) for this project is generated using **Dokka**. It can be read in MarkDown format on Github. 
 
 ## Dependencies
 
