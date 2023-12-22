@@ -89,10 +89,6 @@ dependencies {
     // Added for navigation
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
-    // Required for GIF support
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("io.coil-kt:coil-gif:2.4.0")
-
     // Retrofit for backend API calls
     val retrofit_version = "2.9.0"
     implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
@@ -130,31 +126,10 @@ dependencies {
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
 
-    // for video player
-//    implementation("com.google.android.exoplayer:exoplayer:2.11.7")
-//    implementation("androidx.media3:media3-exoplayer:1.1.1")
-    implementation("com.google.android.exoplayer:exoplayer:2.18.7")
-
 //    for more icons
     implementation("androidx.compose.material:material-icons-extended:1.4.3")
 
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-
-//    implementation("com.google.dagger:hilt-android:2.48.1")
-//    kapt("com.google.dagger:hilt-compiler:2.48.1")
-//
-//    // For instrumentation tests
-//    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48.1")
-//    kaptAndroidTest("com.google.dagger:hilt-compiler:2.48.1")
-//
-//    // For local unit tests
-//    testImplementation("com.google.dagger:hilt-android-testing:2.48.1")
-//    kaptTest("com.google.dagger:hilt-compiler:2.48.1")
-// }
-//
-// kapt {
-//    correctErrorTypes = true
-// }
 
     implementation("com.google.dagger:hilt-android:2.48.1")
     annotationProcessor("com.google.dagger:hilt-compiler:2.48.1")
