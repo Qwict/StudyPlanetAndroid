@@ -1,8 +1,16 @@
 # Study Planet Android App
 
-The Study Planet Android App is designed to help users stay focused and productive by incorporating gamification elements into their learning experience. 
-The app encourages users to concentrate on their studies or work by allowing them to discover and explore virtual planets on their Android phones. 
-Here's a detailed overview of the app's features:
+
+
+## TL;DR
+The Study Planet Android App is designed to help users stay focused and productive by incorporating gamification elements into their learning experience.
+The app encourages users to concentrate on their studies or work by allowing them to discover and explore virtual planets on their Android devices.
+
+Benefits include enhanced focus, gamified learning, and productivity even offline. 
+Dependencies include Room, Retrofit, Kotlin Coroutines, Dagger Hilt, OkHttp, and Gson. 
+The backend is hosted at [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version). 
+For detailed documentation, visit [doc.sp.qwict.com](https://doc.sp.qwict.com). 
+Feedback and issues can be reported on the GitHub repository.
 
 ## Features
 
@@ -37,18 +45,26 @@ Here's a detailed overview of the app's features:
 
 ## Documentation
 
->  The [documentation](documentation/app/[root]/index.md) for this project is generated using **Dokka**. It can be read in MarkDown format on Github. 
+The documentation for StudyPlanet is generated using **Dokka**. 
+It is online available on [doc.sp.qwict.com](https://doc.sp.qwict.com).
+This documentation is updated automatically on every commit to the `main` branch.
 
 ## Dependencies
 
 - [Room](https://developer.android.com/training/data-storage/room): Android SQLite database library.
-- [Retrofit](https://square.github.io/retrofit/): HTTP client for making API requests.
+- [Retrofit](https://square.github.io/retrofit): HTTP client for making API requests.
 - [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html): Asynchronous programming in Kotlin.
 - [Dagger Hilt](https://developer.android.com/training/dependency-injection/hilt-android): Dependency injection for Android.
 - [OkHttp](https://square.github.io/okhttp/): HTTP client for intercepting requests (used in conjunction with Retrofit).
 - [Gson](https://github.com/google/gson): JSON parsing library for Kotlin.
 
 Make sure to check the `build.gradle.kts` file for the most up-to-date list of dependencies.
+
+## Backend
+
+The backend for Study Planet is hosted on [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version).
+This backend is also available on Github at [Qwict/StudyPlanetNodeAPI](https://github.com/Qwict/StudyPlanetNodeAPI).
+The connection to this backend is defined in [Constants](https://doc.sp.qwict.com/app/com.qwict.studyplanetandroid.common/-constants/) as `BASE_URL`.
 
 ## Feedback and Issues
 
