@@ -9,9 +9,9 @@ The app encourages users to concentrate on their studies or work by allowing the
 Benefits include enhanced focus, gamified learning, and productivity even offline. 
 Dependencies include Room, Retrofit, Kotlin Coroutines, Dagger Hilt, OkHttp, and Gson. 
 The backend is hosted at [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version). 
-For detailed documentation, visit [doc.sp.qwict.com](https://doc.sp.qwict.com). 
-The application is automatically built and released on Github.
-Feedback and issues can be reported on the [GitHub releases](https://github.com/Qwict/StudyPlanetAndroid/releases).
+For detailed documentation, visit [docs.sp.qwict.com](https://docs.sp.qwict.com). 
+The application is automatically built and released on [Github Releases](https://github.com/Qwict/StudyPlanetAndroid/releases).
+Feedback and issues can be reported on the [GitHub Issues](https://github.com/Qwict/StudyPlanetAndroid/issues).
 
 ## Features
 
@@ -47,7 +47,7 @@ Feedback and issues can be reported on the [GitHub releases](https://github.com/
 ## Documentation
 
 The documentation for StudyPlanet is generated using **Dokka**. 
-It is online available on [doc.sp.qwict.com](https://doc.sp.qwict.com).
+It is online available on [docs.sp.qwict.com](https://docs.sp.qwict.com).
 This documentation is updated automatically on every commit to the `main` branch.
 
 ## Dependencies
@@ -65,7 +65,7 @@ Make sure to check the `build.gradle.kts` file for the most up-to-date list of d
 
 The backend for Study Planet is hosted on [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version).
 This backend is also available on Github at [Qwict/StudyPlanetNodeAPI](https://github.com/Qwict/StudyPlanetNodeAPI).
-The connection to this backend is defined in [Constants](https://doc.sp.qwict.com/-study-planet/com.qwict.studyplanetandroid.common/-constants/index.html) as `BASE_URL`.
+The connection to this backend is defined in [Constants](https://docs.sp.qwict.com/-study-planet/com.qwict.studyplanetandroid.common/-constants/index.html) as `BASE_URL`.
 
 ## Feedback and Issues
 
