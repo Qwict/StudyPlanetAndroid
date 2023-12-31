@@ -93,12 +93,6 @@ fun DiscoveredPlanetsScreen(
                                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                 )
                             }
-                        } else {
-                            Text(
-                                text = "You have discovered ${planets.size} planets! These planets can now be mined for resources.",
-                                modifier = Modifier.padding(16.dp),
-                                textAlign = TextAlign.Center,
-                            )
                         }
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -142,7 +136,7 @@ fun DiscoveredPlanetCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
         Column(
             modifier = Modifier
