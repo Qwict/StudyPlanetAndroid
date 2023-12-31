@@ -17,7 +17,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "0.9.13"
+        versionName = "0.9.14"
         manifestPlaceholders["auth0Domain"] = "@string/com_auth0_domain"
         manifestPlaceholders["auth0Scheme"] = "@string/com_auth0_scheme"
 

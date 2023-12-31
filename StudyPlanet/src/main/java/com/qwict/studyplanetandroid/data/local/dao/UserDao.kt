@@ -49,7 +49,7 @@ interface UserDao {
     suspend fun delete(user: UserRoomEntity)
 
     @Query("SELECT * FROM users WHERE remoteId = :remoteId")
-    fun getFlowUserByRemoteId(remoteId: Int): Flow<UserRoomEntity>
+    fun getUserFlowByRemoteId(remoteId: Int): Flow<UserRoomEntity>
 
     @Query("SELECT * FROM users WHERE id = :id")
     suspend fun getUserById(id: Int): UserRoomEntity

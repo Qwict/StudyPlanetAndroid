@@ -6,10 +6,8 @@ import com.qwict.studyplanetandroid.common.Constants.BASE_URL
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.StudyPlanetRepositoryImpl
 import com.qwict.studyplanetandroid.data.local.StudyPlanetDatabase
-import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepository
-import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepositoryImpl
-import com.qwict.studyplanetandroid.data.local.database.OfflineUsersRepository
-import com.qwict.studyplanetandroid.data.local.database.OfflineUsersRepositoryImpl
+import com.qwict.studyplanetandroid.data.local.dao.PlanetDao
+import com.qwict.studyplanetandroid.data.local.dao.UserDao
 import com.qwict.studyplanetandroid.data.remote.StudyPlanetApi
 import com.qwict.studyplanetandroid.domain.use_case.user.AuthenticateUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.LoginUseCase
@@ -86,12 +84,12 @@ object AppModule {
      * Provides an instance of [StudyPlanetRepository] using the specified dependencies.
      *
      * This function creates and returns an implementation of [StudyPlanetRepository] by injecting the required dependencies.
-     * It uses the provided [StudyPlanetApi] for making API requests, [OfflinePlanetsRepository] for accessing offline planet data,
-     * and [OfflineUsersRepository] for managing offline user data.
+     * It uses the provided [StudyPlanetApi] for making API requests, [UserDao] for accessing offline planet data,
+     * and [PlanetDao] for managing offline user data.
      *
      * @param api The [StudyPlanetApi] instance used for making API requests.
-     * @param planetsRepo The [OfflinePlanetsRepository] instance for accessing offline planet data.
-     * @param usersRepository The [OfflineUsersRepository] instance for managing offline user data.
+     * @param userDao The [UserDao] instance used for accessing user data.
+     * @param planetDao The [PlanetDao] instance used for accessing planet data.
      *
      * @return An instance of [StudyPlanetRepository] for handling StudyPlanet data with the specified dependencies.
      */
@@ -99,51 +97,26 @@ object AppModule {
     @Singleton
     fun provideStudyPlanetRepository(
         api: StudyPlanetApi,
-        planetsRepo: OfflinePlanetsRepository,
-        usersRepository: OfflineUsersRepository,
+        userDao: UserDao,
+        planetDao: PlanetDao,
     ): StudyPlanetRepository {
-        return StudyPlanetRepositoryImpl(api, usersRepository, planetsRepo)
+        return StudyPlanetRepositoryImpl(api, userDao, planetDao)
     }
 
-    /**
-     * Provides an instance of [OfflinePlanetsRepository] backed by the StudyPlanetDatabase.
-     *
-     * This function creates and returns an implementation of [OfflinePlanetsRepository] that utilizes the StudyPlanetDatabase.
-     * It initializes the database with the application context and a CoroutineScope, and retrieves the PlanetDao for data access.
-     * The returned [OfflinePlanetsRepository] instance is configured as a singleton.
-     *
-     * @return An instance of [OfflinePlanetsRepository] using the StudyPlanetDatabase.
-     */
-    @Provides
     @Singleton
-    fun providePlanetDatabase(): OfflinePlanetsRepository {
-        return OfflinePlanetsRepositoryImpl(
-            StudyPlanetDatabase.getDatabase(
-                StudyPlanetApplication.appContext,
-                CoroutineScope(SupervisorJob() + Dispatchers.Main),
-            ).planetDao(),
-        )
-    }
+    @Provides
+    fun provideStudyPlanetDatabase() = StudyPlanetDatabase.getDatabase(
+        StudyPlanetApplication.appContext,
+        CoroutineScope(SupervisorJob() + Dispatchers.Main),
+    )
 
-    /**
-     * Provides an instance of [OfflineUsersRepository] backed by the StudyPlanetDatabase.
-     *
-     * This function creates and returns an implementation of [OfflineUsersRepository] that utilizes the StudyPlanetDatabase.
-     * It initializes the database with the application context and a CoroutineScope, and retrieves the UserDao for user data access.
-     * The returned [OfflineUsersRepository] instance is configured as a singleton.
-     *
-     * @return An instance of [OfflineUsersRepository] using the StudyPlanetDatabase.
-     */
-    @Provides
     @Singleton
-    fun provideUserDatabase(): OfflineUsersRepository {
-        return OfflineUsersRepositoryImpl(
-            StudyPlanetDatabase.getDatabase(
-                StudyPlanetApplication.appContext,
-                CoroutineScope(SupervisorJob() + Dispatchers.Main),
-            ).userDao(),
-        )
-    }
+    @Provides
+    fun provideUserDao(db: StudyPlanetDatabase) = db.userDao()
+
+    @Singleton
+    @Provides
+    fun providePlanetDao(db: StudyPlanetDatabase) = db.planetDao()
 
     @Provides
     @Singleton

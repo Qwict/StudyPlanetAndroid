@@ -4,8 +4,8 @@ import android.util.Log
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.Resource
-import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepository
-import com.qwict.studyplanetandroid.data.local.database.OfflineUsersRepository
+import com.qwict.studyplanetandroid.data.local.dao.PlanetDao
+import com.qwict.studyplanetandroid.data.local.dao.UserDao
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import com.qwict.studyplanetandroid.data.local.schema.asDomainModel
@@ -40,7 +40,6 @@ interface StudyPlanetRepository {
     suspend fun login(body: LoginDto): AuthenticatedUserDto
     suspend fun authenticate(token: String): AuthenticatedUserDto
     suspend fun register(body: RegisterDto): AuthenticatedUserDto
-    suspend fun registerLocalUser(): User
     suspend fun startDiscovering(body: DiscoverActionDto): Response<Unit>
     suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto?
     suspend fun startExploring(body: ExploreActionDto): Response<Unit>
@@ -52,26 +51,28 @@ interface StudyPlanetRepository {
  * Application of facade pattern to abstract away the implementation details of the data sources.
  *
  * @param api The [StudyPlanetApi] instance for making remote API calls.
- * @param userDatabase The [OfflineUsersRepository] for local user-related database operations.
- * @param planetDatabase The [OfflinePlanetsRepository] for local planet-related database operations.
+ * @param userDao The [OfflineUsersRepository] for local user-related database operations.
+ * @param planetDao The [OfflinePlanetsRepository] for local planet-related database operations.
  */
 class StudyPlanetRepositoryImpl @Inject constructor(
     private val api: StudyPlanetApi,
-    private val userDatabase: OfflineUsersRepository,
-    private val planetDatabase: OfflinePlanetsRepository,
+    private val userDao: UserDao,
+    private val planetDao: PlanetDao,
+//    private val userDao: OfflineUsersRepository,
+//    private val planetDao: OfflinePlanetsRepository,
 ) : StudyPlanetRepository {
     override fun getActiveUser(): Flow<User> {
         if (isUserAuthenticated) {
             val remoteId = AuthenticationSingleton.remoteUserId
             Log.d("StudyPlanetRepository", "getActiveUser: $remoteId")
-            return userDatabase.getUserFlowByRemoteId(remoteId).map { it.asDomainModel() }
+            return userDao.getUserFlowByRemoteId(remoteId).map { it.asDomainModel() }
         } else {
             throw Exception("User is not authenticated")
         }
     }
 
     override fun getDiscoveredPlanets(): Flow<List<Planet>> {
-        return planetDatabase.getPlanetsByOwnerId(AuthenticationSingleton.remoteUserId).map {
+        return planetDao.getPlanetsByOwnerId(AuthenticationSingleton.remoteUserId).map {
             it.map { planet -> planet.asDomainModel() }
         }
     }
@@ -82,8 +83,8 @@ class StudyPlanetRepositoryImpl @Inject constructor(
             Log.i("StudyPlanetRepository", "refreshDiscoveredPlanetsOnline")
             val authenticatedUserDto = api.authenticate()
             val userWithPlanets = authenticatedUserDto.toDatabaseUserWithPlanets()
-            planetDatabase.removeAllByOwnerId(AuthenticationSingleton.remoteUserId)
-            planetDatabase.insertAll(userWithPlanets.planets)
+            planetDao.removeAllByOwnerId(AuthenticationSingleton.remoteUserId)
+            planetDao.insertAll(userWithPlanets.planets)
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
@@ -106,7 +107,7 @@ class StudyPlanetRepositoryImpl @Inject constructor(
      * @return The [UserRoomEntity] representing the user.
      */
     override suspend fun getUserByRemoteId(remoteId: Int): UserRoomEntity {
-        return userDatabase.getUserByRemoteId(remoteId)
+        return userDao.getUserByRemoteId(remoteId)
     }
 
     /**
@@ -115,7 +116,7 @@ class StudyPlanetRepositoryImpl @Inject constructor(
      * @param planet The [PlanetRoomEntity] to be inserted.
      */
     override suspend fun insertPlanet(planet: PlanetRoomEntity) {
-        planetDatabase.insert(planet)
+        planetDao.insert(planet)
     }
 
     /**
@@ -124,7 +125,7 @@ class StudyPlanetRepositoryImpl @Inject constructor(
      * @param planets The list of [PlanetRoomEntity] to be inserted.
      */
     override suspend fun insertPlanets(planets: List<PlanetRoomEntity>) {
-        planetDatabase.insertAll(planets)
+        planetDao.insertAll(planets)
     }
 
     /**
@@ -146,8 +147,8 @@ class StudyPlanetRepositoryImpl @Inject constructor(
     override suspend fun login(body: LoginDto): AuthenticatedUserDto {
         val authenticatedUserDto = api.login(body)
         val userWithPlanets = authenticatedUserDto.toDatabaseUserWithPlanets()
-        userDatabase.insert(userWithPlanets.user)
-        planetDatabase.insertAll(userWithPlanets.planets)
+        userDao.insert(userWithPlanets.user)
+        planetDao.insertAll(userWithPlanets.planets)
         return authenticatedUserDto
     }
 
@@ -160,18 +161,9 @@ class StudyPlanetRepositoryImpl @Inject constructor(
     override suspend fun authenticate(token: String): AuthenticatedUserDto {
         val authenticatedUserDto = api.authenticate()
         val userWithPlanets = authenticatedUserDto.toDatabaseUserWithPlanets()
-        userDatabase.insert(userWithPlanets.user)
-        planetDatabase.insertAll(userWithPlanets.planets)
+        userDao.insert(userWithPlanets.user)
+        planetDao.insertAll(userWithPlanets.planets)
         return authenticatedUserDto
-    }
-
-    /**
-     * Placeholder method for registering a local user. Not implemented.
-     *
-     * @throws NotImplementedError This method is not yet implemented.
-     */
-    override suspend fun registerLocalUser(): User {
-        throw NotImplementedError()
     }
 
     /**
@@ -193,7 +185,7 @@ class StudyPlanetRepositoryImpl @Inject constructor(
     override suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto? {
         val response = api.stopDiscovering(body)
         if (response.hasFoundNewPlanet) {
-            planetDatabase.insert(response.planet.asDatabaseModel(AuthenticationSingleton.remoteUserId))
+            planetDao.insert(response.planet.asDatabaseModel(AuthenticationSingleton.remoteUserId))
             return response.planet
         }
         return null
@@ -211,9 +203,9 @@ class StudyPlanetRepositoryImpl @Inject constructor(
 
     override suspend fun stopExploring(body: ExploreActionDto): Int {
         val response = api.stopExploring(body)
-        val user = userDatabase.getUserByRemoteId(AuthenticationSingleton.remoteUserId)
+        val user = userDao.getUserByRemoteId(AuthenticationSingleton.remoteUserId)
         user.experience += response.experience
-        userDatabase.update(user)
+        userDao.update(user)
         return response.experience
     }
 }
