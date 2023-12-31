@@ -25,7 +25,7 @@ data class PlanetDto(
 fun PlanetDto.asDatabaseModel(userId: Int): PlanetRoomEntity = PlanetRoomEntity(
     remoteId = id,
     name = name,
-    userOwnerId = userId,
+    ownerId = userId,
 )
 
 /**

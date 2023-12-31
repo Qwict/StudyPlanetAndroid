@@ -1,13 +1,13 @@
 package com.qwict.studyplanetandroid.domain.use_case.user // ktlint-disable package-name
 
 import android.util.Log
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getRemoteId
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.common.getEncryptedPreference
-import com.qwict.studyplanetandroid.data.local.schema.toUser
-import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
+import com.qwict.studyplanetandroid.data.StudyPlanetRepository
+import com.qwict.studyplanetandroid.data.local.schema.asDomainModel
 import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -33,9 +33,9 @@ class AuthenticateUseCase @Inject constructor(
             emit(Resource.Loading())
             validateUser()
             if (isUserAuthenticated) {
-                val databaseUser = repo.getUserByRemoteId(getRemoteId())
+                val databaseUser = repo.getUserByRemoteId(AuthenticationSingleton.remoteUserId)
                 try {
-                    emit(Resource.Success(databaseUser.toUser()))
+                    emit(Resource.Success(databaseUser.asDomainModel()))
                     emit(Resource.Loading())
                 } catch (e: Exception) {
                     Log.e("AuthenticateUseCase", "Failed to get local user, will look online with token Error: ${e.localizedMessage}")

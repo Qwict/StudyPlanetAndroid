@@ -2,7 +2,9 @@ package com.qwict.studyplanetandroid.data.remote
 
 import com.qwict.studyplanetandroid.data.remote.dto.AuthenticatedUserDto
 import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionDto
+import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionResponseDto
 import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionDto
+import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionResponseDto
 import com.qwict.studyplanetandroid.data.remote.dto.HealthDto
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
 import com.qwict.studyplanetandroid.data.remote.dto.PlanetDto
@@ -67,7 +69,7 @@ interface StudyPlanetApi {
      * @return The [PlanetDto] representing the discovered planet, or null if the discovery was unsuccessful.
      */
     @PUT("v1/actions/discover")
-    suspend fun stopDiscovering(@Body body: DiscoverActionDto): Response<PlanetDto?>
+    suspend fun stopDiscovering(@Body body: DiscoverActionDto): DiscoverActionResponseDto
 
     /**
      * Initiates the process of exploring a planet.
@@ -84,5 +86,5 @@ interface StudyPlanetApi {
      * @return The [UserDto] representing the user after exploration.
      */
     @PUT("v1/actions/explore")
-    suspend fun stopExploring(@Body body: ExploreActionDto): UserDto
+    suspend fun stopExploring(@Body body: ExploreActionDto): ExploreActionResponseDto
 }

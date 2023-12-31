@@ -5,11 +5,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CardDefaults
@@ -27,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -88,10 +88,16 @@ fun ExplorerScreen(
             }
         }
     }
-    if (isDiscovering) {
-    }
 
     Column {
+        Text(
+            text = selectedPlanet.name,
+            modifier = Modifier.padding(top = 16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineLarge,
+        )
+
         ElevatedCard(
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 6.dp,
@@ -101,48 +107,51 @@ fun ExplorerScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(600.dp)
-                .padding(16.dp),
+                .padding(bottom = 32.dp, start = 32.dp, end = 32.dp),
         ) {
             Column(
                 modifier = modifier.fillMaxWidth(),
             ) {
-                Text(
-                    text = selectedPlanet.name!!,
-                    modifier = Modifier.padding(16.dp),
-                    textAlign = TextAlign.Center,
-                )
                 Image(
-                    painter = painterResource(imageId),
+                    painter = painterResource(selectedPlanet.imageId),
                     contentDescription = selectedPlanet.name,
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Fit,
                 )
                 Text(
                     text = (state.selectedTime / 1000 / 60).toString() + " Minutes",
                     modifier = Modifier.padding(16.dp),
                     textAlign = TextAlign.Center,
                 )
+                CustomCountDownTimer(
+                    state.hours,
+                    state.minutes,
+                    state.seconds,
+                ) { studyViewModel.startCountDown() }
+
+                Text(
+                    text = "Progress",
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    textAlign = TextAlign.Left,
+                )
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
+                        .padding(horizontal = 16.dp),
+                    progress = currentProgress,
+                )
             }
         }
 
         Column(
             modifier = modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CustomCountDownTimer(
-                state.hours,
-                state.minutes,
-                state.seconds,
-            ) { studyViewModel.startCountDown() }
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(10.dp),
-                progress = currentProgress,
-            )
-
             OutlinedButton(
                 onClick = {
                     studyViewModel.openOnBackAlertDialog()
@@ -180,6 +189,7 @@ fun ExplorerScreen(
                     navigateToDiscoveredPlanets = { navigateBackToDiscoveredPlanetsScreen() },
                     planet = state.discoveredPlanet,
                     hasDiscoveredPlanet = state.hasDiscoveredPlanet,
+                    experience = state.selectedTime / 1000 / 60,
                 )
             }
         }

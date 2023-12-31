@@ -5,8 +5,8 @@ import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthent
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.common.getEncryptedPreference
+import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionDto
-import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
 import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

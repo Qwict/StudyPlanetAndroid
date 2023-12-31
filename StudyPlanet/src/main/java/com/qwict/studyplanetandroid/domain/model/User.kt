@@ -3,7 +3,10 @@ package com.qwict.studyplanetandroid.domain.model
 data class User(
     val discoveredPlanets: List<Planet>,
     val email: String,
-    val experience: Int,
-    val id: Int,
     val name: String,
+    val experience: Int,
+    val currentLevel: Int,
+    val experienceForCurrentLevel: Int,
+    val experienceForNextLevel: Int,
+    val experienceProgress: Float,
 )

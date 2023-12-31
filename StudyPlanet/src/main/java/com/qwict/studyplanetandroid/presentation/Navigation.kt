@@ -165,28 +165,15 @@ fun StudyPlanetNavigation(
              *
              * The [MainScreen] composable function is responsible for rendering the main screen content and handling user interactions.
              *
-             * @param onStartExploringButtonClicked Callback triggered when the "Start Exploring" button is clicked.
-             * @param onDiscoverPlanetsButtonClicked Callback triggered when the "Discover Planets" button is clicked.
              * @param modifier The modifier for positioning and sizing the composable.
-             * @param userState The state of the user view model used for displaying user-related information.
              */
             composable(route = StudyPlanetScreens.MainScreen.name) {
-                val userViewModel = it.sharedViewModel<UserViewModel>(navController)
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 selectedPlanetViewModel.reset()
                 MainScreen(
-                    onStartExploringButtonClicked = {
-                        navController.navigate(
-                            StudyPlanetScreens.DiscoveredPlanetsScreen.name,
-                        )
-                    },
-                    onDiscoverPlanetsButtonClicked = {
-                        navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
-                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium)),
-                    userState = userViewModel.state,
                 )
             }
 
@@ -211,7 +198,6 @@ fun StudyPlanetNavigation(
                     },
                 ),
             ) {
-                val userViewModel = it.sharedViewModel<UserViewModel>(navController)
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 TimeSelectionScreen(
                     onStartActionButtonClicked = {
@@ -237,7 +223,6 @@ fun StudyPlanetNavigation(
              * @param userState The state of the user view model used for displaying user-related information.
              */
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
-                val userViewModel = it.sharedViewModel<UserViewModel>(navController)
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 DiscoveredPlanetsScreen(
                     navigateToTimeSelectionScreen = {
@@ -246,9 +231,6 @@ fun StudyPlanetNavigation(
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    getOnlinePlanets = { userViewModel.getOnlinePlanets(it) },
-                    getLocalPlanets = { userViewModel.getLocalPlanets() },
-                    userState = userViewModel.state,
                 )
             }
 

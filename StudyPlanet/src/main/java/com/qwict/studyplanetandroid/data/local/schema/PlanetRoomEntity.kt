@@ -8,16 +8,16 @@ import com.qwict.studyplanetandroid.domain.model.Planet
  *
  * @property remoteId The remote identifier of the planet.
  * @property name The name of the planet.
- * @property userOwnerId The remote identifier of the user to whom the planet belongs.
+ * @property ownerId The remote identifier of the user to whom the planet belongs.
  */
 @Entity(
     tableName = "planets",
-    primaryKeys = ["userOwnerId", "name"],
+    primaryKeys = ["ownerId", "name"],
 )
 data class PlanetRoomEntity(
     val remoteId: Int = 0,
     val name: String,
-    val userOwnerId: Int,
+    val ownerId: Int,
 )
 
 /**
@@ -29,39 +29,39 @@ fun populatePlanets(): List<PlanetRoomEntity> {
     return listOf(
         PlanetRoomEntity(
             name = "Mercury",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Venus",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Earth",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Mars",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Jupiter",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Europe",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Saturn",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Uranus",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
         PlanetRoomEntity(
             name = "Neptune",
-            userOwnerId = 0,
+            ownerId = 0,
         ),
     )
 }
@@ -71,7 +71,7 @@ fun populatePlanets(): List<PlanetRoomEntity> {
  *
  * @return A [Planet] instance.
  */
-fun PlanetRoomEntity.toPlanet() = Planet(
+fun PlanetRoomEntity.asDomainModel() = Planet(
     id = remoteId,
     name = name,
 )

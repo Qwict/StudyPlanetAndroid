@@ -4,14 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,7 +19,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.qwict.studyplanetandroid.domain.model.Planet
 
 @Composable
@@ -31,6 +27,7 @@ fun PlanetDiscoveredDialog(
     navigateHome: () -> Unit,
     navigateToDiscoveredPlanets: () -> Unit,
     hasDiscoveredPlanet: Boolean,
+    experience: Int,
 ) {
     val title = if (hasDiscoveredPlanet) {
         "Planet discovered!"
@@ -39,10 +36,9 @@ fun PlanetDiscoveredDialog(
     }
 
     val discoveryInformation = if (hasDiscoveredPlanet) {
-        "You have discovered ${planet.name}, " +
-            "this planet will now be added to your planet list and is available for mining!"
+        "You have discovered ${planet.name}, and gained $experience xp!"
     } else {
-        "You have not discovered a planet, but gained some experience and learned a lot!" +
+        "No planet discovered, but gained $experience xp" +
             "To improve your chances of discovering a planet, try to study for a longer period of time."
     }
 
@@ -57,22 +53,22 @@ fun PlanetDiscoveredDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(Icons.Filled.TravelExplore, contentDescription = "Planet discovered Icon")
-                Text(
-                    text = title,
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-
                 if (hasDiscoveredPlanet) {
                     Image(
                         painter = painterResource(planet.imageId),
                         contentDescription = "An image of ${planet.name}",
-                        contentScale = ContentScale.Fit,
                         modifier = Modifier
-                            .height(160.dp),
+                            .aspectRatio(1f)
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.Fit,
                     )
                 }
+                Text(
+                    text = title,
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.headlineLarge,
+                )
+
                 Text(
                     text = discoveryInformation,
                     modifier = Modifier.padding(16.dp),
@@ -85,7 +81,7 @@ fun PlanetDiscoveredDialog(
                 ) {
                     TextButton(
                         onClick = { navigateHome() },
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(16.dp),
                     ) {
                         Text("Go home")
                     }
@@ -94,6 +90,7 @@ fun PlanetDiscoveredDialog(
                             onClick = {
                                 navigateToDiscoveredPlanets()
                             },
+                            modifier = Modifier.padding(16.dp),
                         ) {
                             Text("Checkout planet")
                         }

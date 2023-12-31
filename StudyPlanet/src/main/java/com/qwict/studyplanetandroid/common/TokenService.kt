@@ -1,6 +1,7 @@
 package com.qwict.studyplanetandroid.common
 
 import android.util.Log
+import com.auth0.android.jwt.DecodeException
 import com.auth0.android.jwt.JWT
 
 /**
@@ -18,17 +19,21 @@ import com.auth0.android.jwt.JWT
  * @throws IllegalArgumentException if the JWT is not valid or contains null values in required claims.
  */
 fun getDecodedPayload(token: String): DecodedPayload {
-    val jwt = JWT(token)
+    Log.d("TokenService", "getDecodedPayload")
     try {
+        val jwt = JWT(token)
         return DecodedPayload(
             email = jwt.getClaim("email").asString()!!,
             remoteId = jwt.getClaim("id").asInt()!!,
             iat = jwt.getClaim("iat").asInt()!!,
             exp = jwt.getClaim("exp").asInt()!!,
         )
+    } catch (e: DecodeException) {
+        removeEncryptedPreference("token")
+        throw IllegalArgumentException("JWT is not valid: Failed to decode")
     } catch (e: NullPointerException) {
         removeEncryptedPreference("token")
-        throw IllegalArgumentException("JWT is not valid")
+        throw IllegalArgumentException("JWT is not valid: Null values in required claims")
     }
 }
 
@@ -46,16 +51,19 @@ fun getDecodedPayload(token: String): DecodedPayload {
  * @return `true` if the token is valid, `false` otherwise.
  */
 fun tokenIsValid(token: String): Boolean {
-    if (token != "") {
-        val decodedToken = getDecodedPayload(token)
-        Log.i("MainActivity", "decoded token: $decodedToken")
-        val tokenExpiration = decodedToken.exp
-        val currentTime = System.currentTimeMillis() / 1000
-        if (tokenExpiration.toLong() > currentTime) {
-            Log.i("TokenService", "token still valid")
-            return true
+    try {
+        if (token != "expired") {
+            val decodedToken = getDecodedPayload(token)
+            Log.i("MainActivity", "decoded token: $decodedToken")
+            val tokenExpiration = decodedToken.exp
+            val currentTime = System.currentTimeMillis() / 1000
+            if (tokenExpiration.toLong() > currentTime) {
+                Log.i("TokenService", "token still valid")
+                return true
+            }
         }
+    } catch (e: DecodeException) {
+        Log.i("TokenService", "token is not valid")
     }
-    saveEncryptedPreference("token", "expired")
     return false
 }

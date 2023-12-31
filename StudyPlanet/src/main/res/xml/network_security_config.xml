@@ -3,7 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">sp.qwict.com</domain>
         <domain includeSubdomains="true">10.0.2.2</domain>
-        <domain includeSubdomains="true">192.168.1.33</domain>
-        <domain includeSubdomains="true">192.168.0.224</domain>
+        <domain includeSubdomains="true">192.168.1.36</domain>
     </domain-config>
 </network-security-config>

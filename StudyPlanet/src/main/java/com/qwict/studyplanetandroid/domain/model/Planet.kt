@@ -15,6 +15,7 @@ class Planet(
     val id: Int,
     val name: String,
     val imageId: Int = getImageByName(StudyPlanetApplication.appContext, name),
+    val smallImageId: Int = getImageByName(StudyPlanetApplication.appContext, name + "_small"),
 )
 
 /**
@@ -33,6 +34,10 @@ fun getImageByName(context: Context, imageName: String): Int {
     return if (imageId != 0) {
         imageId
     } else {
+        if (imageName.contains("_small")) {
+            // Image not found, return the default small image
+            return Constants.DEFAULT_PLANET_SMALL_IMAGE_ID
+        }
         // Image not found, return the default image
         return Constants.DEFAULT_PLANET_IMAGE_ID
     }

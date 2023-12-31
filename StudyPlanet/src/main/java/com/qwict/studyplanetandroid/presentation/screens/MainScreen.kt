@@ -1,67 +1,74 @@
 package com.qwict.studyplanetandroid.presentation.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.presentation.components.LevelExperienceBar
-import com.qwict.studyplanetandroid.presentation.viewmodels.states.UserState
+import com.qwict.studyplanetandroid.presentation.components.Loader
+import com.qwict.studyplanetandroid.presentation.viewmodels.MainViewModel
+import com.qwict.studyplanetandroid.presentation.viewmodels.states.MainScreenState
 
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    onStartExploringButtonClicked: () -> Unit = {},
-    onDiscoverPlanetsButtonClicked: () -> Unit = {},
-    userState: UserState,
+    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        //            UserPicture(
-        //                url = viewModel.user.picture,
-        //                description = viewModel.user.name,
-        //            )
-        UserInfoRow(
-            label = stringResource(R.string.email_label),
-            value = userState.user.email,
-        )
-        UserInfoRow(
-            label = "username",
-            value = userState.user.name,
-        )
-        LevelExperienceBar(
-            level = userState.currentLevel,
-            experience = userState.user.experience,
-            experienceForNextLevel = userState.experienceForNextLevel,
-            experienceProgress = userState.experienceProgress,
-        )
+    LaunchedEffect(mainViewModel) {
+        mainViewModel.getActiveUser()
+    }
 
-        Row() {
-//            VideoPlayer()
+    when (mainViewModel.state) {
+        is MainScreenState.Loading -> {
+            Loader()
         }
-
-        Column {
-            OutlinedButton(onClick = { onDiscoverPlanetsButtonClicked() }) {
-                Text(text = "Discover Planets")
-            }
-            OutlinedButton(onClick = { onStartExploringButtonClicked() }) {
-                Text(text = "Start Exploring")
+        is MainScreenState.Error -> {
+            Text(text = "Error")
+        }
+        is MainScreenState.Success -> {
+            val user by (mainViewModel.state as MainScreenState.Success).user.collectAsState()
+            Column(
+                modifier = modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.study_planet_icon),
+                    contentDescription = "Logo",
+                )
+                UserInfoRow(
+                    label = stringResource(R.string.email_label),
+                    value = user.email,
+                )
+                UserInfoRow(
+                    label = "username",
+                    value = user.name,
+                )
+                LevelExperienceBar(
+                    currentLevel = user.currentLevel,
+                    experience = user.experience,
+                    experienceForNextLevel = user.experienceForNextLevel,
+                    experienceProgress = user.experienceProgress,
+                )
             }
         }
     }

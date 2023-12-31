@@ -1,10 +1,14 @@
-package com.qwict.studyplanetandroid.data.repository
+package com.qwict.studyplanetandroid.data
 
+import android.util.Log
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
+import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepository
 import com.qwict.studyplanetandroid.data.local.database.OfflineUsersRepository
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
+import com.qwict.studyplanetandroid.data.local.schema.asDomainModel
 import com.qwict.studyplanetandroid.data.remote.StudyPlanetApi
 import com.qwict.studyplanetandroid.data.remote.dto.AuthenticatedUserDto
 import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionDto
@@ -13,12 +17,35 @@ import com.qwict.studyplanetandroid.data.remote.dto.HealthDto
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
 import com.qwict.studyplanetandroid.data.remote.dto.PlanetDto
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
-import com.qwict.studyplanetandroid.data.remote.dto.UserDto
 import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseModel
 import com.qwict.studyplanetandroid.data.remote.dto.toDatabaseUserWithPlanets
+import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.domain.model.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import retrofit2.Response
 import javax.inject.Inject
+
+interface StudyPlanetRepository {
+    fun getActiveUser(): Flow<User>
+    fun getDiscoveredPlanets(): Flow<List<Planet>>
+    suspend fun refreshDiscoveredPlanetsOnline(): Flow<Resource<Unit>>
+
+    suspend fun getHealth(): HealthDto
+    suspend fun getUserByRemoteId(remoteId: Int): UserRoomEntity
+    suspend fun insertPlanet(planet: PlanetRoomEntity)
+    suspend fun insertPlanets(planets: List<PlanetRoomEntity>)
+
+    suspend fun login(body: LoginDto): AuthenticatedUserDto
+    suspend fun authenticate(token: String): AuthenticatedUserDto
+    suspend fun register(body: RegisterDto): AuthenticatedUserDto
+    suspend fun registerLocalUser(): User
+    suspend fun startDiscovering(body: DiscoverActionDto): Response<Unit>
+    suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto?
+    suspend fun startExploring(body: ExploreActionDto): Response<Unit>
+    suspend fun stopExploring(body: ExploreActionDto): Int
+}
 
 /**
  * Implementation of the [StudyPlanetRepository] interface that communicates with both local and remote data sources.
@@ -33,6 +60,36 @@ class StudyPlanetRepositoryImpl @Inject constructor(
     private val userDatabase: OfflineUsersRepository,
     private val planetDatabase: OfflinePlanetsRepository,
 ) : StudyPlanetRepository {
+    override fun getActiveUser(): Flow<User> {
+        if (isUserAuthenticated) {
+            val remoteId = AuthenticationSingleton.remoteUserId
+            Log.d("StudyPlanetRepository", "getActiveUser: $remoteId")
+            return userDatabase.getUserFlowByRemoteId(remoteId).map { it.asDomainModel() }
+        } else {
+            throw Exception("User is not authenticated")
+        }
+    }
+
+    override fun getDiscoveredPlanets(): Flow<List<Planet>> {
+        return planetDatabase.getPlanetsByOwnerId(AuthenticationSingleton.remoteUserId).map {
+            it.map { planet -> planet.asDomainModel() }
+        }
+    }
+
+    override suspend fun refreshDiscoveredPlanetsOnline(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            Log.i("StudyPlanetRepository", "refreshDiscoveredPlanetsOnline")
+            val authenticatedUserDto = api.authenticate()
+            val userWithPlanets = authenticatedUserDto.toDatabaseUserWithPlanets()
+            planetDatabase.removeAllByOwnerId(AuthenticationSingleton.remoteUserId)
+            planetDatabase.insertAll(userWithPlanets.planets)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
+        }
+    }
+
     /**
      * Retrieves the health information of the Study Planet server.
      *
@@ -50,16 +107,6 @@ class StudyPlanetRepositoryImpl @Inject constructor(
      */
     override suspend fun getUserByRemoteId(remoteId: Int): UserRoomEntity {
         return userDatabase.getUserByRemoteId(remoteId)
-    }
-
-    /**
-     * Retrieves a list of planets associated with a user's remote ID from the local database.
-     *
-     * @param remoteId The remote ID of the user.
-     * @return A list of [PlanetRoomEntity] representing the planets associated with the user.
-     */
-    override suspend fun getPlanetsByRemoteId(remoteId: Int): List<PlanetRoomEntity> {
-        return planetDatabase.getPlanetsByRemoteId(remoteId)
     }
 
     /**
@@ -144,11 +191,12 @@ class StudyPlanetRepositoryImpl @Inject constructor(
      * @return The [PlanetDto] representing the discovered planet, or null if the discovery was unsuccessful.
      */
     override suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto? {
-        val planetDto = api.stopDiscovering(body).body()
-        if (planetDto != null) {
-            planetDatabase.insert(planetDto.asDatabaseModel(AuthenticationSingleton.getRemoteId()))
+        val response = api.stopDiscovering(body)
+        if (response.hasFoundNewPlanet) {
+            planetDatabase.insert(response.planet.asDatabaseModel(AuthenticationSingleton.remoteUserId))
+            return response.planet
         }
-        return planetDto
+        return null
     }
 
     /**
@@ -161,13 +209,11 @@ class StudyPlanetRepositoryImpl @Inject constructor(
         return api.startExploring(body)
     }
 
-    /**
-     * Stops the process of exploring a planet remotely.
-     *
-     * @param body The [ExploreActionDto] containing information for stopping the exploration action.
-     * @return The [UserDto] representing the user after exploration.
-     */
-    override suspend fun stopExploring(body: ExploreActionDto): UserDto {
-        return api.stopExploring(body)
+    override suspend fun stopExploring(body: ExploreActionDto): Int {
+        val response = api.stopExploring(body)
+        val user = userDatabase.getUserByRemoteId(AuthenticationSingleton.remoteUserId)
+        user.experience += response.experience
+        userDatabase.update(user)
+        return response.experience
     }
 }

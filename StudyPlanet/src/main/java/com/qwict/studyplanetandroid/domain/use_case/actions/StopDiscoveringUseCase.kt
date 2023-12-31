@@ -1,13 +1,13 @@
 package com.qwict.studyplanetandroid.domain.use_case.actions // ktlint-disable package-name
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.getRemoteId
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.common.Resource
-import com.qwict.studyplanetandroid.data.local.schema.toPlanet
+import com.qwict.studyplanetandroid.data.StudyPlanetRepository
+import com.qwict.studyplanetandroid.data.local.schema.asDomainModel
 import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionDto
 import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseModel
-import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
 import com.qwict.studyplanetandroid.domain.model.Planet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -37,11 +37,11 @@ class StopDiscoveringUseCase @Inject constructor(
             validateUser()
             if (isUserAuthenticated) {
                 val discoveredPlanet = repo.stopDiscovering(DiscoverActionDto(selectedTime = selectedTime))
-                val currentDatabaseUser = repo.getUserByRemoteId(getRemoteId())
+                val currentDatabaseUser = repo.getUserByRemoteId(AuthenticationSingleton.remoteUserId)
                 if (discoveredPlanet != null) {
                     val newDatabasePlanet = discoveredPlanet.asDatabaseModel(currentDatabaseUser.remoteId)
                     repo.insertPlanet(newDatabasePlanet)
-                    emit(Resource.Success(newDatabasePlanet.toPlanet()))
+                    emit(Resource.Success(newDatabasePlanet.asDomainModel()))
                 } else {
                     emit(Resource.Success(null))
                 }

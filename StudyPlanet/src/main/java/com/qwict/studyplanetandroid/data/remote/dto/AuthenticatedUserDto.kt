@@ -51,6 +51,9 @@ fun AuthenticatedUserDto.asDomainModel() = User(
     discoveredPlanets = user.discoveredPlanets.map { it.asDomainModel() },
     email = user.email,
     experience = user.experience,
-    id = user.id,
     name = user.name,
+    currentLevel = 0,
+    experienceForCurrentLevel = 0,
+    experienceForNextLevel = 0,
+    experienceProgress = 0.0f,
 )

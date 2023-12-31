@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun LevelExperienceBar(
-    level: Int,
+    currentLevel: Int,
     experience: Int,
     experienceForNextLevel: Int,
     experienceProgress: Float,
@@ -30,7 +30,7 @@ fun LevelExperienceBar(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Level $level",
+            text = "Level $currentLevel",
             style = TextStyle(
                 fontFamily = FontFamily.Default,
                 fontWeight = FontWeight.Bold,
@@ -38,7 +38,7 @@ fun LevelExperienceBar(
             ),
         )
         Text(
-            text = "Experience needed to reach level ${level + 1}: $experienceForNextLevel (${experienceForNextLevel / 60} Hours)",
+            text = "Experience needed to reach level ${currentLevel + 1}: $experienceForNextLevel (${experienceForNextLevel / 60} Hours)",
             style = TextStyle(
                 fontFamily = FontFamily.Default,
                 fontWeight = FontWeight.Bold,

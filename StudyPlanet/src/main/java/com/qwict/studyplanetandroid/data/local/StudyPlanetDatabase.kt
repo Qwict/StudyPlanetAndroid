@@ -10,9 +10,7 @@ import com.qwict.studyplanetandroid.data.local.dao.PlanetDao
 import com.qwict.studyplanetandroid.data.local.dao.UserDao
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
-import com.qwict.studyplanetandroid.data.local.schema.populatePlanets
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 /**
  * Room Database for the Study Planet application, managing entities such as [PlanetRoomEntity] and [UserRoomEntity].
@@ -22,7 +20,7 @@ import kotlinx.coroutines.launch
  */
 @Database(
     entities = [PlanetRoomEntity::class, UserRoomEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 abstract class StudyPlanetDatabase : RoomDatabase() {
@@ -54,10 +52,10 @@ abstract class StudyPlanetDatabase : RoomDatabase() {
                         // Use a coroutine to insert data
                         val planetDao = Instance?.planetDao()
                         val userDao = Instance?.userDao()
-                        Log.i("StudyPlanetDatabase", "Inserting all planets and users")
-                        scope.launch {
-                            planetDao?.insertAll(populatePlanets())
-                        }
+//                        Log.i("StudyPlanetDatabase", "Inserting all planets and users")
+//                        scope.launch {
+//                            planetDao?.insertAll(populatePlanets())
+//                        }
                     }
                 })
                     .fallbackToDestructiveMigration()

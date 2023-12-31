@@ -7,8 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.qwict.studyplanetandroid.common.Resource
-import com.qwict.studyplanetandroid.domain.use_case.planets.GetLocalPlanetsUseCase
-import com.qwict.studyplanetandroid.domain.use_case.planets.GetOnlinePlanetsUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.AuthenticateUseCase
 import com.qwict.studyplanetandroid.presentation.viewmodels.states.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,84 +25,16 @@ import kotlin.math.pow
  * user levels based on experience points.
  *
  * @property authenticateUseCase The use case responsible for authenticating the user and retrieving user data.
- * @property getLocalPlanetsUseCase The use case responsible for retrieving locally stored planet data.
- * @property getOnlinePlanetsUseCase The use case responsible for retrieving planet data from an online source.
  */
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val authenticateUseCase: AuthenticateUseCase,
-    private val getLocalPlanetsUseCase: GetLocalPlanetsUseCase,
-    private val getOnlinePlanetsUseCase: GetOnlinePlanetsUseCase,
 ) : ViewModel() {
     var state by mutableStateOf(UserState())
         private set
 
     init {
         getUserWithToken()
-    }
-
-    /**
-     * Retrieves locally stored planet data and updates the [UserState] accordingly.
-     *
-     * This function uses the [getLocalPlanetsUseCase] to retrieve locally stored planet data. It observes
-     * the result of the process and updates the [UserState] based on the result:
-     * - If the process is successful ([Resource.Success]), it updates the state with the retrieved planets.
-     * - If no local planets are available, it triggers the retrieval of online planets using [getOnlinePlanets].
-     * - If an error occurs during the process ([Resource.Error]), it updates the state with the error message.
-     * - During the loading phase ([Resource.Loading]), it updates the state to indicate loading.
-     */
-    fun getLocalPlanets() {
-        Log.i("UserViewModel", "getLocalPlanets")
-        getLocalPlanetsUseCase().onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    val planets = result.data ?: emptyList()
-                    if (planets.isNotEmpty()) {
-                        state = state.copy(planets = planets)
-                    } else {
-                        getOnlinePlanets(false)
-                    }
-                }
-
-                is Resource.Error -> {
-                    state = state.copy(error = result.message ?: "An unexpected error occurred")
-                }
-
-                is Resource.Loading -> {
-                    state = state.copy(isLoading = true)
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    /**
-     * Retrieves planet data from an online source and updates the [UserState] accordingly.
-     *
-     * This function uses the [getOnlinePlanetsUseCase] to retrieve planet data from an online source. It observes
-     * the result of the process and updates the [UserState] based on the result:
-     * - If the process is successful ([Resource.Success]), it updates the state with the retrieved online planets.
-     * - If an error occurs during the process ([Resource.Error]), it updates the state with the error message.
-     * - During the loading phase ([Resource.Loading]), it updates the state to indicate loading.
-     *
-     * @param showRefreshing Flag indicating whether to show a refreshing indicator during the process.
-     */
-    fun getOnlinePlanets(showRefreshing: Boolean) {
-        Log.i("UserViewModel", "getOnlinePlanets")
-        getOnlinePlanetsUseCase().onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    state = state.copy(planets = result.data ?: emptyList(), isRefreshing = false)
-                }
-
-                is Resource.Error -> {
-                    state = state.copy(refreshError = result.message ?: "An unexpected error occurred")
-                }
-
-                is Resource.Loading -> {
-                    state = state.copy(isRefreshing = showRefreshing)
-                }
-            }
-        }.launchIn(viewModelScope)
     }
 
     sealed class ValidationEvent {

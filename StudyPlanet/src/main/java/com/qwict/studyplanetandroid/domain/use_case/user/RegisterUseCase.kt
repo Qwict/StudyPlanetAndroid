@@ -2,8 +2,8 @@ package com.qwict.studyplanetandroid.domain.use_case.user // ktlint-disable pack
 
 import android.util.Log
 import com.qwict.studyplanetandroid.common.Resource
+import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
-import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
 import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -3,16 +3,14 @@ package com.qwict.studyplanetandroid.common.di
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.AuthInterceptor
 import com.qwict.studyplanetandroid.common.Constants.BASE_URL
+import com.qwict.studyplanetandroid.data.StudyPlanetRepository
+import com.qwict.studyplanetandroid.data.StudyPlanetRepositoryImpl
 import com.qwict.studyplanetandroid.data.local.StudyPlanetDatabase
 import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepository
 import com.qwict.studyplanetandroid.data.local.database.OfflinePlanetsRepositoryImpl
 import com.qwict.studyplanetandroid.data.local.database.OfflineUsersRepository
 import com.qwict.studyplanetandroid.data.local.database.OfflineUsersRepositoryImpl
 import com.qwict.studyplanetandroid.data.remote.StudyPlanetApi
-import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepository
-import com.qwict.studyplanetandroid.data.repository.StudyPlanetRepositoryImpl
-import com.qwict.studyplanetandroid.domain.use_case.planets.GetLocalPlanetsUseCase
-import com.qwict.studyplanetandroid.domain.use_case.planets.GetOnlinePlanetsUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.AuthenticateUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.LoginUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.RegisterUseCase
@@ -151,42 +149,6 @@ object AppModule {
     @Singleton
     fun provideValidators(): Validators {
         return Validators()
-    }
-
-    /**
-     * Provides an instance of [GetLocalPlanetsUseCase] using the specified [StudyPlanetRepository].
-     *
-     * This function creates and returns an instance of [GetLocalPlanetsUseCase] by injecting the required [StudyPlanetRepository].
-     * The [GetLocalPlanetsUseCase] is responsible for fetching local planet data using the provided repository.
-     *
-     * @param repo The [StudyPlanetRepository] instance used for retrieving local planet data.
-     *
-     * @return An instance of [GetLocalPlanetsUseCase] for fetching local planet data.
-     */
-    @Provides
-    @Singleton
-    fun provideGetLocalPlanetsUseCase(
-        repo: StudyPlanetRepository,
-    ): GetLocalPlanetsUseCase {
-        return GetLocalPlanetsUseCase(repo)
-    }
-
-    /**
-     * Provides an instance of [GetOnlinePlanetsUseCase] using the specified [StudyPlanetRepository].
-     *
-     * This function creates and returns an instance of [GetOnlinePlanetsUseCase] by injecting the required [StudyPlanetRepository].
-     * The [GetOnlinePlanetsUseCase] is responsible for fetching online planet data using the provided repository.
-     *
-     * @param repo The [StudyPlanetRepository] instance used for retrieving online planet data.
-     *
-     * @return An instance of [GetOnlinePlanetsUseCase] for fetching online planet data.
-     */
-    @Provides
-    @Singleton
-    fun provideGetOnlinePlanetsUseCase(
-        repo: StudyPlanetRepository,
-    ): GetOnlinePlanetsUseCase {
-        return GetOnlinePlanetsUseCase(repo)
     }
 
     /**

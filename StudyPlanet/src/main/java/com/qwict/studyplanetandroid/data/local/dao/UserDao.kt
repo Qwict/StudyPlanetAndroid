@@ -48,23 +48,11 @@ interface UserDao {
     @Delete
     suspend fun delete(user: UserRoomEntity)
 
-    /**
-     * Retrieves a flow of a user entity by its identifier from the database.
-     *
-     * @param id The identifier of the user.
-     * @return A [Flow] emitting the user entity with the specified identifier.
-     */
-    @Query("SELECT * FROM users WHERE id = :id")
-    fun getFlowUserById(id: Int): Flow<UserRoomEntity>
+    @Query("SELECT * FROM users WHERE remoteId = :remoteId")
+    fun getFlowUserByRemoteId(remoteId: Int): Flow<UserRoomEntity>
 
-    /**
-     * Retrieves a user entity by its identifier from the database.
-     *
-     * @param id The identifier of the user.
-     * @return The user entity with the specified identifier.
-     */
     @Query("SELECT * FROM users WHERE id = :id")
-    fun getUserById(id: Int): UserRoomEntity
+    suspend fun getUserById(id: Int): UserRoomEntity
 
     /**
      * Retrieves a user entity by its remote identifier from the database.

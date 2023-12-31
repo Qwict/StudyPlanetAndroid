@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Data Access Object (DAO) for interacting with the local database regarding [PlanetRoomEntity].
@@ -58,9 +59,17 @@ interface PlanetDao {
     /**
      * Retrieves all planet entities associated with a user's remote identifier from the database.
      *
-     * @param remoteId The remote identifier of the user.
+     * @param ownerId The remote identifier of the user.
      * @return A list of planet entities associated with the specified user.
      */
-    @Query("SELECT * FROM planets WHERE userOwnerId = :remoteId")
-    suspend fun getPlanetsByRemoteId(remoteId: Int): List<PlanetRoomEntity>
+    @Query("SELECT * FROM planets WHERE ownerId = :ownerId")
+    fun getPlanetsByOwnerId(ownerId: Int): Flow<List<PlanetRoomEntity>>
+
+    /**
+     * Removes all planet entities associated with a user's remote identifier from the database.
+     *
+     * @param ownerId The remote identifier of the user.
+     */
+    @Query("DELETE FROM planets WHERE ownerId = :ownerId")
+    suspend fun removeAllByOwnerId(ownerId: Int)
 }

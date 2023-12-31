@@ -5,7 +5,9 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.google.common.math.DoubleMath.log2
 import com.qwict.studyplanetandroid.domain.model.User
+import kotlin.math.pow
 
 /**
  * Room Entity representing a user in the local database.
@@ -43,7 +45,7 @@ data class DatabaseUserWithPlanets(
     @Embedded val user: UserRoomEntity,
     @Relation(
         parentColumn = "remoteId",
-        entityColumn = "userOwnerId",
+        entityColumn = "ownerId",
     )
     val planets: List<PlanetRoomEntity>,
 )
@@ -54,11 +56,14 @@ data class DatabaseUserWithPlanets(
  * @return A [User] instance.
  */
 fun DatabaseUserWithPlanets.asDomainModel() = User(
-    discoveredPlanets = planets.map { it.toPlanet() },
+    discoveredPlanets = planets.map { it.asDomainModel() },
     email = user.email,
-    experience = user.experience,
-    id = user.id,
     name = user.name,
+    experience = user.experience,
+    currentLevel = 0,
+    experienceForCurrentLevel = 0,
+    experienceForNextLevel = 0,
+    experienceProgress = 0.0f,
 )
 
 /**
@@ -66,10 +71,42 @@ fun DatabaseUserWithPlanets.asDomainModel() = User(
  *
  * @return A [User] instance.
  */
-fun UserRoomEntity.toUser() = User(
+fun UserRoomEntity.asDomainModel() = User(
     discoveredPlanets = emptyList(),
     email = email,
     experience = experience,
-    id = id,
     name = name,
+    currentLevel = calculateLevel(experience),
+    experienceForCurrentLevel = calculateExperienceForCurrentLevel(calculateLevel(experience)),
+    experienceForNextLevel = calculateExperienceForNextLevel(calculateLevel(experience)),
+    experienceProgress = calculateExperienceProgress(
+        experience = experience,
+        experienceForCurrentLevel = calculateExperienceForCurrentLevel(calculateLevel(experience)),
+        experienceForNextLevel = calculateExperienceForNextLevel(calculateLevel(experience)),
+    ),
 )
+
+private fun calculateLevel(experience: Int): Int {
+    val level = kotlin.math.ceil(log2((experience / 60).toDouble()))
+    return if (level < 0) {
+        0
+    } else {
+        level.toInt()
+    }
+}
+
+private fun calculateExperienceForCurrentLevel(level: Int): Int {
+    return 2.0.pow((level - 1).toDouble()).toInt() * 60
+}
+
+private fun calculateExperienceForNextLevel(level: Int): Int {
+    return 2.0.pow(level.toDouble()).toInt() * 60
+}
+
+private fun calculateExperienceProgress(experience: Int, experienceForCurrentLevel: Int, experienceForNextLevel: Int): Float {
+    return if (experienceForCurrentLevel == 0) {
+        experience / experienceForNextLevel.toFloat()
+    } else {
+        (experience - experienceForCurrentLevel) / (experienceForNextLevel - experienceForCurrentLevel).toFloat()
+    }
+}
