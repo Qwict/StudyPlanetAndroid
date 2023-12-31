@@ -38,7 +38,7 @@ fun AppBar(
                 }
             }
         },
-        actions = { AppBarAccountButton() },
+        actions = { AppBarAccountButton(currentScreen) },
 
     )
 }

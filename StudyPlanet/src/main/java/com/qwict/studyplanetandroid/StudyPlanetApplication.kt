@@ -78,7 +78,12 @@ fun StudyPlanetApp(
             )
         },
         // Display the bottom navigation bar if the user is authenticated
-        bottomBar = { if (AuthenticationSingleton.isUserAuthenticated) { NavBar(currentScreen, navController) } },
+        bottomBar = {
+            if (
+                AuthenticationSingleton.isUserAuthenticated &&
+                currentScreen.name != StudyPlanetScreens.PlanetExplorerScreen.name
+            ) { NavBar(currentScreen, navController) }
+        },
     ) { innerPadding ->
 
         Box(modifier = Modifier.padding(innerPadding)) {

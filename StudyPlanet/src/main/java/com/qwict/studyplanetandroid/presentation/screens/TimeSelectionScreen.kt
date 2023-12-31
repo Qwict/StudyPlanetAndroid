@@ -58,7 +58,7 @@ fun SliderAdvancedExample(selectedTimeInMinutes: Float, setSelectedTimeInMinutes
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
             steps = 6,
-            valueRange = 0.1f..0.6f,
+            valueRange = 1f..6f,
 //            valueRange = 15f..120f,
         )
 //        Large text that shows how long the user has selected must be centered
@@ -77,46 +77,4 @@ fun calculateTime(value: Float): String {
     val hoursString = hours.toInt().toString().padStart(2, '0')
     val minutesString = minutes.toInt().toString().padStart(2, '0')
     return "$hoursString:$minutesString:00"
-}
-
-@Composable
-fun OldTimeSelectionScreen(onStartActionButtonClicked: () -> Unit = {}) {
-    Column {
-        Text(text = "Select time to explore")
-        OutlinedButton(
-            onClick = {
-                onStartActionButtonClicked()
-//                    (30 * 60 * 1000).toLong()
-//                userViewModel.selectedTime = (1 * 1000)
-//                userViewModel.updatedTime = userViewModel.selectedTime
-            },
-            modifier = Modifier.padding(16.dp),
-        ) {
-            Text(text = "00:30:00")
-        }
-
-        OutlinedButton(
-            onClick = {
-                onStartActionButtonClicked()
-//                    (60 * 60 * 1000).toLong()
-//                userViewModel.selectedTime = (5 * 60 * 1000)
-//                userViewModel.updatedTime = userViewModel.selectedTime
-            },
-            modifier = Modifier.padding(16.dp),
-        ) {
-            Text(text = "01:00:00")
-        }
-
-        OutlinedButton(
-            onClick = {
-                onStartActionButtonClicked()
-//                    (120 * 60 * 1000).toLong()
-//                userViewModel.selectedTime = (10 * 60 * 1000)
-//                userViewModel.updatedTime = userViewModel.selectedTime
-            },
-            modifier = Modifier.padding(16.dp),
-        ) {
-            Text(text = "02:00:00")
-        }
-    }
 }

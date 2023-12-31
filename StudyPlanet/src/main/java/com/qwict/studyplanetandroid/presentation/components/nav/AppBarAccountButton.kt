@@ -6,10 +6,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton
+import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
 
 @Composable
-fun AppBarAccountButton() {
-    if (AuthenticationSingleton.isUserAuthenticated) {
+fun AppBarAccountButton(currentScreen: StudyPlanetScreens) {
+    if (AuthenticationSingleton.isUserAuthenticated && currentScreen == StudyPlanetScreens.MainScreen) {
         IconButton(
             onClick = { AuthenticationSingleton.logout() },
         ) {

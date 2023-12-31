@@ -11,7 +11,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,7 +35,7 @@ fun NavBar(
         var onClick: () -> Unit = {},
     )
 
-    var selectedNavbarItemIndex by remember { mutableStateOf(0) }
+    var selectedNavbarItemIndex by remember { mutableIntStateOf(0) }
 
     val items = listOf(
         NavbarItem(
@@ -59,24 +59,22 @@ fun NavBar(
     )
 
     NavigationBar {
-        if (currentScreen.name != StudyPlanetScreens.PlanetExplorerScreen.name) {
-            items.forEachIndexed { index, navbarItem ->
-                NavigationBarItem(
-                    icon = { Icon(navbarItem.icon, contentDescription = navbarItem.contentDescription) },
-                    label = { if (currentScreen.name == navbarItem.name) Text(navbarItem.text) },
-                    selected = currentScreen.name == navbarItem.name,
-                    onClick = {
-                        if (currentScreen.name != navbarItem.name) {
-                            navController.navigate(navbarItem.name) {
-                                popUpTo(navbarItem.name) { inclusive = true }
-                            }
-                            selectedNavbarItemIndex = index
-                        } else {
-                            invokeHapticFeedback(view)
+        items.forEachIndexed { index, navbarItem ->
+            NavigationBarItem(
+                icon = { Icon(navbarItem.icon, contentDescription = navbarItem.contentDescription) },
+                label = { if (currentScreen.name == navbarItem.name) Text(navbarItem.text) },
+                selected = currentScreen.name == navbarItem.name,
+                onClick = {
+                    if (currentScreen.name != navbarItem.name) {
+                        navController.navigate(navbarItem.name) {
+                            popUpTo(navbarItem.name) { inclusive = true }
                         }
-                    },
-                )
-            }
+                        selectedNavbarItemIndex = index
+                    } else {
+                        invokeHapticFeedback(view)
+                    }
+                },
+            )
         }
     }
 }

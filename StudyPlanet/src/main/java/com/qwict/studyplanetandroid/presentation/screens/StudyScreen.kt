@@ -31,7 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.qwict.studyplanetandroid.R
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.components.AlertDialog
 import com.qwict.studyplanetandroid.presentation.components.study.CustomCountDownTimer
@@ -53,11 +52,6 @@ fun ExplorerScreen(
     selectedTimeInMinutes: Float,
 ) {
     val scope = rememberCoroutineScope()
-    val imageId = if (isDiscovering) {
-        R.drawable.galaxy
-    } else {
-        selectedPlanet.imageId
-    }
     var currentProgress by remember { mutableFloatStateOf(0f) }
     BackHandler {
         studyViewModel.openOnBackAlertDialog()
@@ -120,16 +114,6 @@ fun ExplorerScreen(
                         .fillMaxWidth(),
                     contentScale = ContentScale.Fit,
                 )
-                Text(
-                    text = (state.selectedTime / 1000 / 60).toString() + " Minutes",
-                    modifier = Modifier.padding(16.dp),
-                    textAlign = TextAlign.Center,
-                )
-                CustomCountDownTimer(
-                    state.hours,
-                    state.minutes,
-                    state.seconds,
-                ) { studyViewModel.startCountDown() }
 
                 Text(
                     text = "Progress",
@@ -143,6 +127,12 @@ fun ExplorerScreen(
                         .padding(horizontal = 16.dp),
                     progress = currentProgress,
                 )
+
+                CustomCountDownTimer(
+                    state.hours,
+                    state.minutes,
+                    state.seconds,
+                ) { studyViewModel.startCountDown() }
             }
         }
 
