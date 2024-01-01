@@ -2,7 +2,6 @@ package com.qwict.studyplanetandroid.data.remote.dto
 
 import com.qwict.studyplanetandroid.data.local.schema.DatabaseUserWithPlanets
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
-import com.squareup.moshi.JsonClass
 
 /**
  * Data transfer object (DTO) representing an authenticated user received from the remote API.
@@ -11,7 +10,6 @@ import com.squareup.moshi.JsonClass
  * @property user The detailed information about the authenticated user.
  * @property validated Indicates whether the user has been validated.
  */
-@JsonClass(generateAdapter = true)
 data class AuthenticatedUserDto(
     val token: String,
     val user: UserDto,

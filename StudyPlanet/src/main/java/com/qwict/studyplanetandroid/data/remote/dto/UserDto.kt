@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.data.remote.dto
 
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
-import com.squareup.moshi.JsonClass
 
 /**
  * Data transfer object (DTO) representing a user received from the remote API.
@@ -12,7 +11,6 @@ import com.squareup.moshi.JsonClass
  * @property experience The experience level of the user.
  * @property discoveredPlanets The list of planets discovered by the user.
  */
-@JsonClass(generateAdapter = true)
 data class UserDto(
     val id: Int,
     val email: String,

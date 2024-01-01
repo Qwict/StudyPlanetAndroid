@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.data.remote.dto
 
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
-import com.squareup.moshi.JsonClass
 
 /**
  * Data transfer object (DTO) representing a planet received from the remote API.
@@ -9,7 +8,6 @@ import com.squareup.moshi.JsonClass
  * @property id The unique identifier of the planet.
  * @property name The name of the planet.
  */
-@JsonClass(generateAdapter = true)
 data class PlanetDto(
     val id: Int,
     val name: String,
