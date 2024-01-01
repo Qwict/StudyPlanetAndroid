@@ -5,14 +5,16 @@ import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton
+import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
 
 @Composable
 fun AppBarAccountButton(currentScreen: StudyPlanetScreens) {
-    if (AuthenticationSingleton.isUserAuthenticated && currentScreen == StudyPlanetScreens.MainScreen) {
+    if (StudyPlanetApplication.authSingleton.isUserAuthenticated &&
+        currentScreen == StudyPlanetScreens.MainScreen
+    ) {
         IconButton(
-            onClick = { AuthenticationSingleton.logout() },
+            onClick = { StudyPlanetApplication.authSingleton.logout() },
         ) {
             Icon(
                 imageVector = Icons.Filled.Logout,

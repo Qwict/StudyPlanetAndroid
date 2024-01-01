@@ -21,6 +21,7 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Inject
 
 /**
  * The [Application] class for the StudyPlanet application.
@@ -33,11 +34,16 @@ class StudyPlanetApplication : Application() {
 
     /**
      * Called when the application is starting. Initializes the [CoroutineScope] and sets the application context.
+     * Also initializes the [AuthenticationSingleton] (@Injected) to ensure that the user is logged in.
+     * This is a very important line of code, because it initializes the AuthenticationSingleton.
+     * All authentication should happen thru this reference to the singleton to increase testability.
      */
     override fun onCreate() {
         super.onCreate()
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         appContext = applicationContext
+        @Inject
+        authSingleton = AuthenticationSingleton
     }
 
     /**
@@ -46,6 +52,7 @@ class StudyPlanetApplication : Application() {
     companion object {
         // Might not be useful, because context is available everywhere... (looked cool tho)
         lateinit var appContext: Context
+        lateinit var authSingleton: AuthenticationSingleton
     }
 }
 
@@ -80,7 +87,7 @@ fun StudyPlanetApp(
         // Display the bottom navigation bar if the user is authenticated
         bottomBar = {
             if (
-                AuthenticationSingleton.isUserAuthenticated &&
+                StudyPlanetApplication.authSingleton.isUserAuthenticated &&
                 currentScreen.name != StudyPlanetScreens.PlanetExplorerScreen.name
             ) { NavBar(currentScreen, navController) }
         },

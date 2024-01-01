@@ -42,9 +42,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ExplorerScreen(
+    modifier: Modifier = Modifier,
     navigateBackToMainScreen: () -> Unit = {},
     navigateBackToDiscoveredPlanetsScreen: () -> Unit = {},
-    modifier: Modifier = Modifier,
     studyViewModel: StudyViewModel = hiltViewModel(),
     state: StudyState = studyViewModel.state,
     isDiscovering: Boolean,
@@ -145,7 +145,6 @@ fun ExplorerScreen(
             OutlinedButton(
                 onClick = {
                     studyViewModel.openOnBackAlertDialog()
-//                    openOnBackAlertDialog.value = true
                 },
                 modifier = Modifier
                     .padding(16.dp),
@@ -160,12 +159,10 @@ fun ExplorerScreen(
                 AlertDialog(
                     onDismissRequest = {
                         studyViewModel.closeBackAlertDialog()
-//                        openOnBackAlertDialog.value = false
                     },
                     onConfirmation = {
                         navigateBackToMainScreen()
                         studyViewModel.closeBackAlertDialog()
-//                        openOnBackAlertDialog.value = false
                     },
                     dialogTitle = "Cancel mining operation?",
                     dialogText = "Are you sure you want to stop mining ${selectedPlanet.name}? All progress will be lost.",
@@ -173,7 +170,6 @@ fun ExplorerScreen(
                 )
             }
             state.openPlanetDiscoveredDialog -> {
-//            true -> {
                 PlanetDiscoveredDialog(
                     navigateHome = { navigateBackToMainScreen() },
                     navigateToDiscoveredPlanets = { navigateBackToDiscoveredPlanetsScreen() },

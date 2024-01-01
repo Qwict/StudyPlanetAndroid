@@ -100,37 +100,3 @@ fun PlanetDiscoveredDialog(
         }
     }
 }
-//        icon = {
-//            Icon(Icons.Filled.TravelExplore, contentDescription = "Planet discovered Icon")
-//        },
-//        title = {
-//            Text(text = title)
-//        },
-//        text = {
-//            Text(text = discoveryInformation)
-//        },
-//        onDismissRequest = {
-//            navigateHome()
-//        },
-//        confirmButton = {
-//            TextButton(
-//                onClick = {
-//                    navigateHome()
-//                },
-//            ) {
-//                Text("Go home")
-//            }
-//        },
-//        dismissButton = {
-//            if (hasDiscoveredPlanet) {
-//                TextButton(
-//                    onClick = {
-//                        navigateToDiscoverdPlanets()
-//                    },
-//                ) {
-//                    Text("Checkout planet")
-//                }
-//            }
-//        },
-//    )
-// }

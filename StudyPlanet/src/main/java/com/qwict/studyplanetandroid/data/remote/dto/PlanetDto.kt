@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.data.remote.dto
 
 import com.qwict.studyplanetandroid.data.local.schema.PlanetRoomEntity
-import com.qwict.studyplanetandroid.domain.model.Planet
 import com.squareup.moshi.JsonClass
 
 /**
@@ -19,21 +18,11 @@ data class PlanetDto(
 /**
  * Converts the [PlanetDto] to a [PlanetRoomEntity] for local database storage.
  *
- * @param userId The unique identifier of the user associated with the planet.
+ * @param remoteId The unique identifier of the user associated with the planet.
  * @return The [PlanetRoomEntity] representation of the planet.
  */
-fun PlanetDto.asDatabaseModel(userId: Int): PlanetRoomEntity = PlanetRoomEntity(
+fun PlanetDto.asDatabaseModel(remoteId: Int): PlanetRoomEntity = PlanetRoomEntity(
     remoteId = id,
     name = name,
-    ownerId = userId,
-)
-
-/**
- * Converts the [PlanetDto] to a [Planet] domain model for application use.
- *
- * @return The [Planet] representation of the planet.
- */
-fun PlanetDto.asDomainModel() = Planet(
-    id = id,
-    name = name,
+    ownerId = remoteId,
 )

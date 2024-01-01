@@ -4,7 +4,7 @@ import android.util.Log
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
-import com.qwict.studyplanetandroid.domain.model.User
+import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -29,14 +29,31 @@ class LoginUseCase @Inject constructor(
     operator fun invoke(
         email: String,
         password: String,
-    ): Flow<Resource<User>> = flow {
+    ): Flow<Resource<Unit>> = flow {
         Log.i("LoginUseCase", "invoke: $email, $password")
         emit(Resource.Loading())
         try {
             val authenticatedUserDto = repo.login(LoginDto(email = email, password = password))
 
             if (authenticatedUserDto.validated) {
-                emit(Resource.Success(insertLocalUserUseCase(authenticatedUserDto)))
+                // Repository pattern insert user
+                repo.insertUser(authenticatedUserDto.asDatabaseModel())
+
+                // Repository pattern insert planets
+                val remoteId = authenticatedUserDto.user.id
+                val planets = authenticatedUserDto.user.discoveredPlanets.map {
+                    it.asDatabaseModel(remoteId)
+                }
+                if (planets.isNotEmpty()) {
+                    repo.insertPlanets(planets)
+                }
+
+                // Final step: authenticate the user in the StudyPlanetApplication.authSingleton
+                saveTokenAndValidateUserUseCase(authenticatedUserDto.token)
+
+                emit(Resource.Success(Unit))
+            } else {
+                emit(Resource.Error("User is was not validated by server."))
             }
         } catch (e: HttpException) {
             Log.e("LoginUseCase", "invoke: ${e.code()}", e)

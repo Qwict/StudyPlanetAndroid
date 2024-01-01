@@ -4,7 +4,7 @@ import android.util.Log
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
-import com.qwict.studyplanetandroid.domain.model.User
+import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -31,19 +31,23 @@ class RegisterUseCase @Inject constructor(
         name: String,
         email: String,
         password: String,
-    ): Flow<Resource<User>> = flow {
+    ): Flow<Resource<Unit>> = flow {
         Log.i("RegisterUseCase", "invoke: $email, $password")
         try {
             emit(Resource.Loading())
-            val authenticatedUser = repo.register(
-                RegisterDto(
-                    name = name,
-                    email = email,
-                    password = password,
-                ),
+            val authenticatedUserDto = repo.register(
+                RegisterDto(name = name, email = email, password = password),
             )
-            if (authenticatedUser.validated) {
-                emit(Resource.Success(insertLocalUserUseCase(authenticatedUser)))
+            if (authenticatedUserDto.validated) {
+                // Repository pattern insert user
+                repo.insertUser(authenticatedUserDto.asDatabaseModel())
+
+                // No planets must be inserted in registration...
+
+                // Final step: authenticate the user in the StudyPlanetApplication.authSingleton
+                saveTokenAndValidateUserUseCase(authenticatedUserDto.token)
+
+                emit(Resource.Success(Unit))
             }
         } catch (e: HttpException) {
             if (e.code() == 400) {

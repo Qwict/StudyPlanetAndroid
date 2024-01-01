@@ -1,7 +1,6 @@
 package com.qwict.studyplanetandroid.domain.use_case.actions // ktlint-disable package-name
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
+import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.common.getEncryptedPreference
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
@@ -34,8 +33,8 @@ class StopExploringUseCase @Inject constructor(
     ): Flow<Resource<User>> = flow {
         try {
             emit(Resource.Loading())
-            validateUser()
-            if (isUserAuthenticated) {
+            StudyPlanetApplication.authSingleton.validateUser()
+            if (StudyPlanetApplication.authSingleton.isUserAuthenticated) {
                 repo.stopExploring(ExploreActionDto(planetId = selectedPlanetId, selectedTime = selectedTime))
             } else if (getEncryptedPreference("token") == "expired") {
                 emit(Resource.Error("Your access to the universe has expired. Please log in again to discover a new planet."))

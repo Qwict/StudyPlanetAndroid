@@ -2,6 +2,7 @@ package com.qwict.studyplanetandroid.common.di
 
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.AuthInterceptor
+import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.common.Constants.BASE_URL
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.StudyPlanetRepositoryImpl
@@ -9,7 +10,6 @@ import com.qwict.studyplanetandroid.data.local.StudyPlanetDatabase
 import com.qwict.studyplanetandroid.data.local.dao.PlanetDao
 import com.qwict.studyplanetandroid.data.local.dao.UserDao
 import com.qwict.studyplanetandroid.data.remote.StudyPlanetApi
-import com.qwict.studyplanetandroid.domain.use_case.user.AuthenticateUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.LoginUseCase
 import com.qwict.studyplanetandroid.domain.use_case.user.RegisterUseCase
 import com.qwict.studyplanetandroid.domain.validator.Validators
@@ -74,11 +74,11 @@ object AppModule {
             .build()
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideAuthenticationSingleton(): AuthenticationSingleton {
-//        return AuthenticationSingleton()
-//    }
+    @Provides
+    @Singleton
+    fun provideAuthenticationSingleton(): AuthenticationSingleton {
+        return AuthenticationSingleton
+    }
 
     /**
      * Provides an instance of [StudyPlanetRepository] using the specified dependencies.
@@ -158,23 +158,5 @@ object AppModule {
         repo: StudyPlanetRepository,
     ): RegisterUseCase {
         return RegisterUseCase(repo)
-    }
-
-    /**
-     * Provides an instance of [AuthenticateUseCase] using the specified [StudyPlanetRepository].
-     *
-     * This function creates and returns an instance of [AuthenticateUseCase] by injecting the required [StudyPlanetRepository].
-     * The [AuthenticateUseCase] is responsible for handling user authentication using the provided repository.
-     *
-     * @param repo The [StudyPlanetRepository] instance used for handling user authentication functionality.
-     *
-     * @return An instance of [AuthenticateUseCase] for managing user authentication.
-     */
-    @Provides
-    @Singleton
-    fun provideAuthenticateUseCase(
-        repo: StudyPlanetRepository,
-    ): AuthenticateUseCase {
-        return AuthenticateUseCase(repo)
     }
 }

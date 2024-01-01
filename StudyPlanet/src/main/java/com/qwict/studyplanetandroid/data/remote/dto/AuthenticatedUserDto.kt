@@ -2,7 +2,6 @@ package com.qwict.studyplanetandroid.data.remote.dto
 
 import com.qwict.studyplanetandroid.data.local.schema.DatabaseUserWithPlanets
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
-import com.qwict.studyplanetandroid.domain.model.User
 import com.squareup.moshi.JsonClass
 
 /**
@@ -25,7 +24,7 @@ data class AuthenticatedUserDto(
  *
  * @return The [UserRoomEntity] representation of the authenticated user.
  */
-fun AuthenticatedUserDto.toDatabaseUser() = UserRoomEntity(
+fun AuthenticatedUserDto.asDatabaseModel() = UserRoomEntity(
     email = user.email,
     name = user.name,
     experience = user.experience,
@@ -37,23 +36,7 @@ fun AuthenticatedUserDto.toDatabaseUser() = UserRoomEntity(
  *
  * @return The [DatabaseUserWithPlanets] representation of the authenticated user with discovered planets.
  */
-fun AuthenticatedUserDto.toDatabaseUserWithPlanets() = DatabaseUserWithPlanets(
+fun AuthenticatedUserDto.asDatabaseEntityWithPlanets() = DatabaseUserWithPlanets(
     user = user.asDatabaseModel(),
     planets = user.discoveredPlanets.map { it.asDatabaseModel(user.id) },
-)
-
-/**
- * Converts the [AuthenticatedUserDto] to a [User] domain model for application use.
- *
- * @return The [User] domain model representation of the authenticated user.
- */
-fun AuthenticatedUserDto.asDomainModel() = User(
-    discoveredPlanets = user.discoveredPlanets.map { it.asDomainModel() },
-    email = user.email,
-    experience = user.experience,
-    name = user.name,
-    currentLevel = 0,
-    experienceForCurrentLevel = 0,
-    experienceForNextLevel = 0,
-    experienceProgress = 0.0f,
 )

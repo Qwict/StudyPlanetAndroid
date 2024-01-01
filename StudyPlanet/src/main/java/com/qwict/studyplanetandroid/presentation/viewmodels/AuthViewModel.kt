@@ -1,5 +1,6 @@
 package com.qwict.studyplanetandroid.presentation.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -82,7 +83,8 @@ class AuthViewModel @Inject constructor(
             loginUseCase(state.email, state.password).onEach { result ->
                 when (result) {
                     is Resource.Success -> {
-                        state = AuthState(user = result.data!!)
+                        Log.d("AuthViewModel", "loginUser succeeded")
+//                        state = AuthState(user = result.data!!)
 //                    levelCalculator(state.user.experience)
                     }
 
@@ -183,7 +185,8 @@ class AuthViewModel @Inject constructor(
             registerUseCase(state.username, state.email, state.password).onEach { result ->
                 when (result) {
                     is Resource.Success -> {
-                        state = AuthState(user = result.data!!)
+                        Log.d("AuthViewModel", "registerUser succeeded")
+//                        state = AuthState(user = result.data!!)
 //                        levelCalculator(state.user.experience)
                     }
                     is Resource.Error -> {

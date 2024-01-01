@@ -1,6 +1,5 @@
 package com.qwict.studyplanetandroid
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,12 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
 import com.qwict.studyplanetandroid.presentation.theme.StudyPlanetAndroidTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * The main [Activity] for the StudyPlanet application.
+ * The main [ComponentActivity] for the StudyPlanet application.
  *
  * The [MainActivity] serves as the entry point for the application and is responsible for setting up the
  * user interface using Jetpack Compose. It also includes lifecycle methods such as [onCreate], [onResume], and [onPause].
@@ -47,22 +45,14 @@ class MainActivity : ComponentActivity() {
      */
     override fun onResume() {
         super.onResume()
-        validateUser()
+        StudyPlanetApplication.authSingleton.validateUser()
     }
 
     /**
      * Called as part of the activity lifecycle when an activity is going into the background, but has not (yet) been stopped.
      */
     override fun onPause() {
+        // TODO, Might have to add code here to stop users from being able to use the app when it's in the background
         super.onPause()
-    }
-
-    /**
-     * Gets the context of the activity.
-     *
-     * @return The [Context] associated with this activity.
-     */
-    fun getContext(): Context {
-        return this
     }
 }

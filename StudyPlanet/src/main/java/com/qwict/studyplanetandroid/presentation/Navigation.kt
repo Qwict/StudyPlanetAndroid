@@ -21,7 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.qwict.studyplanetandroid.R
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
+import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.presentation.screens.DiscoveredPlanetsScreen
 import com.qwict.studyplanetandroid.presentation.screens.ExplorerScreen
 import com.qwict.studyplanetandroid.presentation.screens.MainScreen
@@ -30,8 +30,6 @@ import com.qwict.studyplanetandroid.presentation.screens.auth.LoginScreen
 import com.qwict.studyplanetandroid.presentation.screens.auth.RegisterScreen
 import com.qwict.studyplanetandroid.presentation.viewmodels.AuthViewModel
 import com.qwict.studyplanetandroid.presentation.viewmodels.SelectedPlanetViewModel
-import com.qwict.studyplanetandroid.presentation.viewmodels.UserViewModel
-
 enum class StudyPlanetScreens(@StringRes val title: Int) {
     MainRoute(title = R.string.main_route),
     AuthenticationRoute(title = R.string.main_route),
@@ -67,7 +65,7 @@ fun StudyPlanetNavigation(
      */
     NavHost(
         navController = navController,
-        startDestination = if (isUserAuthenticated) {
+        startDestination = if (StudyPlanetApplication.authSingleton.isUserAuthenticated) {
             StudyPlanetScreens.MainRoute.name
         } else {
             StudyPlanetScreens.AuthenticationRoute.name
@@ -79,8 +77,6 @@ fun StudyPlanetNavigation(
          * The [navigation] composable function is used to define the navigation structure for the authentication flow.
          * It specifies the start destination and route for the authentication route in the navigation graph.
          *
-         * @param startDestination The starting destination for the authentication flow.
-         * @param route The route associated with the authentication flow in the navigation graph.
          */
         navigation(
             startDestination = StudyPlanetScreens.LoginScreen.name,
@@ -92,13 +88,6 @@ fun StudyPlanetNavigation(
              * The [LoginScreen] composable function is responsible for rendering the login screen UI and handling
              * user interactions related to the login process.
              *
-             * @param authState The [AuthState] representing the authentication state.
-             * @param loginUser Callback for initiating the login process.
-             * @param navigateToRegisterScreen Callback for navigating to the registration screen.
-             * @param validationEvent The event channel for handling validation events.
-             * @param onEvent Callback for handling events related to the authentication form.
-             * @param switchPasswordVisibility Callback for switching the visibility of the password field.
-             * @param clearValidationErrors Callback for clearing validation errors in the authentication form.
              */
             composable(route = StudyPlanetScreens.LoginScreen.name) {
                 val authViewModel = it.sharedViewModel<AuthViewModel>(navController)
@@ -121,13 +110,6 @@ fun StudyPlanetNavigation(
              * The [RegisterScreen] composable function is responsible for rendering the registration screen UI and handling
              * user interactions related to the registration process.
              *
-             * @param authState The [AuthState] representing the authentication state.
-             * @param registerUser Callback for initiating the registration process.
-             * @param navigateToLoginScreen Callback for navigating back to the login screen.
-             * @param validationEvent The event channel for handling validation events.
-             * @param onEvent Callback for handling events related to the authentication form.
-             * @param switchPasswordVisibility Callback for switching the visibility of the password field.
-             * @param clearValidationErrors Callback for clearing validation errors in the authentication form.
              */
             composable(route = StudyPlanetScreens.RegisterScreen.name) {
                 val authViewModel = it.sharedViewModel<AuthViewModel>(navController)
@@ -153,8 +135,6 @@ fun StudyPlanetNavigation(
          * The [navigation] composable function is used to define the navigation structure for the main content flow.
          * It specifies the start destination and route for the main route in the navigation graph.
          *
-         * @param startDestination The starting destination for the main content flow.
-         * @param route The route associated with the main content flow in the navigation graph.
          */
         navigation(
             startDestination = StudyPlanetScreens.MainScreen.name,
@@ -165,7 +145,6 @@ fun StudyPlanetNavigation(
              *
              * The [MainScreen] composable function is responsible for rendering the main screen content and handling user interactions.
              *
-             * @param modifier The modifier for positioning and sizing the composable.
              */
             composable(route = StudyPlanetScreens.MainScreen.name) {
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
@@ -183,11 +162,6 @@ fun StudyPlanetNavigation(
              * The [TimeSelectionScreen] composable function is responsible for rendering the time selection screen content
              * and handling user interactions related to selecting exploration time.
              *
-             * @param onStartActionButtonClicked Callback triggered when the action button (e.g., "Start Exploring") is clicked.
-             * @param modifier The modifier for positioning and sizing the composable.
-             * @param isDiscovering Flag indicating whether the user is currently discovering planets.
-             * @param selectedTimeInMinutes The selected exploration time in minutes.
-             * @param setSelectedTimeInMinutes Callback to set the selected exploration time.
              */
             composable(
                 route = StudyPlanetScreens.TimeSelectionScreen.name,
@@ -216,11 +190,6 @@ fun StudyPlanetNavigation(
              * The [DiscoveredPlanetsScreen] composable function is responsible for rendering the screen content related
              * to discovered planets and handling user interactions.
              *
-             * @param navigateToTimeSelectionScreen Callback triggered when navigating to the time selection screen.
-             * @param modifier The modifier for positioning and sizing the composable.
-             * @param getOnlinePlanets Callback to fetch online planets.
-             * @param getLocalPlanets Callback to fetch local planets.
-             * @param userState The state of the user view model used for displaying user-related information.
              */
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
@@ -240,18 +209,10 @@ fun StudyPlanetNavigation(
              * The [ExplorerScreen] composable function is responsible for rendering the screen content related
              * to exploring a selected planet and handling user interactions during exploration.
              *
-             * @param navigateBackToMainScreen Callback triggered when navigating back to the main screen.
-             * @param navigateBackToDiscoveredPlanetsScreen Callback triggered when navigating back to the discovered planets screen.
-             * @param modifier The modifier for positioning and sizing the composable.
-             * @param isDiscovering Flag indicating whether the user is currently discovering planets.
-             * @param selectedPlanet The selected planet for exploration.
-             * @param selectedTimeInMinutes The selected exploration time in minutes.
              */
             composable(route = StudyPlanetScreens.PlanetExplorerScreen.name) {
-                val userViewModel = it.sharedViewModel<UserViewModel>(navController)
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 BackHandler(true) {
-                    // Or do nothing
                     Log.i("Application", "Clicked back")
                 }
                 ExplorerScreen(

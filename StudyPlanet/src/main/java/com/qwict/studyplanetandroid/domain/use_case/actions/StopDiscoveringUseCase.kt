@@ -1,8 +1,6 @@
 package com.qwict.studyplanetandroid.domain.use_case.actions // ktlint-disable package-name
 
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.isUserAuthenticated
-import com.qwict.studyplanetandroid.common.AuthenticationSingleton.validateUser
+import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.local.schema.asDomainModel
@@ -34,10 +32,10 @@ class StopDiscoveringUseCase @Inject constructor(
     ): Flow<Resource<Planet?>> = flow {
         try {
             emit(Resource.Loading())
-            validateUser()
-            if (isUserAuthenticated) {
+            StudyPlanetApplication.authSingleton.validateUser()
+            if (StudyPlanetApplication.authSingleton.isUserAuthenticated) {
                 val discoveredPlanet = repo.stopDiscovering(DiscoverActionDto(selectedTime = selectedTime))
-                val currentDatabaseUser = repo.getUserByRemoteId(AuthenticationSingleton.remoteUserId)
+                val currentDatabaseUser = repo.getUserByRemoteId(StudyPlanetApplication.authSingleton.remoteUserId)
                 if (discoveredPlanet != null) {
                     val newDatabasePlanet = discoveredPlanet.asDatabaseModel(currentDatabaseUser.remoteId)
                     repo.insertPlanet(newDatabasePlanet)
