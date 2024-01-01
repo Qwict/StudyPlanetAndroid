@@ -1,5 +1,6 @@
 package com.qwict.studyplanetandroid.data.local.schema
 
+import android.util.Log
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
@@ -7,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.google.common.math.DoubleMath.log2
 import com.qwict.studyplanetandroid.domain.model.User
+import kotlin.math.ceil
 import kotlin.math.pow
 
 /**
@@ -51,62 +53,51 @@ data class DatabaseUserWithPlanets(
 )
 
 /**
- * Converts a [DatabaseUserWithPlanets] into a [User] domain model.
- *
- * @return A [User] instance.
- */
-fun DatabaseUserWithPlanets.asDomainModel() = User(
-    discoveredPlanets = planets.map { it.asDomainModel() },
-    email = user.email,
-    name = user.name,
-    experience = user.experience,
-    currentLevel = 0,
-    experienceForCurrentLevel = 0,
-    experienceForNextLevel = 0,
-    experienceProgress = 0.0f,
-)
-
-/**
  * Converts a [UserRoomEntity] into a [User] domain model.
  *
  * @return A [User] instance.
  */
-fun UserRoomEntity.asDomainModel() = User(
-    discoveredPlanets = emptyList(),
-    email = email,
-    experience = experience,
-    name = name,
-    currentLevel = calculateLevel(experience),
-    experienceForCurrentLevel = calculateExperienceForCurrentLevel(calculateLevel(experience)),
-    experienceForNextLevel = calculateExperienceForNextLevel(calculateLevel(experience)),
-    experienceProgress = calculateExperienceProgress(
+fun UserRoomEntity.asDomainModel(): User {
+    val experience = this.experience
+    var currentLevel = 0
+
+    Log.d("calculateLevel", "experience: $experience")
+    if (ceil(log2(experience.toDouble() / 60)) > 0) {
+        currentLevel = (log2(experience.toDouble() / 60) + 1).toInt()
+    }
+    Log.d("calculateLevel", "currentLevel: $currentLevel")
+
+    val experienceForCurrentLevel = (2.0.pow((currentLevel - 1).toDouble()) * 60).toInt()
+    Log.d("calculateLevel", "experienceForCurrentLevel: $experienceForCurrentLevel")
+
+    val experienceForNextLevel = (2.0.pow(currentLevel) * 60).toInt()
+    Log.d("calculateLevel", "experienceForNextLevel: $experienceForNextLevel")
+
+    val experienceProgress = if (currentLevel == 0) {
+        (experience / experienceForNextLevel).toFloat()
+    } else {
+        (
+            (experience - experienceForCurrentLevel).toDouble() /
+                (experienceForNextLevel - experienceForCurrentLevel).toDouble()
+            ).toFloat()
+    }
+    Log.d("calculateLevel", "experienceProgress: $experienceProgress")
+
+    val currentLevelProgress = if (currentLevel != 0) {
+        experience - experienceForCurrentLevel
+    } else {
+        experience
+    }
+
+    return User(
+        discoveredPlanets = emptyList(),
+        email = email,
+        name = name,
         experience = experience,
-        experienceForCurrentLevel = calculateExperienceForCurrentLevel(calculateLevel(experience)),
-        experienceForNextLevel = calculateExperienceForNextLevel(calculateLevel(experience)),
-    ),
-)
-
-private fun calculateLevel(experience: Int): Int {
-    val level = kotlin.math.ceil(log2((experience / 60).toDouble()))
-    return if (level < 0) {
-        0
-    } else {
-        level.toInt()
-    }
-}
-
-private fun calculateExperienceForCurrentLevel(level: Int): Int {
-    return 2.0.pow((level - 1).toDouble()).toInt() * 60
-}
-
-private fun calculateExperienceForNextLevel(level: Int): Int {
-    return 2.0.pow(level.toDouble()).toInt() * 60
-}
-
-private fun calculateExperienceProgress(experience: Int, experienceForCurrentLevel: Int, experienceForNextLevel: Int): Float {
-    return if (experienceForCurrentLevel == 0) {
-        experience / experienceForNextLevel.toFloat()
-    } else {
-        (experience - experienceForCurrentLevel) / (experienceForNextLevel - experienceForCurrentLevel).toFloat()
-    }
+        currentLevel = currentLevel,
+        currentLevelProgress = currentLevelProgress,
+        experienceForCurrentLevel = experienceForCurrentLevel,
+        experienceForNextLevel = experienceForNextLevel,
+        experienceProgress = experienceProgress,
+    )
 }

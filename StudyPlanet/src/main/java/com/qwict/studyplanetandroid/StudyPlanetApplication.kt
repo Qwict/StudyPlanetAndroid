@@ -15,8 +15,8 @@ import androidx.navigation.compose.rememberNavController
 import com.qwict.studyplanetandroid.common.AuthenticationSingleton
 import com.qwict.studyplanetandroid.presentation.StudyPlanetNavigation
 import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
-import com.qwict.studyplanetandroid.presentation.components.nav.AppBar
 import com.qwict.studyplanetandroid.presentation.components.nav.NavBar
+import com.qwict.studyplanetandroid.presentation.components.nav.TopBar
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +78,7 @@ fun StudyPlanetApp(
     Scaffold(
         topBar = {
             // Display the app bar with relevant actions
-            AppBar(
+            TopBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },

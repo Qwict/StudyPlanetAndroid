@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -66,7 +67,9 @@ fun DiscoveredPlanetsScreen(
         }
         is DiscoveredPlanetsState.Success -> {
             val planets by (discoverViewModel.state as DiscoveredPlanetsState.Success).discoveredPlanets.collectAsState()
-            Column {
+            Column(
+                modifier = Modifier.padding(top = 8.dp),
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -82,13 +85,19 @@ fun DiscoveredPlanetsScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
                             ) {
+                                Icon(
+                                    imageVector = Icons.Default.TravelExplore,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(bottom = 16.dp),
+                                )
                                 Text(
-                                    text = "No discovered planets yet!",
+                                    text = "No Planets discovered yet.",
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                                 )
                                 Text(
-                                    text = "Start discovering new planets!",
+                                    text = "discover new planets in the Discover tab",
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                 )

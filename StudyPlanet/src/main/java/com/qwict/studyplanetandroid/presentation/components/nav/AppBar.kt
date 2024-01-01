@@ -12,18 +12,25 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.qwict.studyplanetandroid.BuildConfig
 import com.qwict.studyplanetandroid.presentation.StudyPlanetScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(
+fun TopBar(
     currentScreen: StudyPlanetScreens,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
-        title = { Text(stringResource(currentScreen.title)) },
+        title = {
+            if (stringResource(currentScreen.title) == "Study Planet") {
+                Text(stringResource(currentScreen.title) + " v" + BuildConfig.VERSION_NAME)
+            } else {
+                Text(stringResource(currentScreen.title))
+            }
+        },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
         ),

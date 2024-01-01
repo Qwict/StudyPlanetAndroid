@@ -45,16 +45,16 @@ fun NavBar(
             contentDescription = "Mission Control Center",
         ),
         NavbarItem(
-            text = "Discover",
-            name = StudyPlanetScreens.TimeSelectionScreen.name,
-            icon = Icons.Filled.SatelliteAlt,
-            contentDescription = "Discover a new planet",
-        ),
-        NavbarItem(
             text = "Explore",
             name = StudyPlanetScreens.DiscoveredPlanetsScreen.name,
             icon = Icons.Filled.TravelExplore,
             contentDescription = "Explore a planet",
+        ),
+        NavbarItem(
+            text = "Discover",
+            name = StudyPlanetScreens.TimeSelectionScreen.name,
+            icon = Icons.Filled.SatelliteAlt,
+            contentDescription = "Discover a new planet",
         ),
     )
 
