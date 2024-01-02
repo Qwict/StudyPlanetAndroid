@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +29,52 @@ class StudyViewModel @Inject constructor(
 
     var state by mutableStateOf(StudyState())
         private set
+
+    suspend fun startStudyTimer(selectedTimeInMinutes: Float, isDiscovering: Boolean) {
+        viewModelScope.launch {
+            Log.d(
+                "StudyViewModel",
+                "Started ${if (isDiscovering) "discovering" else "exploring"} for $selectedTimeInMinutes minutes",
+            )
+            Log.d("StudyViewModel", state.updatedTime.toString())
+            try {
+                if (isDiscovering) {
+                    startDiscovering()
+                } else {
+                    startExploring()
+                }
+
+                val selectedTimeInMillis = selectedTimeInMinutes.toInt() * 60 * 1000
+                val startTimeInMillis = System.currentTimeMillis()
+                val endTimeInMillis = startTimeInMillis + selectedTimeInMillis
+                state = state.copy(updatedTime = selectedTimeInMillis)
+                while (state.updatedTime > 0) {
+                    Log.d("StudyViewModel", "startCountDown: ${state.currentProgress}")
+                    val hours = (endTimeInMillis - System.currentTimeMillis()) / 1000 / 60 / 60
+                    val minutes = (endTimeInMillis - System.currentTimeMillis()) / 1000 / 60 % 60
+                    val seconds = (endTimeInMillis - System.currentTimeMillis()) / 1000 % 60
+                    // moet van nul naar 1 gaan
+                    val currentProgress = ((System.currentTimeMillis() - startTimeInMillis) / selectedTimeInMillis.toDouble())
+                    state = state.copy(
+                        updatedTime = state.updatedTime - 1000,
+                        hours = hours.toInt(),
+                        minutes = minutes.toInt(),
+                        seconds = seconds.toInt(),
+                        currentProgress = currentProgress.toFloat(),
+                        progressPercentage = (currentProgress * 100).toInt(),
+                    )
+                    delay(1000)
+                }
+                if (isDiscovering) {
+                    stopDiscovering()
+                } else {
+                    stopExploring()
+                }
+            } catch (e: Exception) {
+                Log.i("ExplorerScreen", e.toString())
+            }
+        }
+    }
 
     /**
      * Initiates the process of discovering study resources based on the selected time in the current state.
@@ -144,46 +191,4 @@ class StudyViewModel @Inject constructor(
 
     fun closeBackAlertDialog() { state = state.copy(openOnBackAlertDialog = false) }
     fun openOnBackAlertDialog() { state = state.copy(openOnBackAlertDialog = true) }
-
-    /**
-     * Resets the study state by setting relevant properties to their initial values.
-     *
-     * This function resets the study state by setting the following properties to their initial values:
-     * - [StudyState.selectedTime]: 0 (zero)
-     * - [StudyState.hours]: 0 (zero)
-     * - [StudyState.minutes]: 0 (zero)
-     * - [StudyState.seconds]: 0 (zero)
-     * - [StudyState.updatedTime]: 0 (zero)
-     *
-     * It effectively initializes the state for a new study session.
-     */
-    fun resetAction() {
-        state.selectedTime = 0
-        state.hours = 0
-        state.minutes = 0
-        state.seconds = 0
-        state.updatedTime = 0
-    }
-
-    /**
-     * Initiates a countdown process by decrementing the updated time in the current state at intervals of 1 second.
-     *
-     * This function uses a [while] loop to decrement the [StudyState.updatedTime] property by 1000 milliseconds (1 second)
-     * in each iteration. It calculates the remaining hours, minutes, and seconds based on the updated time and updates
-     * the corresponding properties in the state. The countdown continues until the updated time reaches zero.
-     *
-     * The function introduces a delay of 1000 milliseconds between each iteration using [delay] to simulate the passage
-     * of time.
-     *
-     * This function is a suspending function, allowing it to be called from a coroutine.
-     */
-    suspend fun startCountDown() {
-        while (state.updatedTime > 0) {
-            state.updatedTime -= 1000
-            state.hours = (state.updatedTime / (1000 * 60 * 60)).toInt()
-            state.minutes = (state.updatedTime % (1000 * 60 * 60) / (1000 * 60)).toInt()
-            state.seconds = (state.updatedTime % (1000 * 60 * 60) % (1000 * 60) / 1000).toInt()
-            delay(1000)
-        }
-    }
 }

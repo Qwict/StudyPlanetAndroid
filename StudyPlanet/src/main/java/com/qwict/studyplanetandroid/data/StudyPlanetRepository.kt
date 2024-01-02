@@ -70,7 +70,7 @@ class StudyPlanetRepositoryImpl @Inject constructor(
     }
 
     override fun getDiscoveredPlanets(): Flow<List<Planet>> {
-        return planetDao.getPlanetsByOwnerId(StudyPlanetApplication.authSingleton.remoteUserId).map {
+        return planetDao.getPlanetsFlowByOwnerId(StudyPlanetApplication.authSingleton.remoteUserId).map {
             it.map { planet -> planet.asDomainModel() }
         }
     }
@@ -80,9 +80,16 @@ class StudyPlanetRepositoryImpl @Inject constructor(
         try {
             Log.i("StudyPlanetRepository", "refreshDiscoveredPlanetsOnline")
             val authenticatedUserDto = api.authenticate()
-            val userWithPlanets = authenticatedUserDto.asDatabaseEntityWithPlanets()
-            planetDao.removeAllByOwnerId(StudyPlanetApplication.authSingleton.remoteUserId)
-            planetDao.insertAll(userWithPlanets.planets)
+            val remotePlanets = authenticatedUserDto.asDatabaseEntityWithPlanets().planets
+            val localPlanets = planetDao.getPlanetsByOwnerId(StudyPlanetApplication.authSingleton.remoteUserId)
+
+            localPlanets.forEach { localPlanet ->
+                if (!remotePlanets.contains(localPlanet)) {
+                    planetDao.delete(localPlanet)
+                }
+            }
+
+            planetDao.insertAll(remotePlanets)
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))

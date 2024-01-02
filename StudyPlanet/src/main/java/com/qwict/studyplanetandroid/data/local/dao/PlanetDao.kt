@@ -63,7 +63,10 @@ interface PlanetDao {
      * @return A list of planet entities associated with the specified user.
      */
     @Query("SELECT * FROM planets WHERE ownerId = :ownerId")
-    fun getPlanetsByOwnerId(ownerId: Int): Flow<List<PlanetRoomEntity>>
+    fun getPlanetsFlowByOwnerId(ownerId: Int): Flow<List<PlanetRoomEntity>>
+
+    @Query("SELECT * FROM planets WHERE ownerId = :ownerId")
+    suspend fun getPlanetsByOwnerId(ownerId: Int): List<PlanetRoomEntity>
 
     /**
      * Removes all planet entities associated with a user's remote identifier from the database.

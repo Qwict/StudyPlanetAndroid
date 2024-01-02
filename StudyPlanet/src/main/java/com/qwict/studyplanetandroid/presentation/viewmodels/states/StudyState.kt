@@ -4,17 +4,18 @@ import com.qwict.studyplanetandroid.common.Constants.EMPTY_PLANET
 import com.qwict.studyplanetandroid.domain.model.Planet
 
 data class StudyState(
-    var selectedTime: Int = 0,
-    var selectedPlanet: Planet = EMPTY_PLANET,
+    val selectedTime: Int = 0,
+    val selectedPlanet: Planet = EMPTY_PLANET,
 
     var discoveredPlanet: Planet = EMPTY_PLANET,
     var hasDiscoveredPlanet: Boolean = false,
 
-    var hours: Int = 0,
-    var minutes: Int = 0,
-    var seconds: Int = 0,
-    var updatedTime: Int = 0,
-    var currentProgress: Float = 0f,
+    val hours: Int = 0,
+    val minutes: Int = 0,
+    val seconds: Int = 0,
+    val updatedTime: Int = 0,
+    val progressPercentage: Int = 0,
+    var currentProgress: Float = 0.2f,
 
     var isLoading: Boolean = false,
     var error: String = "",

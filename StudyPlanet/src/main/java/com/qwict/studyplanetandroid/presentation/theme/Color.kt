@@ -61,7 +61,7 @@ val md_theme_dark_background = Color(18, 35, 58, 255)
 
 // is indeed background
 val md_theme_dark_onBackground = Color(0xFFFFFFFF)
-val md_theme_dark_surface = Color(0xFF000000)
+val md_theme_dark_surface = Color(18, 35, 58, 255)
 
 // backgound lower bar
 val md_theme_dark_onSurface = Color(0xFFFFFFFF)

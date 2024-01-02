@@ -75,13 +75,16 @@ fun DiscoveredPlanetsScreen(
                         .fillMaxSize()
                         .pullRefresh(pullRefreshState),
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .pullRefresh(pullRefreshState),
+                    ) {
                         if (planets.isEmpty()) {
                             Column(
                                 modifier = Modifier
                                     .background(MaterialTheme.colorScheme.surface)
-                                    .fillMaxSize()
-                                    .pullRefresh(pullRefreshState),
+                                    .fillMaxWidth()
+                                    .padding(32.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
                             ) {
@@ -92,7 +95,7 @@ fun DiscoveredPlanetsScreen(
                                         .padding(bottom = 16.dp),
                                 )
                                 Text(
-                                    text = "No Planets discovered yet.",
+                                    text = "No Discovered Planets",
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                                 )
