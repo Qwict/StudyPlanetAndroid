@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -43,7 +44,7 @@ enum class StudyPlanetScreens(
     MainScreen(title = R.string.title_main_screen),
     DiscoveredPlanetsScreen(title = R.string.title_discovered_planets_screen),
     TimeSelectionScreen(title = R.string.title_time_selection_screen),
-    PlanetExplorerScreen(title = R.string.title_explorer_screen),
+    PlanetExplorerScreen(title = R.string.title_study_screen),
 }
 
 /**
@@ -55,7 +56,10 @@ enum class StudyPlanetScreens(
  * @param navController The navigation controller managing the navigation flow.
  */
 @Composable
-fun StudyPlanetNavigation(navController: NavHostController) {
+fun StudyPlanetNavigation(
+    windowSize: WindowSizeClass,
+    navController: NavHostController,
+) {
     /**
      * Configures the navigation host for the StudyPlanet application.
      *
@@ -103,6 +107,7 @@ fun StudyPlanetNavigation(navController: NavHostController) {
                     onEvent = authViewModel::onEvent,
                     switchPasswordVisibility = { authViewModel.switchPasswordVisibility() },
                     clearValidationErrors = { authViewModel.clearValidationErrors() },
+                    windowSize = windowSize,
                 )
             }
 
@@ -127,6 +132,7 @@ fun StudyPlanetNavigation(navController: NavHostController) {
                     onEvent = authViewModel::onEvent,
                     switchPasswordVisibility = { authViewModel.switchPasswordVisibility() },
                     clearValidationErrors = { authViewModel.clearValidationErrors() },
+                    windowSize = windowSize,
                 )
             }
         }
@@ -156,6 +162,7 @@ fun StudyPlanetNavigation(navController: NavHostController) {
                         Modifier
                             .fillMaxSize()
                             .padding(dimensionResource(R.dimen.padding_medium)),
+                    windowSize = windowSize,
                 )
             }
 
@@ -182,9 +189,10 @@ fun StudyPlanetNavigation(navController: NavHostController) {
                         navController.navigate(StudyPlanetScreens.PlanetExplorerScreen.name)
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    isDiscovering = selectedPlanetViewModel.isDiscovering,
                     selectedTimeInMinutes = selectedPlanetViewModel.selectedTimeInMinutes,
+                    selectedPlanet = selectedPlanetViewModel.selectedPlanet,
                     setSelectedTimeInMinutes = { selectedPlanetViewModel.selectedTimeInMinutes = it },
+                    windowSize = windowSize,
                 )
             }
 
@@ -234,6 +242,7 @@ fun StudyPlanetNavigation(navController: NavHostController) {
                     isDiscovering = true,
                     selectedPlanet = selectedPlanetViewModel.selectedPlanet,
                     selectedTimeInMinutes = selectedPlanetViewModel.selectedTimeInMinutes,
+                    windowSize = windowSize,
                 )
             }
         }

@@ -6,6 +6,6 @@
     <string name="title_register_screen">Register</string>
     <string name="title_main_screen">Study Planet</string>
     <string name="title_discovered_planets_screen">Discovered Planets</string>
-    <string name="title_explorer_screen">Exploring Planet</string>
+    <string name="title_study_screen">Study Planet</string>
     <string name="title_time_selection_screen">Select time</string>
 </resources>

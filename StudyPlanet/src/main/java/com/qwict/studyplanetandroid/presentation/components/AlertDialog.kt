@@ -3,9 +3,11 @@ package com.qwict.studyplanetandroid.presentation.components
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun AlertDialog(
@@ -17,13 +19,21 @@ fun AlertDialog(
 ) {
     AlertDialog(
         icon = {
-            Icon(icon, contentDescription = "Example Icon")
+            Icon(icon, contentDescription = "Alert icon")
         },
         title = {
-            Text(text = dialogTitle)
+            Text(
+                text = dialogTitle,
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center,
+            )
         },
         text = {
-            Text(text = dialogText)
+            Text(
+                text = dialogText,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+            )
         },
         onDismissRequest = {
             onDismissRequest()

@@ -36,6 +36,11 @@ class StudyViewModel
             isDiscovering: Boolean,
         ) {
             viewModelScope.launch {
+                if (state.isRunning) {
+                    return@launch
+                } else {
+                    state = state.copy(isRunning = true)
+                }
                 Log.d(
                     "StudyViewModel",
                     "Started ${if (isDiscovering) "discovering" else "exploring"} for $selectedTimeInMinutes minutes",

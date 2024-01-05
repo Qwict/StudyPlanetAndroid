@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ExperienceBar(
+    modifier: Modifier = Modifier,
     experience: Int,
     currentLevelProgress: Int,
     experienceForNextLevel: Int,
@@ -21,7 +22,7 @@ fun ExperienceBar(
 ) {
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .padding(20.dp),
     ) {
@@ -30,13 +31,13 @@ fun ExperienceBar(
             style = MaterialTheme.typography.bodyLarge,
             // Should align text to the left
             modifier =
-                Modifier
+                modifier
                     .fillMaxWidth()
                     .align(Alignment.Start),
         )
         LinearProgressIndicator(
             modifier =
-                Modifier
+                modifier
                     .fillMaxWidth()
                     .height(10.dp),
             progress = experienceProgress,
@@ -45,7 +46,7 @@ fun ExperienceBar(
             text = "$currentLevelProgress / $experienceForNextLevel (total: ${experience}xp)",
             style = MaterialTheme.typography.bodyMedium,
             modifier =
-                Modifier
+                modifier
                     .fillMaxWidth()
                     .align(Alignment.Start),
         )

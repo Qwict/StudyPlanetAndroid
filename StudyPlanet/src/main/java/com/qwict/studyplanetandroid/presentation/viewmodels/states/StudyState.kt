@@ -4,6 +4,7 @@ import com.qwict.studyplanetandroid.common.Constants.EMPTY_PLANET
 import com.qwict.studyplanetandroid.domain.model.Planet
 
 data class StudyState(
+    val isRunning: Boolean = false,
     val selectedTime: Int = 0,
     val selectedPlanet: Planet = EMPTY_PLANET,
     var discoveredPlanet: Planet = EMPTY_PLANET,

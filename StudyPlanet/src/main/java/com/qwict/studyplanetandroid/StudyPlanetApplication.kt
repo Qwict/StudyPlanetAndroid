@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -61,9 +61,11 @@ class StudyPlanetApplication : Application() {
  *
  * @param navController The [NavHostController] used for navigation within the application.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudyPlanetApp(navController: NavHostController = rememberNavController()) {
+fun StudyPlanetApp(
+    windowSize: WindowSizeClass,
+    navController: NavHostController = rememberNavController(),
+) {
     // Retrieve the current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
 
@@ -95,7 +97,10 @@ fun StudyPlanetApp(navController: NavHostController = rememberNavController()) {
     ) { innerPadding ->
 
         Box(modifier = Modifier.padding(innerPadding)) {
-            StudyPlanetNavigation(navController = navController)
+            StudyPlanetNavigation(
+                windowSize = windowSize,
+                navController = navController,
+            )
         }
     }
 }

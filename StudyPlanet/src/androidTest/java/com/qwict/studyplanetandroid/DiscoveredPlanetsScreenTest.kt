@@ -10,7 +10,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class DiscoveredPlanetsScreenTest {
-
     @get:Rule
     val rule = createComposeRule()
 

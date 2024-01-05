@@ -68,78 +68,74 @@ fun DiscoveredPlanetsScreen(
         }
         is DiscoveredPlanetsState.Success -> {
             val planets by (discoverViewModel.state as DiscoveredPlanetsState.Success).discoveredPlanets.collectAsState()
-            Column(
-                modifier = Modifier.padding(top = 8.dp),
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .pullRefresh(pullRefreshState),
             ) {
-                Box(
+                Column(
                     modifier =
                         Modifier
-                            .fillMaxSize()
-                            .pullRefresh(pullRefreshState),
+                            .pullRefresh(pullRefreshState)
+                            .padding(top = 8.dp),
                 ) {
-                    Column(
-                        modifier =
-                            Modifier
-                                .pullRefresh(pullRefreshState),
-                    ) {
-                        if (planets.isEmpty()) {
-                            Column(
+                    if (planets.isEmpty()) {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .fillMaxWidth()
+                                    .padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.TravelExplore,
+                                contentDescription = null,
                                 modifier =
                                     Modifier
-                                        .background(MaterialTheme.colorScheme.surface)
-                                        .fillMaxWidth()
-                                        .padding(32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.TravelExplore,
-                                    contentDescription = null,
-                                    modifier =
-                                        Modifier
-                                            .padding(bottom = 16.dp),
-                                )
-                                Text(
-                                    text = "No Discovered Planets",
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                                )
-                                Text(
-                                    text = "discover new planets in the Discover tab",
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                                )
-                            }
+                                        .padding(bottom = 16.dp),
+                            )
+                            Text(
+                                text = "No Discovered Planets",
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                            )
+                            Text(
+                                text = "discover new planets in the Discover tab",
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                            )
                         }
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                        ) {
-                            items(
-                                planets.size,
-                            ) { id ->
-                                DiscoveredPlanetCard(modifier, planets[id]) {
-                                    navigateToTimeSelectionScreen(
-                                        planets[id],
-                                    )
-                                }
+                    }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        items(
+                            planets.size,
+                        ) { id ->
+                            DiscoveredPlanetCard(planets[id]) {
+                                navigateToTimeSelectionScreen(
+                                    planets[id],
+                                )
                             }
                         }
                     }
-
-                    PullRefreshIndicator(
-                        refreshing = discoverViewModel.screenState.isRefreshing,
-                        state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter),
-                    )
                 }
+
+                PullRefreshIndicator(
+                    refreshing = discoverViewModel.screenState.isRefreshing,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                )
             }
         }
     }
 }
 
 @Composable
-fun DiscoveredPlanetCard(
-    modifier: Modifier = Modifier,
+private fun DiscoveredPlanetCard(
     planet: Planet,
     onMineButtonClicked: (Planet) -> Unit = {},
 ) {
