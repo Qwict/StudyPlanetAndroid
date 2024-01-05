@@ -17,7 +17,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "0.10.0"
+        versionName = "0.10.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -91,8 +91,11 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Required for Room (local database) v2.5.2 is stable apparently (Lector)
+    //noinspection GradleDependency
     implementation("androidx.room:room-runtime:2.5.2")
+    //noinspection GradleDependency
     ksp("androidx.room:room-compiler:2.5.2")
+    //noinspection GradleDependency
     implementation("androidx.room:room-ktx:2.5.2")
 
     // Used for JWT token decoding

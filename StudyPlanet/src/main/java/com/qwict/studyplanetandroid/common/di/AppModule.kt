@@ -10,8 +10,8 @@ import com.qwict.studyplanetandroid.data.local.StudyPlanetDatabase
 import com.qwict.studyplanetandroid.data.local.dao.PlanetDao
 import com.qwict.studyplanetandroid.data.local.dao.UserDao
 import com.qwict.studyplanetandroid.data.remote.StudyPlanetApi
-import com.qwict.studyplanetandroid.domain.use_case.user.LoginUseCase
-import com.qwict.studyplanetandroid.domain.use_case.user.RegisterUseCase
+import com.qwict.studyplanetandroid.domain.user.LoginUseCase
+import com.qwict.studyplanetandroid.domain.user.RegisterUseCase
 import com.qwict.studyplanetandroid.domain.validator.Validators
 import dagger.Module
 import dagger.Provides

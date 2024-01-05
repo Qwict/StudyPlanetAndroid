@@ -1,4 +1,4 @@
-package com.qwict.studyplanetandroid.domain.use_case.user // ktlint-disable package-name
+package com.qwict.studyplanetandroid.domain.user
 
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.saveEncryptedPreference

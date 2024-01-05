@@ -71,7 +71,8 @@ fun populatePlanets(): List<PlanetRoomEntity> {
  *
  * @return A [Planet] instance.
  */
-fun PlanetRoomEntity.asDomainModel() = Planet(
-    id = remoteId,
-    name = name,
-)
+fun PlanetRoomEntity.asDomainModel() =
+    Planet(
+        id = remoteId,
+        name = name,
+    )

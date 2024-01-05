@@ -73,21 +73,23 @@ fun UserRoomEntity.asDomainModel(): User {
     val experienceForNextLevel = (2.0.pow(currentLevel) * 60).toInt()
     Log.d("calculateLevel", "experienceForNextLevel: $experienceForNextLevel")
 
-    val experienceProgress = if (currentLevel == 0) {
-        (experience / experienceForNextLevel).toFloat()
-    } else {
-        (
-            (experience - experienceForCurrentLevel).toDouble() /
-                (experienceForNextLevel - experienceForCurrentLevel).toDouble()
+    val experienceProgress =
+        if (currentLevel == 0) {
+            (experience / experienceForNextLevel).toFloat()
+        } else {
+            (
+                (experience - experienceForCurrentLevel).toDouble() /
+                    (experienceForNextLevel - experienceForCurrentLevel).toDouble()
             ).toFloat()
-    }
+        }
     Log.d("calculateLevel", "experienceProgress: $experienceProgress")
 
-    val currentLevelProgress = if (currentLevel != 0) {
-        experience - experienceForCurrentLevel
-    } else {
-        experience
-    }
+    val currentLevelProgress =
+        if (currentLevel != 0) {
+            experience - experienceForCurrentLevel
+        } else {
+            experience
+        }
 
     return User(
         discoveredPlanets = emptyList(),

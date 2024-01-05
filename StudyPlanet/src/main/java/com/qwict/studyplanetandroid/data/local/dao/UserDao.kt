@@ -10,6 +10,7 @@ import androidx.room.Update
 import com.qwict.studyplanetandroid.data.local.schema.DatabaseUserWithPlanets
 import com.qwict.studyplanetandroid.data.local.schema.UserRoomEntity
 import kotlinx.coroutines.flow.Flow
+
 /**
  * Data Access Object (DAO) for interacting with the local database regarding [UserRoomEntity].
  * Defines methods to perform CRUD (Create, Read, Update, Delete) operations on user entities.

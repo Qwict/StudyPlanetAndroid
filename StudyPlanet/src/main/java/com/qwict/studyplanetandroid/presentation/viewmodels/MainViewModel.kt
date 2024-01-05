@@ -15,25 +15,29 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    private val repository: StudyPlanetRepository,
-) : ViewModel() {
+class MainViewModel
+    @Inject
+    constructor(
+        private val repository: StudyPlanetRepository,
+    ) : ViewModel() {
+        var state: MainScreenState by mutableStateOf(MainScreenState.Loading)
+            private set
 
-    var state: MainScreenState by mutableStateOf(MainScreenState.Loading)
-        private set
-    fun getActiveUser() {
-        viewModelScope.launch {
-            state = MainScreenState.Loading
-            state = try {
-                val user = repository.getActiveUser().stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5_000),
-                    initialValue = EMPTY_USER,
-                )
-                MainScreenState.Success(user)
-            } catch (e: Exception) {
-                MainScreenState.Error(e.message ?: "An unexpected error occurred")
+        fun getActiveUser() {
+            viewModelScope.launch {
+                state = MainScreenState.Loading
+                state =
+                    try {
+                        val user =
+                            repository.getActiveUser().stateIn(
+                                scope = viewModelScope,
+                                started = SharingStarted.WhileSubscribed(5_000),
+                                initialValue = EMPTY_USER,
+                            )
+                        MainScreenState.Success(user)
+                    } catch (e: Exception) {
+                        MainScreenState.Error(e.message ?: "An unexpected error occurred")
+                    }
             }
         }
     }
-}

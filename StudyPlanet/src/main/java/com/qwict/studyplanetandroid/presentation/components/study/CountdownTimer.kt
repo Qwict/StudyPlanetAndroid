@@ -17,8 +17,9 @@ fun CustomCountDownTimer(
 ) {
     Text(
         fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-        modifier = Modifier.padding(16.dp)
-            .fillMaxWidth(),
+        modifier =
+            Modifier.padding(16.dp)
+                .fillMaxWidth(),
         textAlign = TextAlign.Center,
         text = String.format("%02d:%02d:%02d", hours, minutes, seconds),
     )

@@ -24,43 +24,48 @@ import kotlinx.coroutines.CoroutineScope
     exportSchema = false,
 )
 abstract class StudyPlanetDatabase : RoomDatabase() {
-
     abstract fun planetDao(): PlanetDao
+
     abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
-        private var Instance: StudyPlanetDatabase? = null
+        private var instance: StudyPlanetDatabase? = null
 
         /**
          * Gets an instance of the [StudyPlanetDatabase].
          *
          * @param context The application context.
-         * @param scope The coroutine scope for database operations.
+         * @param scope The coroutine scope for database operations. Only used for populating the database.
          * @return The [StudyPlanetDatabase] instance.
          */
-        fun getDatabase(context: Context, scope: CoroutineScope): StudyPlanetDatabase {
+        fun getDatabase(
+            context: Context,
+            scope: CoroutineScope,
+        ): StudyPlanetDatabase {
             Log.d("StudyPlanetDatabase", "Creating database")
-            return Instance ?: synchronized(this) {
+            return instance ?: synchronized(this) {
                 Room.databaseBuilder(
                     context,
                     StudyPlanetDatabase::class.java,
                     "study_planet_database",
-                ).addCallback(object : Callback() {
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        super.onCreate(db)
-                        // Use a coroutine to insert data
-                        val planetDao = Instance?.planetDao()
-                        val userDao = Instance?.userDao()
+                ).addCallback(
+                    object : Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            // Use a coroutine to insert data
+//                            val planetDao = instance?.planetDao()
+//                            val userDao = instance?.userDao()
 //                        Log.i("StudyPlanetDatabase", "Inserting all planets and users")
 //                        scope.launch {
 //                            planetDao?.insertAll(populatePlanets())
 //                        }
-                    }
-                })
+                        }
+                    },
+                )
                     .fallbackToDestructiveMigration()
                     .build()
-                    .also { Instance = it }
+                    .also { instance = it }
             }
         }
     }

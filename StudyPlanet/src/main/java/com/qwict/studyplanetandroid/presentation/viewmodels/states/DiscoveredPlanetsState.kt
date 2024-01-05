@@ -5,7 +5,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 sealed class DiscoveredPlanetsState {
     data class Success(val discoveredPlanets: StateFlow<List<Planet>>) : DiscoveredPlanetsState()
+
     data class Error(val exception: String) : DiscoveredPlanetsState()
+
     data object Loading : DiscoveredPlanetsState()
 }
 

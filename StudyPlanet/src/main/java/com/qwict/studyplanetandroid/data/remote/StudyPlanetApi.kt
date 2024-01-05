@@ -35,7 +35,9 @@ interface StudyPlanetApi {
      * @return The [AuthenticatedUserDto] representing the authenticated user.
      */
     @POST("v1/users/login")
-    suspend fun login(@Body body: LoginDto): AuthenticatedUserDto
+    suspend fun login(
+        @Body body: LoginDto,
+    ): AuthenticatedUserDto
 
     /**
      * Registers a new user with the provided [RegisterDto].
@@ -44,7 +46,9 @@ interface StudyPlanetApi {
      * @return The [AuthenticatedUserDto] representing the registered and authenticated user.
      */
     @POST("v1/users/register")
-    suspend fun register(@Body body: RegisterDto): AuthenticatedUserDto
+    suspend fun register(
+        @Body body: RegisterDto,
+    ): AuthenticatedUserDto
 
     /**
      * Authenticates the current user.
@@ -60,7 +64,9 @@ interface StudyPlanetApi {
      * @param body The [DiscoverActionDto] containing information for the discovery action.
      */
     @POST("v1/actions/discover")
-    suspend fun startDiscovering(@Body body: DiscoverActionDto): Response<Unit>
+    suspend fun startDiscovering(
+        @Body body: DiscoverActionDto,
+    ): Response<Unit>
 
     /**
      * Stops the process of discovering a planet.
@@ -69,7 +75,9 @@ interface StudyPlanetApi {
      * @return The [PlanetDto] representing the discovered planet, or null if the discovery was unsuccessful.
      */
     @PUT("v1/actions/discover")
-    suspend fun stopDiscovering(@Body body: DiscoverActionDto): DiscoverActionResponseDto
+    suspend fun stopDiscovering(
+        @Body body: DiscoverActionDto,
+    ): DiscoverActionResponseDto
 
     /**
      * Initiates the process of exploring a planet.
@@ -77,7 +85,9 @@ interface StudyPlanetApi {
      * @param body The [ExploreActionDto] containing information for the exploration action.
      */
     @POST("v1/actions/explore")
-    suspend fun startExploring(@Body body: ExploreActionDto): Response<Unit>
+    suspend fun startExploring(
+        @Body body: ExploreActionDto,
+    ): Response<Unit>
 
     /**
      * Stops the process of exploring a planet.
@@ -86,5 +96,7 @@ interface StudyPlanetApi {
      * @return The [UserDto] representing the user after exploration.
      */
     @PUT("v1/actions/explore")
-    suspend fun stopExploring(@Body body: ExploreActionDto): ExploreActionResponseDto
+    suspend fun stopExploring(
+        @Body body: ExploreActionDto,
+    ): ExploreActionResponseDto
 }

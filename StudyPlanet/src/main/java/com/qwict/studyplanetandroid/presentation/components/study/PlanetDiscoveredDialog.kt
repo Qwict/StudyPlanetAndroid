@@ -28,24 +28,27 @@ fun PlanetDiscoveredDialog(
     hasDiscoveredPlanet: Boolean,
     experience: Int,
 ) {
-    val title = if (hasDiscoveredPlanet) {
-        "Planet discovered!"
-    } else {
-        "No planet discovered"
-    }
+    val title =
+        if (hasDiscoveredPlanet) {
+            "Planet discovered!"
+        } else {
+            "No planet discovered"
+        }
 
-    val discoveryInformation = if (hasDiscoveredPlanet) {
-        "You have discovered ${planet.name}, and gained $experience xp!"
-    } else {
-        "No planet discovered, but gained $experience xp" +
-            "To improve your chances of discovering a planet, try to study for a longer period of time."
-    }
+    val discoveryInformation =
+        if (hasDiscoveredPlanet) {
+            "You have discovered ${planet.name}, and gained $experience xp!"
+        } else {
+            "No planet discovered, but gained $experience xp" +
+                "To improve your chances of discovering a planet, try to study for a longer period of time."
+        }
 
     Dialog(onDismissRequest = { navigateHome() }) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             shape = MaterialTheme.shapes.medium,
         ) {
             Column(
@@ -56,9 +59,10 @@ fun PlanetDiscoveredDialog(
                     Image(
                         painter = painterResource(planet.imageId),
                         contentDescription = "An image of ${planet.name}",
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .aspectRatio(1f)
+                                .fillMaxWidth(),
                         contentScale = ContentScale.Fit,
                     )
                 }
@@ -74,8 +78,9 @@ fun PlanetDiscoveredDialog(
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Button(

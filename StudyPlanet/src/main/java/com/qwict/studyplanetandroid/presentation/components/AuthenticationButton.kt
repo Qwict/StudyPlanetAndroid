@@ -19,16 +19,18 @@ fun AuthenticationButton(
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(5.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Button(
             onClick = { onClick() },
-            modifier = Modifier
-                .width(200.dp)
-                .height(50.dp),
+            modifier =
+                Modifier
+                    .width(200.dp)
+                    .height(50.dp),
         ) {
             Text(
                 text = text,

@@ -26,7 +26,8 @@ fun NavBar(
     navController: NavHostController,
 ) {
     // for haptic feedback
-    var view = LocalView.current
+    val view = LocalView.current
+
     data class NavbarItem(
         var text: String = "",
         var name: String = "",
@@ -37,26 +38,27 @@ fun NavBar(
 
     var selectedNavbarItemIndex by remember { mutableIntStateOf(0) }
 
-    val items = listOf(
-        NavbarItem(
-            text = "Home",
-            name = StudyPlanetScreens.MainScreen.name,
-            icon = Icons.Filled.Rocket,
-            contentDescription = "Mission Control Center",
-        ),
-        NavbarItem(
-            text = "Explore",
-            name = StudyPlanetScreens.DiscoveredPlanetsScreen.name,
-            icon = Icons.Filled.TravelExplore,
-            contentDescription = "Explore a planet",
-        ),
-        NavbarItem(
-            text = "Discover",
-            name = StudyPlanetScreens.TimeSelectionScreen.name,
-            icon = Icons.Filled.SatelliteAlt,
-            contentDescription = "Discover a new planet",
-        ),
-    )
+    val items =
+        listOf(
+            NavbarItem(
+                text = "Home",
+                name = StudyPlanetScreens.MainScreen.name,
+                icon = Icons.Filled.Rocket,
+                contentDescription = "Mission Control Center",
+            ),
+            NavbarItem(
+                text = "Explore",
+                name = StudyPlanetScreens.DiscoveredPlanetsScreen.name,
+                icon = Icons.Filled.TravelExplore,
+                contentDescription = "Explore a planet",
+            ),
+            NavbarItem(
+                text = "Discover",
+                name = StudyPlanetScreens.TimeSelectionScreen.name,
+                icon = Icons.Filled.SatelliteAlt,
+                contentDescription = "Discover a new planet",
+            ),
+        )
 
     NavigationBar {
         items.forEachIndexed { index, navbarItem ->

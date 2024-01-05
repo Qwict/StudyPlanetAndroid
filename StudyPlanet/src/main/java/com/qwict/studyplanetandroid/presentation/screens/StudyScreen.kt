@@ -18,8 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,52 +55,59 @@ fun ExplorerScreen(
     Column {
         Text(
             text = selectedPlanet.name,
-            modifier = Modifier.padding(vertical = 16.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier.padding(vertical = 16.dp)
+                    .fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineLarge,
         )
 
         Box(
             propagateMinConstraints = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-                .height(IntrinsicSize.Min),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+                    .height(IntrinsicSize.Min),
         ) {
             Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(MaterialTheme.colorScheme.tertiaryContainer),
+                modifier =
+                    modifier
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer),
             ) {
                 Image(
                     painter = painterResource(selectedPlanet.imageId),
                     contentDescription = selectedPlanet.name,
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .aspectRatio(1f)
+                            .fillMaxWidth(),
                     contentScale = ContentScale.Fit,
                 )
                 Text(
                     text = "Progress",
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .padding(top = 16.dp)
+                            .padding(horizontal = 16.dp),
                     textAlign = TextAlign.Left,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp)
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                            .padding(horizontal = 16.dp),
                     progress = state.currentProgress,
                 )
                 Text(
                     text = "${state.progressPercentage} %",
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp),
                     textAlign = TextAlign.Left,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -119,17 +124,18 @@ fun ExplorerScreen(
         }
 
         Column(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier =
+                modifier
+                    .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(
                 onClick = {
                     studyViewModel.openOnBackAlertDialog()
                 },
-                modifier = Modifier
-                    .padding(16.dp),
-
+                modifier =
+                    Modifier
+                        .padding(16.dp),
             ) {
                 Text(text = "Cancel")
             }

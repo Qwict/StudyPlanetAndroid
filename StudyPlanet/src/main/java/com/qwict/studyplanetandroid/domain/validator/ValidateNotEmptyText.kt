@@ -11,7 +11,10 @@ class ValidateNotEmptyText {
      * @param name The name or label associated with the text field for error messages.
      * @return A [ValidationResult] indicating the result of the validation.
      */
-    operator fun invoke(text: String, name: String): ValidationResult {
+    operator fun invoke(
+        text: String,
+        name: String,
+    ): ValidationResult {
         return if (text.isBlank()) {
             ValidationResult(
                 successful = false,

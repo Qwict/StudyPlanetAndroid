@@ -30,7 +30,10 @@ import com.qwict.studyplanetandroid.presentation.screens.auth.LoginScreen
 import com.qwict.studyplanetandroid.presentation.screens.auth.RegisterScreen
 import com.qwict.studyplanetandroid.presentation.viewmodels.AuthViewModel
 import com.qwict.studyplanetandroid.presentation.viewmodels.SelectedPlanetViewModel
-enum class StudyPlanetScreens(@StringRes val title: Int) {
+
+enum class StudyPlanetScreens(
+    @StringRes val title: Int,
+) {
     MainRoute(title = R.string.main_route),
     AuthenticationRoute(title = R.string.main_route),
 
@@ -52,9 +55,7 @@ enum class StudyPlanetScreens(@StringRes val title: Int) {
  * @param navController The navigation controller managing the navigation flow.
  */
 @Composable
-fun StudyPlanetNavigation(
-    navController: NavHostController,
-) {
+fun StudyPlanetNavigation(navController: NavHostController) {
     /**
      * Configures the navigation host for the StudyPlanet application.
      *
@@ -65,11 +66,12 @@ fun StudyPlanetNavigation(
      */
     NavHost(
         navController = navController,
-        startDestination = if (StudyPlanetApplication.authSingleton.isUserAuthenticated) {
-            StudyPlanetScreens.MainRoute.name
-        } else {
-            StudyPlanetScreens.AuthenticationRoute.name
-        },
+        startDestination =
+            if (StudyPlanetApplication.authSingleton.isUserAuthenticated) {
+                StudyPlanetScreens.MainRoute.name
+            } else {
+                StudyPlanetScreens.AuthenticationRoute.name
+            },
     ) {
         /**
          * Defines the navigation structure for the authentication flow in the StudyPlanet application.
@@ -150,9 +152,10 @@ fun StudyPlanetNavigation(
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 selectedPlanetViewModel.reset()
                 MainScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_medium)),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(dimensionResource(R.dimen.padding_medium)),
                 )
             }
 
@@ -165,12 +168,13 @@ fun StudyPlanetNavigation(
              */
             composable(
                 route = StudyPlanetScreens.TimeSelectionScreen.name,
-                arguments = listOf(
-                    navArgument("selectedPlanet") {
-                        defaultValue = 0
-                        type = NavType.IntType
-                    },
-                ),
+                arguments =
+                    listOf(
+                        navArgument("selectedPlanet") {
+                            defaultValue = 0
+                            type = NavType.IntType
+                        },
+                    ),
             ) {
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 TimeSelectionScreen(
@@ -194,12 +198,12 @@ fun StudyPlanetNavigation(
             composable(route = StudyPlanetScreens.DiscoveredPlanetsScreen.name) {
                 val selectedPlanetViewModel = it.sharedViewModel<SelectedPlanetViewModel>(navController)
                 DiscoveredPlanetsScreen(
+                    modifier = Modifier.fillMaxHeight(),
                     navigateToTimeSelectionScreen = {
                         selectedPlanetViewModel.selectedPlanet = it
                         selectedPlanetViewModel.isDiscovering = false
                         navController.navigate(StudyPlanetScreens.TimeSelectionScreen.name)
                     },
-                    modifier = Modifier.fillMaxHeight(),
                 )
             }
 
@@ -239,8 +243,9 @@ fun StudyPlanetNavigation(
 @Composable
 inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
     val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
-    val parentEntry = remember(this) {
-        navController.getBackStackEntry(navGraphRoute)
-    }
+    val parentEntry =
+        remember(this) {
+            navController.getBackStackEntry(navGraphRoute)
+        }
     return hiltViewModel(parentEntry)
 }

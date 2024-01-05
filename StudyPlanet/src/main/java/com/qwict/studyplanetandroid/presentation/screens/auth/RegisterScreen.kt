@@ -76,9 +76,10 @@ fun RegisterScreen(
         Loader()
     } else {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
             contentAlignment = Alignment.Center,
         ) {
             Column(
@@ -94,12 +95,13 @@ fun RegisterScreen(
                 Text(
                     textAlign = TextAlign.Center,
                     text = authState.error,
-                    style = TextStyle(
-                        fontFamily = FontFamily.Default,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 25.sp,
-                        color = MaterialTheme.colorScheme.error,
-                    ),
+                    style =
+                        TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 25.sp,
+                            color = MaterialTheme.colorScheme.error,
+                        ),
                 )
 
                 OutlinedTextField(
@@ -107,10 +109,11 @@ fun RegisterScreen(
                     value = authState.username,
                     isError = authState.emailError.isNotEmpty(),
                     onValueChange = { onEvent(AuthenticationFormEvent.UsernameChanged(it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                    ),
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next,
+                        ),
                 )
                 Text(
                     text = authState.usernameError,
@@ -122,10 +125,11 @@ fun RegisterScreen(
                     value = authState.email,
                     isError = authState.emailError.isNotEmpty(),
                     onValueChange = { onEvent(AuthenticationFormEvent.EmailChanged(it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next,
-                    ),
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next,
+                        ),
                 )
                 Text(
                     text = authState.emailError,
@@ -136,22 +140,25 @@ fun RegisterScreen(
                     label = { Text(text = "Password") },
                     value = authState.password,
                     isError = authState.passwordError.isNotEmpty(),
-                    visualTransformation = if (authState.isPasswordVisible) {
-                        VisualTransformation.None
-                    } else {
-                        PasswordVisualTransformation()
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Next,
-                    ),
+                    visualTransformation =
+                        if (authState.isPasswordVisible) {
+                            VisualTransformation.None
+                        } else {
+                            PasswordVisualTransformation()
+                        },
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Next,
+                        ),
                     onValueChange = { onEvent(AuthenticationFormEvent.PasswordChanged(it)) },
                     trailingIcon = {
-                        val image = if (authState.isPasswordVisible) {
-                            Icons.Filled.Visibility
-                        } else {
-                            Icons.Filled.VisibilityOff
-                        }
+                        val image =
+                            if (authState.isPasswordVisible) {
+                                Icons.Filled.Visibility
+                            } else {
+                                Icons.Filled.VisibilityOff
+                            }
                         val description = if (authState.isPasswordVisible) "Hide password" else "Show password"
                         IconButton(onClick = { switchPasswordVisibility() }) {
                             Icon(imageVector = image, description)
@@ -167,19 +174,21 @@ fun RegisterScreen(
                     label = { Text(text = "Confirm Password") },
                     value = authState.confirmPassword,
                     isError = authState.confirmPasswordError.isNotEmpty(),
-                    visualTransformation = if (authState.isPasswordVisible) {
-                        VisualTransformation.None
-                    } else {
-                        PasswordVisualTransformation()
-                    },
+                    visualTransformation =
+                        if (authState.isPasswordVisible) {
+                            VisualTransformation.None
+                        } else {
+                            PasswordVisualTransformation()
+                        },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     onValueChange = { onEvent(AuthenticationFormEvent.ConfirmPasswordChanged(it)) },
                     trailingIcon = {
-                        val image = if (authState.isPasswordVisible) {
-                            Icons.Filled.Visibility
-                        } else {
-                            Icons.Filled.VisibilityOff
-                        }
+                        val image =
+                            if (authState.isPasswordVisible) {
+                                Icons.Filled.Visibility
+                            } else {
+                                Icons.Filled.VisibilityOff
+                            }
                         val description = if (authState.isPasswordVisible) "Hide password" else "Show password"
                         IconButton(onClick = { switchPasswordVisibility() }) {
                             Icon(imageVector = image, description)

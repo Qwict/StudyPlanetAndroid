@@ -18,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     /**
      * Called when the activity is first created. It sets up the Compose UI and the main content of the application.
      *

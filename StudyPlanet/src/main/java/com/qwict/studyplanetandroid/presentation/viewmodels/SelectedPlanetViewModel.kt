@@ -10,13 +10,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class SelectedPlanetViewModel @Inject constructor() : ViewModel() {
-    var isDiscovering by mutableStateOf(false)
-    var selectedTimeInMinutes by mutableFloatStateOf(30f)
-    var selectedPlanet by mutableStateOf(EMPTY_PLANET)
+class SelectedPlanetViewModel
+    @Inject
+    constructor() : ViewModel() {
+        var isDiscovering by mutableStateOf(false)
+        var selectedTimeInMinutes by mutableFloatStateOf(30f)
+        var selectedPlanet by mutableStateOf(EMPTY_PLANET)
 
-    fun reset() {
-        isDiscovering = false
-        selectedPlanet = EMPTY_PLANET
+        fun reset() {
+            isDiscovering = false
+            selectedPlanet = EMPTY_PLANET
+        }
     }
-}

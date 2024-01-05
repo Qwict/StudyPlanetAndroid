@@ -77,9 +77,10 @@ fun LoginScreen(
         Loader()
     } else {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
             contentAlignment = Alignment.Center,
         ) {
             Column(
@@ -96,22 +97,24 @@ fun LoginScreen(
                 Text(
                     textAlign = TextAlign.Center,
                     text = authState.error,
-                    style = TextStyle(
-                        fontFamily = FontFamily.Default,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 25.sp,
-                        color = MaterialTheme.colorScheme.error,
-                    ),
+                    style =
+                        TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 25.sp,
+                            color = MaterialTheme.colorScheme.error,
+                        ),
                 )
                 OutlinedTextField(
                     label = { Text(text = "Email") },
                     value = authState.email,
                     isError = authState.emailError.isNotEmpty(),
                     onValueChange = { onEvent(AuthenticationFormEvent.EmailChanged(it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next,
-                    ),
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next,
+                        ),
                 )
                 Text(
                     text = authState.emailError,
@@ -121,21 +124,24 @@ fun LoginScreen(
                     label = { Text(text = "Password") },
                     value = authState.password,
                     isError = authState.passwordError.isNotEmpty(),
-                    visualTransformation = if (authState.isPasswordVisible) {
-                        VisualTransformation.None
-                    } else {
-                        PasswordVisualTransformation()
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                    ),
+                    visualTransformation =
+                        if (authState.isPasswordVisible) {
+                            VisualTransformation.None
+                        } else {
+                            PasswordVisualTransformation()
+                        },
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                        ),
                     onValueChange = { onEvent(AuthenticationFormEvent.PasswordChanged(it)) },
                     trailingIcon = {
-                        val image = if (authState.isPasswordVisible) {
-                            Icons.Filled.Visibility
-                        } else {
-                            Icons.Filled.VisibilityOff
-                        }
+                        val image =
+                            if (authState.isPasswordVisible) {
+                                Icons.Filled.Visibility
+                            } else {
+                                Icons.Filled.VisibilityOff
+                            }
                         val description = if (authState.isPasswordVisible) "Hide password" else "Show password"
                         IconButton(onClick = { switchPasswordVisibility() }) {
                             Icon(imageVector = image, description)

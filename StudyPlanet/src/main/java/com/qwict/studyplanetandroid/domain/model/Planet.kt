@@ -1,5 +1,6 @@
 package com.qwict.studyplanetandroid.domain.model
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Constants
@@ -28,7 +29,11 @@ class Planet(
  * @param imageName The name of the image to search for.
  * @return The resource ID of the image, or the default planet image resource ID if not found.
  */
-fun getImageByName(context: Context, imageName: String): Int {
+@SuppressLint("DiscouragedApi")
+fun getImageByName(
+    context: Context,
+    imageName: String,
+): Int {
     val resources = context.resources
     val imageId = resources.getIdentifier(imageName.lowercase(), "drawable", context.packageName)
     return if (imageId != 0) {

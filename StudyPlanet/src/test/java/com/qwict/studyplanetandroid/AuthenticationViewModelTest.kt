@@ -1,9 +1,10 @@
 package com.qwict.studyplanetandroid
 
 import com.qwict.studyplanetandroid.common.Resource
-import com.qwict.studyplanetandroid.domain.use_case.user.LoginUseCase
-import com.qwict.studyplanetandroid.domain.use_case.user.RegisterUseCase
+import com.qwict.studyplanetandroid.domain.user.LoginUseCase
+import com.qwict.studyplanetandroid.domain.user.RegisterUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -20,6 +21,7 @@ class AuthenticationViewModelTest {
     private lateinit var loginUseCase: LoginUseCase
     private lateinit var registerUseCase: RegisterUseCase
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
         Dispatchers.setMain(testScope)

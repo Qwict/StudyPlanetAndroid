@@ -45,14 +45,15 @@ import com.qwict.studyplanetandroid.presentation.viewmodels.states.DiscoveredPla
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DiscoveredPlanetsScreen(
-    navigateToTimeSelectionScreen: (Planet) -> Unit = {},
     modifier: Modifier = Modifier,
+    navigateToTimeSelectionScreen: (Planet) -> Unit = {},
     discoverViewModel: DiscoverViewModel = hiltViewModel(),
 ) {
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = discoverViewModel.screenState.isRefreshing,
-        onRefresh = { discoverViewModel.getDiscoveredPlanetsOnline() },
-    )
+    val pullRefreshState =
+        rememberPullRefreshState(
+            refreshing = discoverViewModel.screenState.isRefreshing,
+            onRefresh = { discoverViewModel.getDiscoveredPlanetsOnline() },
+        )
 
     LaunchedEffect(discoverViewModel) {
         discoverViewModel.getDiscoveredPlanets()
@@ -71,28 +72,32 @@ fun DiscoveredPlanetsScreen(
                 modifier = Modifier.padding(top = 8.dp),
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState),
                 ) {
                     Column(
-                        modifier = Modifier
-                            .pullRefresh(pullRefreshState),
+                        modifier =
+                            Modifier
+                                .pullRefresh(pullRefreshState),
                     ) {
                         if (planets.isEmpty()) {
                             Column(
-                                modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .fillMaxWidth()
-                                    .padding(32.dp),
+                                modifier =
+                                    Modifier
+                                        .background(MaterialTheme.colorScheme.surface)
+                                        .fillMaxWidth()
+                                        .padding(32.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center,
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.TravelExplore,
                                     contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(bottom = 16.dp),
+                                    modifier =
+                                        Modifier
+                                            .padding(bottom = 16.dp),
                                 )
                                 Text(
                                     text = "No Discovered Planets",
@@ -139,43 +144,50 @@ fun DiscoveredPlanetCard(
     onMineButtonClicked: (Planet) -> Unit = {},
 ) {
     ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp,
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+        elevation =
+            CardDefaults.cardElevation(
+                defaultElevation = 6.dp,
+            ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { onMineButtonClicked(planet) },
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable { onMineButtonClicked(planet) },
         ) {
             Row {
                 Image(
                     painter = painterResource(planet.smallImageId),
                     contentDescription = planet.name,
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .aspectRatio(1f)
+                            .fillMaxWidth(),
                     contentScale = ContentScale.Fit,
                 )
                 Text(
                     text = planet.name,
-                    modifier = Modifier.padding(16.dp)
-                        .weight(1f),
+                    modifier =
+                        Modifier.padding(16.dp)
+                            .weight(1f),
                     textAlign = TextAlign.Left,
                     style = MaterialTheme.typography.titleLarge,
                 )
                 // Icon button aligned to the right of the card, centered vertically
                 IconButton(
                     onClick = { onMineButtonClicked(planet) },
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterVertically),
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowForwardIos,

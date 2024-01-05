@@ -19,49 +19,55 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DiscoverViewModel @Inject constructor(
-    private val repository: StudyPlanetRepository,
-) : ViewModel() {
-    var state: DiscoveredPlanetsState by mutableStateOf(DiscoveredPlanetsState.Loading)
-        private set
-    var screenState: DiscoveredPlanetsScreenState by mutableStateOf(DiscoveredPlanetsScreenState())
-        private set
-    fun getDiscoveredPlanets() {
-        viewModelScope.launch {
-            state = DiscoveredPlanetsState.Loading
-            state = try {
-                val planets = repository.getDiscoveredPlanets().stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5_000),
-                    initialValue = emptyList(),
-                )
-                DiscoveredPlanetsState.Success(planets)
-            } catch (e: Exception) {
-                DiscoveredPlanetsState.Error(e.message ?: "An unexpected error occurred")
+class DiscoverViewModel
+    @Inject
+    constructor(
+        private val repository: StudyPlanetRepository,
+    ) : ViewModel() {
+        var state: DiscoveredPlanetsState by mutableStateOf(DiscoveredPlanetsState.Loading)
+            private set
+        var screenState: DiscoveredPlanetsScreenState by mutableStateOf(DiscoveredPlanetsScreenState())
+            private set
+
+        fun getDiscoveredPlanets() {
+            viewModelScope.launch {
+                state = DiscoveredPlanetsState.Loading
+                state =
+                    try {
+                        val planets =
+                            repository.getDiscoveredPlanets().stateIn(
+                                scope = viewModelScope,
+                                started = SharingStarted.WhileSubscribed(5_000),
+                                initialValue = emptyList(),
+                            )
+                        DiscoveredPlanetsState.Success(planets)
+                    } catch (e: Exception) {
+                        DiscoveredPlanetsState.Error(e.message ?: "An unexpected error occurred")
+                    }
+            }
+        }
+
+        fun getDiscoveredPlanetsOnline() {
+            viewModelScope.launch {
+                Log.d("DiscoverViewModel", "getDiscoveredPlanetsOnline")
+                repository.refreshDiscoveredPlanetsOnline().onEach { result ->
+                    screenState =
+                        when (result) {
+                            is Resource.Success -> {
+                                DiscoveredPlanetsScreenState()
+                            }
+
+                            is Resource.Error -> {
+                                DiscoveredPlanetsScreenState(
+                                    refreshError = result.message ?: "An unexpected error occurred",
+                                )
+                            }
+
+                            is Resource.Loading -> {
+                                DiscoveredPlanetsScreenState(isRefreshing = true)
+                            }
+                        }
+                }.launchIn(viewModelScope)
             }
         }
     }
-
-    fun getDiscoveredPlanetsOnline() {
-        viewModelScope.launch {
-            Log.d("DiscoverViewModel", "getDiscoveredPlanetsOnline")
-            repository.refreshDiscoveredPlanetsOnline().onEach { result ->
-                screenState = when (result) {
-                    is Resource.Success -> {
-                        DiscoveredPlanetsScreenState()
-                    }
-
-                    is Resource.Error -> {
-                        DiscoveredPlanetsScreenState(
-                            refreshError = result.message ?: "An unexpected error occurred",
-                        )
-                    }
-
-                    is Resource.Loading -> {
-                        DiscoveredPlanetsScreenState(isRefreshing = true)
-                    }
-                }
-            }.launchIn(viewModelScope)
-        }
-    }
-}

@@ -31,9 +31,10 @@ fun TopBar(
                 Text(stringResource(currentScreen.title))
             }
         },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-        ),
+        colors =
+            TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
         modifier = modifier,
         navigationIcon = {
             if (canNavigateBack && currentScreen != StudyPlanetScreens.PlanetExplorerScreen) {
@@ -46,6 +47,5 @@ fun TopBar(
             }
         },
         actions = { AppBarAccountButton(currentScreen) },
-
     )
 }

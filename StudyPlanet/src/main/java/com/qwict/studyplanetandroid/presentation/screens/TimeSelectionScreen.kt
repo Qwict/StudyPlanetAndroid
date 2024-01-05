@@ -24,9 +24,10 @@ fun TimeSelectionScreen(
     setSelectedTimeInMinutes: (Float) -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -42,14 +43,16 @@ fun TimeSelectionScreen(
         } else {
             Text(
                 fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                text = "The exploration of this planet will grant more experience points depending " +
-                    "on the time you spend exploring it.",
+                text =
+                    "The exploration of this planet will grant more experience points depending " +
+                        "on the time you spend exploring it.",
             )
         }
 
         Column(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier =
+                modifier
+                    .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CheckpointSlider(selectedTimeInMinutes, setSelectedTimeInMinutes)

@@ -5,4 +5,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class TimeSelectionViewModel @Inject constructor() : ViewModel()
+class TimeSelectionViewModel
+    @Inject
+    constructor() : ViewModel()

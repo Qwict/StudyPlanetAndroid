@@ -33,7 +33,10 @@ fun getEncryptedPreference(key: String): String {
  * @param key The key under which the preference value will be stored.
  * @param preference The encrypted preference value to be saved.
  */
-fun saveEncryptedPreference(key: String, preference: String) {
+fun saveEncryptedPreference(
+    key: String,
+    preference: String,
+) {
     getSharedPreferences().edit().putString(key, preference).apply()
 }
 

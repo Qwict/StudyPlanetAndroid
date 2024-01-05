@@ -1,4 +1,5 @@
 package com.qwict.studyplanetandroid.domain.validator
+
 /**
  * Validator for ensuring the validity of a password, including matching with a confirmation password.
  */
@@ -10,7 +11,10 @@ class ValidatePassword {
      * @param confirmPassword The confirmation password to be compared with the original password.
      * @return A [ValidationResult] indicating the result of the validation.
      */
-    operator fun invoke(password: String, confirmPassword: String): ValidationResult {
+    operator fun invoke(
+        password: String,
+        confirmPassword: String,
+    ): ValidationResult {
         return if (password != confirmPassword) {
             ValidationResult(
                 successful = false,

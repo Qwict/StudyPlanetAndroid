@@ -19,8 +19,9 @@ data class PlanetDto(
  * @param remoteId The unique identifier of the user associated with the planet.
  * @return The [PlanetRoomEntity] representation of the planet.
  */
-fun PlanetDto.asDatabaseModel(remoteId: Int): PlanetRoomEntity = PlanetRoomEntity(
-    remoteId = id,
-    name = name,
-    ownerId = remoteId,
-)
+fun PlanetDto.asDatabaseModel(remoteId: Int): PlanetRoomEntity =
+    PlanetRoomEntity(
+        remoteId = id,
+        name = name,
+        ownerId = remoteId,
+    )

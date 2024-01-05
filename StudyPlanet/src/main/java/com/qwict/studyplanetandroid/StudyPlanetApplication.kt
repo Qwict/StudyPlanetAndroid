@@ -63,16 +63,15 @@ class StudyPlanetApplication : Application() {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudyPlanetApp(
-    navController: NavHostController = rememberNavController(),
-) {
+fun StudyPlanetApp(navController: NavHostController = rememberNavController()) {
     // Retrieve the current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     // Determine the current screen based on the back stack entry
-    val currentScreen = StudyPlanetScreens.valueOf(
-        backStackEntry?.destination?.route ?: StudyPlanetScreens.MainScreen.name,
-    )
+    val currentScreen =
+        StudyPlanetScreens.valueOf(
+            backStackEntry?.destination?.route ?: StudyPlanetScreens.MainScreen.name,
+        )
 
     // Compose UI structure using Scaffold
     Scaffold(
@@ -89,7 +88,9 @@ fun StudyPlanetApp(
             if (
                 StudyPlanetApplication.authSingleton.isUserAuthenticated &&
                 currentScreen.name != StudyPlanetScreens.PlanetExplorerScreen.name
-            ) { NavBar(currentScreen, navController) }
+            ) {
+                NavBar(currentScreen, navController)
+            }
         },
     ) { innerPadding ->
 

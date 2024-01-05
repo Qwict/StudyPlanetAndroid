@@ -20,30 +20,34 @@ fun ExperienceBar(
     experienceProgress: Float,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
     ) {
         Text(
             text = "Experience",
             style = MaterialTheme.typography.bodyLarge,
             // Should align text to the left
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Start),
         )
         LinearProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(10.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(10.dp),
             progress = experienceProgress,
         )
         Text(
             text = "$currentLevelProgress / $experienceForNextLevel (total: ${experience}xp)",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Start),
         )
     }
 }

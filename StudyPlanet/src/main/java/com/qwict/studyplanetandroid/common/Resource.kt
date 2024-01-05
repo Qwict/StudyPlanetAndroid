@@ -15,7 +15,6 @@ package com.qwict.studyplanetandroid.common
  * @property message A descriptive message associated with the resource, usually for error states.
  */
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
-
     /**
      * Represents the loading state of a resource.
      *

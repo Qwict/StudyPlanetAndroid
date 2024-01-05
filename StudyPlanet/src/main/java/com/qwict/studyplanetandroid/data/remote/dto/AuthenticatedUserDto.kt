@@ -22,19 +22,21 @@ data class AuthenticatedUserDto(
  *
  * @return The [UserRoomEntity] representation of the authenticated user.
  */
-fun AuthenticatedUserDto.asDatabaseModel() = UserRoomEntity(
-    email = user.email,
-    name = user.name,
-    experience = user.experience,
-    remoteId = user.id,
-)
+fun AuthenticatedUserDto.asDatabaseModel() =
+    UserRoomEntity(
+        email = user.email,
+        name = user.name,
+        experience = user.experience,
+        remoteId = user.id,
+    )
 
 /**
  * Converts the [AuthenticatedUserDto] to a [DatabaseUserWithPlanets] for local database storage.
  *
  * @return The [DatabaseUserWithPlanets] representation of the authenticated user with discovered planets.
  */
-fun AuthenticatedUserDto.asDatabaseEntityWithPlanets() = DatabaseUserWithPlanets(
-    user = user.asDatabaseModel(),
-    planets = user.discoveredPlanets.map { it.asDatabaseModel(user.id) },
-)
+fun AuthenticatedUserDto.asDatabaseEntityWithPlanets() =
+    DatabaseUserWithPlanets(
+        user = user.asDatabaseModel(),
+        planets = user.discoveredPlanets.map { it.asDatabaseModel(user.id) },
+    )
