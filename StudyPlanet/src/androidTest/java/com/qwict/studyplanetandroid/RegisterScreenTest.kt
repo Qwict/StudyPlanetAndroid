@@ -1,11 +1,14 @@
 package com.qwict.studyplanetandroid
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.unit.DpSize
 import com.qwict.studyplanetandroid.presentation.screens.auth.RegisterScreen
 import com.qwict.studyplanetandroid.presentation.viewmodels.states.AuthState
 import kotlinx.coroutines.flow.flowOf
@@ -17,6 +20,7 @@ class RegisterScreenTest {
     @get:Rule
     val rule = createComposeRule()
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Test
     fun testRegisterScreenCorrectInput() {
         var registerUserCalled = false
@@ -31,11 +35,13 @@ class RegisterScreenTest {
                 validationEvent = flowOf(),
                 onEvent = {},
                 switchPasswordVisibility = {
-                    authState = authState.copy(
-                        isPasswordVisible = !authState.isPasswordVisible,
-                    )
+                    authState =
+                        authState.copy(
+                            isPasswordVisible = !authState.isPasswordVisible,
+                        )
                 },
                 clearValidationErrors = {},
+                windowSize = WindowSizeClass.calculateFromSize(DpSize.Unspecified),
             )
         }
 

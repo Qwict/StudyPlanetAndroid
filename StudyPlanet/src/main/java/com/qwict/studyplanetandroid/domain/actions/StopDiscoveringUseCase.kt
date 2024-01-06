@@ -5,10 +5,8 @@ package com.qwict.studyplanetandroid.domain.actions
 import com.qwict.studyplanetandroid.StudyPlanetApplication
 import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
-import com.qwict.studyplanetandroid.data.local.schema.asDomainModel
 import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionDto
-import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseModel
-import com.qwict.studyplanetandroid.domain.model.Planet
+import com.qwict.studyplanetandroid.domain.model.ActionResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -29,23 +27,16 @@ class StopDiscoveringUseCase
          * Invokes the use case to stop the process of discovering a new planet.
          *
          * @param selectedTime The selected time for the discovery process.
-         * @return Flow<Resource<Planet?>> representing the result of the operation.
+         * @return Flow<Resource<ActionResponse>> representing the result of the operation.
          */
-        operator fun invoke(selectedTime: Int): Flow<Resource<Planet?>> =
+        operator fun invoke(selectedTime: Int): Flow<Resource<ActionResponse>> =
             flow {
                 try {
                     emit(Resource.Loading())
                     StudyPlanetApplication.authSingleton.validateUser()
                     if (StudyPlanetApplication.authSingleton.isUserAuthenticated) {
-                        val discoveredPlanet = repo.stopDiscovering(DiscoverActionDto(selectedTime = selectedTime))
-                        val currentDatabaseUser = repo.getUserByRemoteId(StudyPlanetApplication.authSingleton.remoteUserId)
-                        if (discoveredPlanet != null) {
-                            val newDatabasePlanet = discoveredPlanet.asDatabaseModel(currentDatabaseUser.remoteId)
-                            repo.insertPlanet(newDatabasePlanet)
-                            emit(Resource.Success(newDatabasePlanet.asDomainModel()))
-                        } else {
-                            emit(Resource.Success(null))
-                        }
+                        val actionResponse = repo.stopDiscovering(DiscoverActionDto(selectedTime = selectedTime))
+                        emit(Resource.Success(actionResponse))
                     } else {
                         emit(Resource.Error("Failed to discover a new planet."))
                     }

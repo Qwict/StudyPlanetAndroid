@@ -21,28 +21,14 @@ import androidx.compose.ui.window.Dialog
 import com.qwict.studyplanetandroid.domain.model.Planet
 
 @Composable
-fun PlanetDiscoveredDialog(
+fun PlanetDialog(
     planet: Planet,
     navigateHome: () -> Unit,
     navigateToDiscoveredPlanets: () -> Unit,
+    isDiscovering: Boolean,
     hasDiscoveredPlanet: Boolean,
     experience: Int,
 ) {
-    val title =
-        if (hasDiscoveredPlanet) {
-            "Planet discovered!"
-        } else {
-            "No planet discovered"
-        }
-
-    val discoveryInformation =
-        if (hasDiscoveredPlanet) {
-            "You have discovered ${planet.name}, and gained $experience xp!"
-        } else {
-            "No planet discovered, but gained $experience xp" +
-                "To improve your chances of discovering a planet, try to study for a longer period of time."
-        }
-
     Dialog(onDismissRequest = { navigateHome() }) {
         Card(
             modifier =
@@ -67,13 +53,31 @@ fun PlanetDiscoveredDialog(
                     )
                 }
                 Text(
-                    text = title,
+                    text =
+                        if (isDiscovering) {
+                            if (hasDiscoveredPlanet) {
+                                "${planet.name} discovered!"
+                            } else {
+                                "No planet discovered"
+                            }
+                        } else {
+                            "${planet.name} explored"
+                        },
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.headlineLarge,
                 )
 
                 Text(
-                    text = discoveryInformation,
+                    text =
+                        if (isDiscovering) {
+                            if (hasDiscoveredPlanet) {
+                                "You have discovered ${planet.name}, and gained ${experience}xp!"
+                            } else {
+                                "No planet discovered, but gained ${experience}xp"
+                            }
+                        } else {
+                            "You have explored ${planet.name}, and gained ${experience}xp"
+                        },
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.bodyLarge,
                 )
@@ -96,7 +100,7 @@ fun PlanetDiscoveredDialog(
                             },
                             modifier = Modifier.padding(16.dp),
                         ) {
-                            Text("Checkout planet")
+                            Text("Checkout")
                         }
                     }
                 }

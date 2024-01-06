@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.qwict.studyplanetandroid.common.Constants.DEFAULT_STUDY_TIME
 import com.qwict.studyplanetandroid.common.Constants.EMPTY_PLANET
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class SelectedPlanetViewModel
     @Inject
     constructor() : ViewModel() {
         var isDiscovering by mutableStateOf(false)
-        var selectedTimeInMinutes by mutableFloatStateOf(30f)
+        var selectedTimeInMinutes by mutableFloatStateOf(DEFAULT_STUDY_TIME)
         var selectedPlanet by mutableStateOf(EMPTY_PLANET)
 
         fun reset() {

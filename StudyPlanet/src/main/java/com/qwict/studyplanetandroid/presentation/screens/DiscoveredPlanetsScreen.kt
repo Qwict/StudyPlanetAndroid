@@ -77,8 +77,7 @@ fun DiscoveredPlanetsScreen(
                 Column(
                     modifier =
                         Modifier
-                            .pullRefresh(pullRefreshState)
-                            .padding(top = 8.dp),
+                            .pullRefresh(pullRefreshState),
                 ) {
                     if (planets.isEmpty()) {
                         Column(

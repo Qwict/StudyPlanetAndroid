@@ -239,7 +239,6 @@ fun StudyPlanetNavigation(
                         }
                     },
                     modifier = Modifier.fillMaxHeight(),
-                    isDiscovering = true,
                     selectedPlanet = selectedPlanetViewModel.selectedPlanet,
                     selectedTimeInMinutes = selectedPlanetViewModel.selectedTimeInMinutes,
                     windowSize = windowSize,

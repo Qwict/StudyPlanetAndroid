@@ -33,7 +33,7 @@ class StudyViewModel
 
         suspend fun startStudyTimer(
             selectedTimeInMinutes: Float,
-            isDiscovering: Boolean,
+            selectedPlanetId: Int,
         ) {
             viewModelScope.launch {
                 if (state.isRunning) {
@@ -43,42 +43,38 @@ class StudyViewModel
                 }
                 Log.d(
                     "StudyViewModel",
-                    "Started ${if (isDiscovering) "discovering" else "exploring"} for $selectedTimeInMinutes minutes",
+                    "Started ${if (selectedPlanetId == 0) "discovering" else "exploring"} for $selectedTimeInMinutes minutes",
                 )
-                Log.d("StudyViewModel", state.updatedTime.toString())
                 try {
-                    if (isDiscovering) {
-                        startDiscovering()
+                    val selectedTimeInMillis = selectedTimeInMinutes.toInt() * 60 * 1000
+                    if (selectedPlanetId == 0) {
+                        startDiscovering(selectedTimeInMillis)
                     } else {
-                        startExploring()
+                        startExploring(selectedTimeInMillis, selectedPlanetId)
                     }
 
-                    val selectedTimeInMillis = selectedTimeInMinutes.toInt() * 60 * 1000
                     val startTimeInMillis = System.currentTimeMillis()
                     val endTimeInMillis = startTimeInMillis + selectedTimeInMillis
-                    state = state.copy(updatedTime = selectedTimeInMillis)
-                    while (state.updatedTime > 0) {
-                        Log.d("StudyViewModel", "startCountDown: ${state.currentProgress}")
+                    while (endTimeInMillis > System.currentTimeMillis()) {
+                        Log.d("StudyViewModel", "${System.currentTimeMillis()}")
                         val hours = (endTimeInMillis - System.currentTimeMillis()) / 1000 / 60 / 60
                         val minutes = (endTimeInMillis - System.currentTimeMillis()) / 1000 / 60 % 60
                         val seconds = (endTimeInMillis - System.currentTimeMillis()) / 1000 % 60
-                        // moet van nul naar 1 gaan
                         val currentProgress = ((System.currentTimeMillis() - startTimeInMillis) / selectedTimeInMillis.toDouble())
                         state =
                             state.copy(
-                                updatedTime = state.updatedTime - 1000,
                                 hours = hours.toInt(),
                                 minutes = minutes.toInt(),
                                 seconds = seconds.toInt(),
                                 currentProgress = currentProgress.toFloat(),
                                 progressPercentage = (currentProgress * 100).toInt(),
                             )
-                        delay(1000)
+                        delay(500)
                     }
-                    if (isDiscovering) {
+                    if (selectedPlanetId == 0) {
                         stopDiscovering()
                     } else {
-                        stopExploring()
+                        stopExploring(selectedTimeInMillis, selectedPlanetId)
                     }
                 } catch (e: Exception) {
                     Log.i("ExplorerScreen", e.toString())
@@ -98,9 +94,9 @@ class StudyViewModel
          *
          * @throws IllegalStateException if the [startDiscoveringUseCase] is not provided or initialized.
          */
-        fun startDiscovering() {
+        private fun startDiscovering(selectedTimeInMillis: Int) {
             Log.i("StudyViewModel", "startDiscovering")
-            startDiscoveringUseCase(state.selectedTime).onEach { result ->
+            startDiscoveringUseCase(selectedTimeInMillis).onEach { result ->
                 state =
                     when (result) {
                         is Resource.Success -> {
@@ -134,31 +130,23 @@ class StudyViewModel
          *
          * @throws IllegalStateException if the [stopDiscoveringUseCase] is not provided or initialized.
          */
-        fun stopDiscovering() {
+        private fun stopDiscovering() {
             Log.i("StudyViewModel", "stopDiscovering")
             stopDiscoveringUseCase(state.selectedTime).onEach { result ->
                 when (result) {
                     is Resource.Success -> {
                         Log.i("StudyViewModel", "stopDiscovering: ${result.data}")
                         state =
-                            if (result.data != null) {
-                                state.copy(
-                                    discoveredPlanet = result.data,
-                                    hasDiscoveredPlanet = true,
-                                    openPlanetDiscoveredDialog = true,
-                                )
-                            } else {
-                                state.copy(
-                                    hasDiscoveredPlanet = false,
-                                    openPlanetDiscoveredDialog = true,
-                                )
-                            }
+                            state.copy(
+                                discoveredPlanet = result.data?.planet ?: state.discoveredPlanet,
+                                hasDiscoveredPlanet = result.data?.hasFoundNewPlanet ?: false,
+                                openPlanetDiscoveredDialog = true,
+                                gainedExperience = result.data?.gainedExperience ?: 0,
+                            )
                     }
-
                     is Resource.Error -> {
                         state = state.copy(error = result.message ?: "An unexpected error occurred")
                     }
-
                     is Resource.Loading -> {
                         state = state.copy(isLoading = true)
                     }
@@ -178,9 +166,12 @@ class StudyViewModel
          *
          * @throws IllegalStateException if the [startExploringUseCase] is not provided or initialized.
          */
-        fun startExploring() {
+        private fun startExploring(
+            selectedTimeInMillis: Int,
+            selectedPlanetId: Int,
+        ) {
             Log.i("StudyViewModel", "startExploring")
-            startExploringUseCase(state.selectedTime, selectedPlanetId = state.selectedPlanet.id).onEach { result ->
+            startExploringUseCase(selectedTimeInMillis = selectedTimeInMillis, selectedPlanetId = selectedPlanetId).onEach { result ->
                 state =
                     when (result) {
                         is Resource.Success -> {
@@ -199,7 +190,30 @@ class StudyViewModel
             }.launchIn(viewModelScope)
         }
 
-        fun stopExploring() {
+        private fun stopExploring(
+            selectedTimeInMillis: Int,
+            selectedPlanetId: Int,
+        ) {
+            stopExploringUseCase(selectedTimeInMillis = selectedTimeInMillis, selectedPlanetId = selectedPlanetId).onEach { result ->
+                state =
+                    when (result) {
+                        is Resource.Success -> {
+                            Log.i("StudyViewModel", "startExploring: ${result.data}")
+                            state.copy(
+                                gainedExperience = result.data!!,
+                                openPlanetDiscoveredDialog = true,
+                            )
+                        }
+
+                        is Resource.Error -> {
+                            state.copy(error = result.message ?: "An unexpected error occurred")
+                        }
+
+                        is Resource.Loading -> {
+                            state.copy(isLoading = true)
+                        }
+                    }
+            }.launchIn(viewModelScope)
         }
 
         fun closeBackAlertDialog() {

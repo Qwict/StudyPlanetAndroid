@@ -73,7 +73,7 @@ class LoginUseCase
                     emit(Resource.Error("Couldn't reach server. Check your internet connection."))
                 } catch (e: Exception) {
                     Log.e("LoginUseCase", "invoke: ${e.message}", e)
-                    emit(Resource.Error("The developer didn't do his job..."))
+                    emit(Resource.Error("An unexpected error occurred"))
                 }
             }
     }

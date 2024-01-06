@@ -9,38 +9,42 @@ import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionDto
 import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionDto
 import com.qwict.studyplanetandroid.data.remote.dto.HealthDto
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
-import com.qwict.studyplanetandroid.data.remote.dto.PlanetDto
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
 import com.qwict.studyplanetandroid.data.remote.dto.UserDto
+import com.qwict.studyplanetandroid.domain.model.ActionResponse
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class FakeStudyPlanetRepository : StudyPlanetRepository {
-    private var databaaseUser = UserRoomEntity(
-        id = 1,
-        experience = 121,
-        name = "Test",
-        remoteId = 1,
-        email = "test@test.com",
-    )
+    private var databaseUser =
+        UserRoomEntity(
+            id = 1,
+            experience = 121,
+            name = "Test",
+            remoteId = 1,
+            email = "test@test.com",
+        )
 
-    private var userDto = UserDto(
-        id = 1,
-        name = "Test",
-        email = "test@test.com",
-        experience = 121,
-        discoveredPlanets = emptyList(),
-    )
+    private var userDto =
+        UserDto(
+            id = 1,
+            name = "Test",
+            email = "test@test.com",
+            experience = 121,
+            discoveredPlanets = emptyList(),
+        )
 
-    private var authenticatedUserDto = AuthenticatedUserDto(
-        user = userDto,
-        token = "token",
-        validated = true,
-    )
+    private var authenticatedUserDto =
+        AuthenticatedUserDto(
+            user = userDto,
+            token = "token",
+            validated = true,
+        )
 
     private var planets = emptyList<PlanetRoomEntity>()
+
     override fun getActiveUser(): Flow<User> {
         TODO("Not yet implemented")
     }
@@ -98,7 +102,7 @@ class FakeStudyPlanetRepository : StudyPlanetRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto? {
+    override suspend fun stopDiscovering(body: DiscoverActionDto): ActionResponse {
         TODO("Not yet implemented")
     }
 

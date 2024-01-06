@@ -19,8 +19,8 @@ fun CheckpointSlider(
                 activeTrackColor = MaterialTheme.colorScheme.secondary,
                 inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-        steps = 6,
+        steps = 14,
 //        valueRange = 1f..6f,
-        valueRange = 15f..120f,
+        valueRange = 15f..240f,
     )
 }

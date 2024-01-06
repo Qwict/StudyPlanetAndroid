@@ -35,7 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.presentation.components.AlertDialog
 import com.qwict.studyplanetandroid.presentation.components.study.CustomCountDownTimer
-import com.qwict.studyplanetandroid.presentation.components.study.PlanetDiscoveredDialog
+import com.qwict.studyplanetandroid.presentation.components.study.PlanetDialog
 import com.qwict.studyplanetandroid.presentation.viewmodels.StudyViewModel
 import com.qwict.studyplanetandroid.presentation.viewmodels.states.StudyState
 
@@ -46,8 +46,8 @@ fun ExplorerScreen(
     navigateBackToDiscoveredPlanetsScreen: () -> Unit = {},
     studyViewModel: StudyViewModel = hiltViewModel(),
     state: StudyState = studyViewModel.state,
-    isDiscovering: Boolean,
     selectedPlanet: Planet,
+    isDiscovering: Boolean = selectedPlanet.name == "Galaxy",
     selectedTimeInMinutes: Float,
     windowSize: WindowSizeClass,
 ) {
@@ -56,7 +56,7 @@ fun ExplorerScreen(
     }
 
     LaunchedEffect(key1 = null) {
-        studyViewModel.startStudyTimer(selectedTimeInMinutes, isDiscovering)
+        studyViewModel.startStudyTimer(selectedTimeInMinutes, selectedPlanet.id)
     }
     when (windowSize.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {
@@ -253,13 +253,13 @@ fun ExplorerScreen(
             )
         }
         state.openPlanetDiscoveredDialog -> {
-            PlanetDiscoveredDialog(
+            PlanetDialog(
                 navigateHome = { navigateBackToMainScreen() },
                 navigateToDiscoveredPlanets = { navigateBackToDiscoveredPlanetsScreen() },
-                planet = state.discoveredPlanet,
+                planet = if (isDiscovering) state.discoveredPlanet else selectedPlanet,
+                isDiscovering = isDiscovering,
                 hasDiscoveredPlanet = state.hasDiscoveredPlanet,
-                experience = 0,
-//                    state.selectedTime / 1000 / 60,
+                experience = state.gainedExperience,
             )
         }
     }

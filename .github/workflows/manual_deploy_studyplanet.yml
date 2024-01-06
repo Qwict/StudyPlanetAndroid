@@ -27,7 +27,7 @@ jobs:
           cp -R ./StudyPlanet/build/dokka/html/* ../StudyPlanetDocumentation
           
     - name: Build Stduyplanet to apk
-      uses: appleboy/ssh-action@v0.1.7
+      uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
@@ -36,10 +36,15 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd /var/www/qwict/StudyPlanet/StudyPlanetAndroid
-          ./gradlew assembleDebug
+          rm ./StudyPlanet/src/main/res/xml/network_security_config.xml
+          cp ../network_security_config.xml ./StudyPlanet/src/main/res/xml/network_security_config.xml
+          rm keystore.properties
+          rm -rf ./StudyPlanet/build
+          cp /var/www/qwict/StudyPlanet/keystore.properties /var/www/qwict/StudyPlanet/StudyPlanetAndroid/
+          ./gradlew assembleRelease
 
     - name: Release APK to Github Releases
-      uses: appleboy/ssh-action@v0.1.7
+      uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
@@ -48,4 +53,5 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd /var/www/qwict/StudyPlanet/StudyPlanetAndroid
-          gh release create $(echo "$(git log -1 --pretty=%B)" | sed 's/ ->.*//') --title "Study Planet $(echo "$(git log -1 --pretty=%B)" | sed 's/ ->.*//')" --notes "$(echo $(git log -1 --pretty=%B) | sed 's/.*-> //')" './StudyPlanet/build/outputs/apk/debug/StudyPlanet-debug.apk'
+          mv /var/www/qwict/StudyPlanet/StudyPlanetAndroid/StudyPlanet/build/outputs/apk/release/StudyPlanet-release.apk /var/www/qwict/StudyPlanet/StudyPlanetAndroid/StudyPlanet/build/outputs/apk/release/StudyPlanet.apk
+          gh release create $(echo "$(git log -1 --pretty=%B)" | sed 's/ ->.*//') --title "Study Planet $(echo "$(git log -1 --pretty=%B)" | sed 's/ ->.*//')" --notes "$(echo $(git log -1 --pretty=%B) | sed 's/.*-> //')" './StudyPlanet/build/outputs/apk/release/StudyPlanet.apk'

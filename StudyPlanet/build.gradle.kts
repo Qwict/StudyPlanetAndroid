@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
 
     id("com.android.application")
@@ -8,7 +11,26 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.10"
 }
 
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+val keystoreProperties = Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
 android {
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
     namespace = "com.qwict.studyplanetandroid"
     compileSdk = 34
 
@@ -17,21 +39,25 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "0.11.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        signingConfig = signingConfigs.getByName("release")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+//            isMinifyEnabled = true
+//            isShrinkResources = true
+//            isMinifyEnabled = true // breaks the app in login screen (and probably elsewhere)
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+//                "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     buildFeatures {

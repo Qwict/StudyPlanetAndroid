@@ -205,7 +205,7 @@ fun RegisterForm(
     authState: AuthState,
     onEvent: (AuthenticationFormEvent) -> Unit,
 ) {
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         OutlinedTextField(
             label = { Text(text = "Username") },
             value = authState.username,
@@ -224,7 +224,7 @@ fun RegisterForm(
         )
     }
 
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         OutlinedTextField(
             label = { Text(text = "Email") },
             value = authState.email,
@@ -251,7 +251,7 @@ fun RegisterPasswordForm(
     switchPasswordVisibility: () -> Unit,
     registerUser: () -> Unit,
 ) {
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         OutlinedTextField(
             label = { Text(text = "Password") },
             value = authState.password,
@@ -284,10 +284,7 @@ fun RegisterPasswordForm(
             singleLine = true,
         )
     }
-    Column(
-        modifier = Modifier.padding(horizontal = 4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
         OutlinedTextField(
             label = { Text(text = "Confirm Password") },
             value = authState.confirmPassword,

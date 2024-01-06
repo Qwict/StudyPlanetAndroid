@@ -8,7 +8,6 @@ import com.qwict.studyplanetandroid.common.Resource
 import com.qwict.studyplanetandroid.common.getEncryptedPreference
 import com.qwict.studyplanetandroid.data.StudyPlanetRepository
 import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionDto
-import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -28,20 +27,20 @@ class StartExploringUseCase
         /**
          * Invokes the use case to start the process of exploring a selected planet.
          *
-         * @param selectedTime The selected time for the exploration process.
+         * @param selectedTimeInMillis The selected time for the exploration process.
          * @param selectedPlanetId The ID of the planet to explore.
-         * @return Flow<Resource<User>> representing the result of the operation.
+         * @return Flow<Resource<Unit>> A flow of the result of the exploration process.
          */
         operator fun invoke(
-            selectedTime: Int,
+            selectedTimeInMillis: Int,
             selectedPlanetId: Int,
-        ): Flow<Resource<User>> =
+        ): Flow<Resource<Unit>> =
             flow {
                 try {
                     emit(Resource.Loading())
                     StudyPlanetApplication.authSingleton.validateUser()
                     if (StudyPlanetApplication.authSingleton.isUserAuthenticated) {
-                        repo.startExploring(ExploreActionDto(planetId = selectedPlanetId, selectedTime = selectedTime))
+                        repo.startExploring(ExploreActionDto(planetId = selectedPlanetId, selectedTime = selectedTimeInMillis))
                     } else if (getEncryptedPreference("token") == "expired") {
                         emit(Resource.Error("Your access to the universe has expired. Please log in again to discover a new planet."))
                     } else {

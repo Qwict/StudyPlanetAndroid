@@ -10,6 +10,8 @@ object Constants {
 //        "http://10.0.2.2:9012/api/" // For developing with android simulator
 //        "http://192.168.1.32:9012/api/" // For developing with android device
 
+    const val DEFAULT_STUDY_TIME = 1f
+
     val DEFAULT_PLANET_IMAGE_ID = R.drawable.galaxy
     val DEFAULT_PLANET_SMALL_IMAGE_ID = R.drawable.galaxy_small
     val EMPTY_USER =

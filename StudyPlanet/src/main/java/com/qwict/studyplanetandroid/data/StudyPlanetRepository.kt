@@ -14,10 +14,11 @@ import com.qwict.studyplanetandroid.data.remote.dto.DiscoverActionDto
 import com.qwict.studyplanetandroid.data.remote.dto.ExploreActionDto
 import com.qwict.studyplanetandroid.data.remote.dto.HealthDto
 import com.qwict.studyplanetandroid.data.remote.dto.LoginDto
-import com.qwict.studyplanetandroid.data.remote.dto.PlanetDto
 import com.qwict.studyplanetandroid.data.remote.dto.RegisterDto
 import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseEntityWithPlanets
 import com.qwict.studyplanetandroid.data.remote.dto.asDatabaseModel
+import com.qwict.studyplanetandroid.data.remote.dto.asDomainModel
+import com.qwict.studyplanetandroid.domain.model.ActionResponse
 import com.qwict.studyplanetandroid.domain.model.Planet
 import com.qwict.studyplanetandroid.domain.model.User
 import kotlinx.coroutines.flow.Flow
@@ -51,7 +52,7 @@ interface StudyPlanetRepository {
 
     suspend fun startDiscovering(body: DiscoverActionDto): Response<Unit>
 
-    suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto?
+    suspend fun stopDiscovering(body: DiscoverActionDto): ActionResponse
 
     suspend fun startExploring(body: ExploreActionDto): Response<Unit>
 
@@ -204,15 +205,18 @@ class StudyPlanetRepositoryImpl
          * Stops the process of discovering a planet remotely and performs local database operations if successful.
          *
          * @param body The [DiscoverActionDto] containing information for stopping the discovery action.
-         * @return The [PlanetDto] representing the discovered planet, or null if the discovery was unsuccessful.
+         * @return The [ActionResponse] containing information about the discovery action.
          */
-        override suspend fun stopDiscovering(body: DiscoverActionDto): PlanetDto? {
+        override suspend fun stopDiscovering(body: DiscoverActionDto): ActionResponse {
             val response = api.stopDiscovering(body)
-            if (response.hasFoundNewPlanet) {
-                planetDao.insert(response.planet.asDatabaseModel(StudyPlanetApplication.authSingleton.remoteUserId))
-                return response.planet
+            if (response.hasFoundNewPlanet && response.planet != null) {
+                val planetRoomEntity = response.planet.asDatabaseModel(StudyPlanetApplication.authSingleton.remoteUserId)
+                planetDao.insert(planetRoomEntity)
             }
-            return null
+            val activeUser = userDao.getUserByRemoteId(StudyPlanetApplication.authSingleton.remoteUserId)
+            val updatedUser = activeUser.copy(experience = activeUser.experience + response.experience)
+            userDao.update(updatedUser)
+            return response.asDomainModel(response.planet?.asDatabaseModel(StudyPlanetApplication.authSingleton.remoteUserId))
         }
 
         /**
@@ -227,9 +231,9 @@ class StudyPlanetRepositoryImpl
 
         override suspend fun stopExploring(body: ExploreActionDto): Int {
             val response = api.stopExploring(body)
-            val user = userDao.getUserByRemoteId(StudyPlanetApplication.authSingleton.remoteUserId)
-            user.experience += response.experience
-            userDao.update(user)
+            val activeUser = userDao.getUserByRemoteId(StudyPlanetApplication.authSingleton.remoteUserId)
+            val updatedUser = activeUser.copy(experience = activeUser.experience + response.experience)
+            userDao.update(updatedUser)
             return response.experience
         }
     }
