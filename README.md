@@ -6,43 +6,20 @@
 The Study Planet Android App is designed to help users stay focused and productive by incorporating gamification elements into their learning experience.
 The app encourages users to concentrate on their studies or work by allowing them to discover and explore virtual planets on their Android devices.
 
-Benefits include enhanced focus, gamified learning, and productivity even offline. 
-Dependencies include Room, Retrofit, Kotlin Coroutines, Dagger Hilt, OkHttp, and Gson. 
-The backend is hosted at [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version). 
+The backend is hosted at [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version) the code for this server is available at [Github/Qwict/StudyPlanetNodeAPI](https://github.com/Qwict/StudyPlanetNodeAPI). 
 For detailed documentation, visit [docs.sp.qwict.com](https://docs.sp.qwict.com). 
 The application is automatically built and released on [Github Releases](https://github.com/Qwict/StudyPlanetAndroid/releases).
+An iOS version was also build and is available on [Github/Qwict/StudyPlanetiOS](https://github.com/Qwict/StudyPlanetiOS).
 Feedback and issues can be reported on the [GitHub Issues](https://github.com/Qwict/StudyPlanetAndroid/issues).
 
-## Features
+## Demo
 
-**User Authentication**
-- Users can create an account by registering with their Android phone.
-- Existing users can log in to access the app's features.
+https://github.com/Qwict/StudyPlanetAndroid/assets/100297369/4f2cd849-c952-43e7-8c4b-424e28cc39c9
 
-**Study Mode**
-- Once authenticated, users enter study mode where they can focus on their tasks without distractions.
-
-**Planet Discovery**
-- Users can discover new planets in the background while they concentrate on their studies or work.
-- Each discovered planet contributes to the user's overall progress and experience.
-
-**Planet Exploration**
-- Users have the option to explore the planets they've discovered, earning additional experience points.
-- Exploration adds an interactive and rewarding element to the learning experience.
-
-**Experience Points (XP) System**
-- Users accumulate experience points based on their discovered planets and exploration activities.
-- The XP system provides a measure of the user's dedication to focused learning.
-
-**Offline Learning**
-- The app is designed to operate in the background, allowing users to learn even without actively using their phones.
-- Users can track their progress and achievements over time.
-  
-## Benefits
-
-  Focus Enhancement: Encourages users to concentrate for longer periods by providing a tangible reward system.
-  Gamification of Learning: Adds a playful element to the learning process, making it more engaging and enjoyable.
-  Offline Productivity: Facilitates learning even when the user is not actively interacting with the app.
+> This demo shows the application running in an Android simulator.
+> It is combined with a locally hosted development backend to visualise the API calls that are performed by the application.
+> Running the backend in development mode allows discover and explore actions under 15 minutes.
+> The production version of the server requires actions that take atlease 15 minutes.
 
 ## Documentation
 
@@ -65,7 +42,31 @@ Make sure to check the `build.gradle.kts` file for the most up-to-date list of d
 
 The backend for Study Planet is hosted on [sp.qwict.com/api](https://sp.qwict.com/api/v1/health/version).
 This backend is also available on Github at [Qwict/StudyPlanetNodeAPI](https://github.com/Qwict/StudyPlanetNodeAPI).
-The connection to this backend is defined in [Constants](https://docs.sp.qwict.com/-study-planet/com.qwict.studyplanetandroid.common/-constants/index.html) as `BASE_URL`.
+The connection to this backend is defined in [Constants](https://docs.sp.qwict.com/-study-planet/com.qwict.studyplanetandroid.common/-constants/index.html) as `BASE_URL`. The `/res/xml/network_security_config.xml` must also be changed according to this URL.
+
+## Features
+
+**User Authentication**
+- Users can create an account by registering with their Android phone.
+- Existing users can log in to access the app's features.
+
+**Study Mode**
+- Once authenticated, users can enter study mode where they can focus on their tasks without distractions.
+
+**Planet Discovery**
+- Users can discover new planets while they concentrate on their studies or work.
+- Each discovered planet contributes to the user's overall progress and experience.
+
+**Planet Exploration**
+- Users have the option to explore the planets they've discovered, earning additional experience points.
+- Exploration adds an interactive and rewarding element to the learning experience.
+
+**Experience Points (XP) System**
+- Users accumulate experience points based on their discovered planets and exploration activities.
+- The XP system provides a measure of the user's dedication to focused learning.
+
+**Offline Learning**
+- The app is designed to be able to opperate offline, however offline work will not add online user progrss.
 
 ## Feedback and Issues
 
