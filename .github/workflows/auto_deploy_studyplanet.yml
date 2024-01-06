@@ -22,6 +22,7 @@ jobs:
           rm -rf ./StudyPlanet/build
           git pull
           cp -R ./licenses/* /usr/lib/android-sdk/licenses/
+          cp ../network_security_config.xml ./StudyPlanet/src/main/res/xml/network_security_config.xml
           ./gradlew dokkaHtml
           rm -rf ../StudyPlanetDocumentation/*
           cp -R ./StudyPlanet/build/dokka/html/* ../StudyPlanetDocumentation
