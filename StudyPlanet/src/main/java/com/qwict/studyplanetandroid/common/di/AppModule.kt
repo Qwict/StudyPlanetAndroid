@@ -36,7 +36,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     /**
      * Provides an instance of [StudyPlanetApi] using Retrofit.
      *
@@ -105,10 +104,11 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideStudyPlanetDatabase() = StudyPlanetDatabase.getDatabase(
-        StudyPlanetApplication.appContext,
-        CoroutineScope(SupervisorJob() + Dispatchers.Main),
-    )
+    fun provideStudyPlanetDatabase() =
+        StudyPlanetDatabase.getDatabase(
+            StudyPlanetApplication.appContext,
+            CoroutineScope(SupervisorJob() + Dispatchers.Main),
+        )
 
     @Singleton
     @Provides
@@ -136,9 +136,7 @@ object AppModule {
      */
     @Provides
     @Singleton
-    fun provideLoginUseCase(
-        repo: StudyPlanetRepository,
-    ): LoginUseCase {
+    fun provideLoginUseCase(repo: StudyPlanetRepository): LoginUseCase {
         return LoginUseCase(repo)
     }
 
@@ -154,9 +152,7 @@ object AppModule {
      */
     @Provides
     @Singleton
-    fun provideRegisterUseCase(
-        repo: StudyPlanetRepository,
-    ): RegisterUseCase {
+    fun provideRegisterUseCase(repo: StudyPlanetRepository): RegisterUseCase {
         return RegisterUseCase(repo)
     }
 }
